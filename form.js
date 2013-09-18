@@ -21,7 +21,7 @@ var Form = (function ($) {
 				var field = $(this),
 					t = this,
 					regExp;
-				if ((field.attr('required') && (field.attr('type') === 'text' || field.attr('type') === 'password') && field.val() === "") || (field.attr('required') && field.is('textarea') && !$.trim(field.val()))) {
+				if (field.attr('required') && (field.val() === "" || !$.trim(field.val()))) {
 					field.parent().addClass("error");
 					error += 1;
 				}

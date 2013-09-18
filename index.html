@@ -5,14 +5,15 @@
     <title>Form</title>
 	<style>
         *{-moz-box-sizing: border-box;-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-font-smoothing:subpixel-antialiased;margin: 0;padding: 0;border: 0;outline: 0;vertical-align: baseline;}
-        label {display:block;margin:0 0 1% 5%;}
-        input {display:block; border:1px solid grey;width:70%;margin:0 0 5% 5%;}
+        label {display:block;margin:2% 0 1% 5%;}
+        input,
+        textarea {display:block; border:1px solid grey;width:70%;margin:0 0 2% 5%;}
         input[type="submit"] {background:grey;color:#000;}
-        .error input {border:1px solid red;}
+        .error {border:1px solid red;}
     </style>
 </head>
 <body>		
-	<form class="registration-form">
+	<form class="registration-form" action="/test">
         <fieldset>
             <div class="form-row">
                 <label for="registration_name">Name:<span>*</span></label>
@@ -24,7 +25,7 @@
             </div>
             <div class="form-row">
                 <label for="registration_address_1">Address:<span>*</span></label>
-                <input type="text" id="registration_address_1" value="" required>           
+                <textarea id="registration_address_1" required></textarea>           
             </div>
             <div class="form-row">
                 <label for="registration_postcode">Postcode:<span>*</span></label>
@@ -51,7 +52,7 @@
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
 	<script src="jquery.form.js"></script>
 	<script>
-        $('body').Form();
+        $('.registration-form').Form();
 	</script>
 </body>
 </html>
