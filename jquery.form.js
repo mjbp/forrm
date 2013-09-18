@@ -13,12 +13,16 @@
         var pluginName = "Form",
             defaults = {
                 errorTemplate : '<p class="error-message"></p>',
+                errorMessages : {
+                    'missing' : 'Fields marked * are required',
+                    'email' : 'Please enter a valid email address'
+                },
                 no : function () { console.log('nein'); }
             };
     
         function Plugin(element, options) {
             this.element = element;
-            this.options = $.extend({}, defaults, options);
+            this.options = $.extend(true, {}, defaults, options);
             this.emailPattern = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
     
             this._defaults = defaults;
@@ -30,6 +34,7 @@
         Plugin.prototype = {
             init: function () {
                 var self = this;
+                
                 $(this.element).find('input[type=submit]').on("click", function (e) {
                     e.preventDefault();
                     self.clearErrors()
@@ -41,42 +46,44 @@
             },
             clearErrors : function () {
                 var self = this;
+                
                 if ($(self.element).find('.error').length) {
                     $('.error').removeClass('error');
-                    $(this.element).next().remove();
+                    
+                    //$(this.element).next().remove();
                 }
                 return this;
             },
             test : function () {
                 var self = this;
                 
-                this.errors = false;
+                this.errors = [];
                 
                 $(':input:not(input[type=hidden])').each(function () {
                     var field = $(this),
                         t = this,
-                        regExp;
-                    if (field.attr('required') && (field.val() === "" || !$.trim(field.val()))) {
+                        regExp,
+                        tmp;
+                    
+                    if (field.attr('required') && field.attr('type') !== 'email' && (field.val() === "" || !$.trim(field.val()))) {
                         field.addClass('error');
-                        field.after(self.write('Fields marked * are required'));
-                        self.errors = true;
+                        self.errors.push([$(field).attr('id'), 'missing']);
                     }
                     if (field.attr('required') && field.attr('type') === 'email') {
-                        //check email address
                         regExp = new RegExp(self.emailPattern, "");
                         if (!regExp.test(field.val())) {
                             field.addClass('error');
-                            field.parent().append(self.write('Please enter a valid email address'));
-                            self.errors = true;
+                            self.errors.push([$(field).attr('id'), 'email']);
                         }
                     }
                 });
-                if (!self.error) {
+                if (!!self.errors) {
+                    console.log(this.errors);
+                    console.log(this.options.errorMessages);
                     this.options.no.call();
                 } else {
-                    //return !0;
                     console.log('ya');
-                    //$(this.element).submit();
+                    $(this.element).submit();
                 }
             }
         };
