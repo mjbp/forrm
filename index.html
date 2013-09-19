@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset=utf-8>
+    <title>Form</title>
+	<style>
+        *{-moz-box-sizing: border-box;-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-font-smoothing:subpixel-antialiased;margin: 0;padding: 0;border: 0;outline: 0;vertical-align: baseline;}
+        label {display:block;margin:2% 0 1% 5%;}
+        input,
+        textarea {display:block; border:1px solid grey;width:70%;margin:0 0 2% 5%;}
+        input[type="submit"] {background:grey;color:#000;}
+        .error {border:1px solid red;}
+    </style>
+</head>
+<body>		
+	<form class="registration-form" action="/test">
+        <fieldset>
+            <div class="form-row">
+                <label for="registration_name">Name:<span>*</span></label>
+                <input type="text" id="registration_name" value="" required>
+            </div>
+            <div class="form-row">
+                <label for="registration_company">Company:<span>*</span></label>
+                <input type="text" id="registration_company" value="" required>
+            </div>
+            <div class="form-row">
+                <label for="registration_address_1">Address:<span>*</span></label>
+                <textarea id="registration_address_1" required></textarea>           
+            </div>
+            <div class="form-row">
+                <label for="registration_postcode">Postcode:<span>*</span></label>
+                <input type="text" id="registration_postcode" value="" required>
+            </div>
+            <div class="form-row">
+                <label for="registration_telephone">Telephone:<span>*</span></label>
+                <input type="tel" id="registration_telephone" value="" required>
+            </div>
+            <div class="form-row">
+                <label for="registration_mobile">Mobile:</label>
+                <input type="text" id="registration_mobile" value="">
+            </div>
+            <div class="form-row">
+                <label for="registration_email">Email:<span>*</span></label>
+                <input type="email" id="registration_email" value="" required>
+            </div>
+            <div class="form-row submit">
+                <input type="submit" value="Submit">
+            </div>    
+        </fieldset>
+    </form>
+    
+    <form class="registration-form" action="/test">
+        <fieldset>
+            <div class="form-row">
+                <label for="registration_name_2">Name:<span>*</span></label>
+                <input type="text" id="registration_name_2" value="" required>
+            </div>
+            <div class="form-row">
+                <label for="registration_company_2">Company:<span>*</span></label>
+                <input type="text" id="registration_company_2" value="" required>
+            </div>
+            <div class="form-row submit">
+                <input type="submit" value="Submit">
+            </div>    
+        </fieldset>
+    </form>
+		
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="jquery.form.js"></script>
+	<script>
+        $('.registration-form').Form({ errorMessages : {'missing': 'Fields marked topshop are required'}});
+	</script>
+</body>
+</html>
