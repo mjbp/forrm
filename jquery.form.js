@@ -1,7 +1,7 @@
 /*jslint browser:true,nomen:true*/
 /*global jQuery,console*/
 /*!
- * @name        Form, lightweight jQuery form validation plugin
+ * @name        Form, lightweight jQuery HTML5 form validation plugin
  * @version     Sept 13  
  * @author      mjbp
  * Licensed under the MIT license
@@ -21,15 +21,17 @@
                 'dob' : 'Please enter a valid date of birth',
                 'email' : 'Please enter a valid email address'
             },
-            no : function () { console.log('nein'); },
+            patterns : {
+                email : "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+                tel : "[\\w\\d\\s\\(\\)\\.+-]+"
+            },
+            no : function () {},
             yes : false
         };
 
     function Plugin(element, options) {
         this.element = element;
         this.options = $.extend(true, {}, defaults, options);
-        this.emailPattern = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
-
         this._defaults = defaults;
         this._name = pluginName;
 
@@ -70,27 +72,36 @@
             }
         },
         test : function () {
-            var self = this;
+            var self = this,
+                go;
             
             this.errors = [];
             
-            $(':input:not(input[type=hidden])').each(function () {
+            $(this.element).find(':input').each(function () {
                 var field = $(this),
                     t = this,
+                    type,
                     regExp,
-                    tmp;
+                    tmp,
+                    pattern;
                 
-                if (field.attr('required') && field.attr('type') !== 'email' && (field.val() === "" || !$.trim(field.val()))) {
-                    field.addClass('error');
-                    self.errors.push([$(field).attr('id'), 'missing']);
-                }
-                if (field.attr('required') && field.attr('type') === 'email') {
-                    regExp = new RegExp(self.emailPattern, "");
-                    if (!regExp.test(field.val())) {
+                if (field.attr('type') !== 'hidden' && !field.attr('novalidate') && field.attr('type') !== 'submit') {
+                    if (field.attr('required') && (field.val() === "" || !$.trim(field.val()))) {
                         field.addClass('error');
-                        self.errors.push([$(field).attr('id'), 'email']);
+                        self.errors.push([$(field).attr('id'), 'missing']);
+                    } else {
+                        if (field.attr('required')) {
+                            type = field.attr('type');
+                            pattern = field.attr('pattern') || self.options.patterns[type];
+                            regExp = new RegExp(pattern, "");
+                            if (!regExp.test(field.val())) {
+                                field.addClass('error');
+                                self.errors.push([$(field).attr('id'), type]);
+                            }
+                        }
                     }
                 }
+                
             });
             if (self.errors.length) {
                 if (!!self.options.displayMessages) {
@@ -98,7 +109,7 @@
                 }
                 this.options.no.call();
             } else {
-                this.options.yes ? this.options.yes.call() : $(this.element).submit();
+                go = this.options.yes ? this.options.yes.call() : $(this.element).submit();
             }
         }
     };
