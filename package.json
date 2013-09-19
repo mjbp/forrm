@@ -1,0 +1,11 @@
+{
+  "name": "Form",
+  "author" : "mjbp",
+  "description" : "A lightweight jQuery HTML5 form validation plugin",
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.1.2",
+    "grunt-contrib-watch": "~0.4.4"
+  }
+}
