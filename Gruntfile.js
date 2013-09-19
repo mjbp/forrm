@@ -1,15 +1,14 @@
 /*global module:false*/
 module.exports = function (grunt) {
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
-	js_src_path: 'src/',
-    js_build_path: "build/js",
-	
+    pkg: grunt.file.readJSON('package.json'),	
       
     uglify: {
 		js: {
-			src: '<%= js_src_path %>',
-			dest:'<%= js_build_path %>/*.js'
+            files : {
+                'build/js/form.min.js' : 'src/form.js',
+                'build/js/jquery.form.min.js' : 'src/jquery.form.js',
+            }
 		}
     },
     watch: {
