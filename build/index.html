@@ -60,15 +60,16 @@
                 <input type="text" id="registration_company_2" value="" required>
             </div>
             <div class="form-row submit">
-                <input type="submit" value="Submit">
-            </div>    
+                <input type="submit" value="Subit">
+            </div>
         </fieldset>
     </form>
 		
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script src="js/jquery.form.min.js"></script>
+	<script src="js/form.min.js"></script>
 	<script>
-        $('.registration-form').Form({ errorMessages : {'missing': 'Fields marked topshop are required'}});
+        //$('.registration-form').Form({ errorMessages : {'missing': 'Fields marked topshop are required'}});
+        Form.init(".registration-form", {errorMessages : {'missing': 'Fields marked topshop are required'}});
 	</script>
 </body>
 </html>
