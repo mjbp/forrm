@@ -10,6 +10,7 @@
         textarea {display:block; border:1px solid grey;width:70%;margin:0 0 2% 5%;}
         input[type="submit"] {background:grey;color:#000;}
         .error {border:1px solid red;}
+        .error-message {margin-left:5%;}
     </style>
 </head>
 <body>		
@@ -66,10 +67,10 @@
     </form>
 		
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script src="js/jquery.form.min.js"></script>
+	<script src="js/form.min.js"></script>
 	<script>
-        $('.registration-form').Form({ errorMessages : {'missing': 'Fields marked topshop are required'}});
-        //Form.init(".registration-form", {errorMessages : {'missing': 'Fields marked topshop are required'}});
+        //$('.registration-form').Form({ errorMessages : {'missing': 'Fields marked topshop are required'}});
+        Form.init("form", {errorMessages : {'missing': 'Fields marked topshop are required'}});
 	</script>
 </body>
 </html>
