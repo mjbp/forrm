@@ -1,7 +1,7 @@
 /*jslint browser:true,nomen:true*/
 /*global define, console*/
 /*!
- * @name        Form, lightweight vanilla js HTML5 form validation helper
+ * @name        Form, lightweight vanilla js HTML5 form validation module
  * @version     Sept 13  
  * @author      mjbp
  * Licensed under the MIT license
@@ -20,9 +20,9 @@
     context = context || this;
     
     var defaults = {
-            displayMessages : false,
+            displayMessages : true,
             errorMessagesClass : 'error-message',
-            errorTemplate : '<p></p>',
+            errorMessageElement : 'p',
             errorMessages : {
                 'missing' : 'Fields marked * are required',
                 'phone' : 'Please enter a valid phone number',
@@ -72,37 +72,43 @@
             }
         },
         write : function (msg) {
-            return this.options.errorTemplate.replace(/></, '>' + msg + '<');
+            var self = this,
+                r = document.createElement(self.options.errorMessageElement);
+            r.textContent = msg;
+            r.className = self.options.errorMessagesClass;
+            return r;
         },
         clearErrors : function () {
             var self = this,
                 fields = this.element.querySelectorAll('input, textarea'),
+                er,
                 i,
                 l = fields.length;
-            //remove .error className
+            
             for (i = 0; i < l; i += 1) {
                 fields[i].className = fields[i].className.replace(/\serror/g, '');
+                er = fields[i].nextElementSibling;
+                if (er) {
+                    er.parentNode.removeChild(er);
+                }
             }
-            
-            /*
-            if ($(self.element).find('.error').length) {
-                $('.error-message').remove();
-            }
-            */
             return this;
         },
         displayErrorMessages : function () {
-            /*
             var self = this,
                 i,
+                el,
+                elParent,
                 l = self.errors.length,
                 tmp;
+            
             for (i = 0; i < l; i += 1) {
                 tmp = self.write(self.options.errorMessages[self.errors[i][1]]);
-                $('#' + self.errors[i][0]).after($(tmp).addClass(self.options.errorMessagesClass));
-                
+                el = document.getElementById(self.errors[i][0]);
+                elParent = el.parentNode;
+                //console.log(el);
+                elParent.insertBefore(tmp, el.nextSibling);
             }
-            */
         },
         test : function () {
             var self = this,
@@ -145,26 +151,12 @@
                 if (!!self.options.displayMessages) {
                     self.displayErrorMessages();
                 }
-                
                 this.options.no.call();
             } else {
                 go = this.options.yes ? this.options.yes.call() : this.element.submit();
             }
-            
-            /*
-                 
-            if (self.errors.length) {
-                if (!!self.options.displayMessages) {
-                    self.displayErrorMessages();
-                }
-                this.options.no.call();
-            } else {
-                go = this.options.yes ? this.options.yes.call() : $(this.element).submit();
-            }
-            */
         }
     };
-    
     
     return {
         init : function (el, options) {
@@ -172,7 +164,7 @@
                 forms = [],
                 i,
                 l = elements.length;
-        
+            
             for (i = 0; i < l; i += 1) {
                 forms[i] = new Plugin(elements[i], options);
             }

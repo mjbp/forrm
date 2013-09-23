@@ -12,9 +12,9 @@
     
     var pluginName = "Form",
         defaults = {
-            displayMessages : false,
+            displayMessages : true,
             errorMessagesClass : 'error-message',
-            errorTemplate : '<p></p>',
+            errorMessageElement : 'p',
             errorMessages : {
                 'missing' : 'Fields marked * are required',
                 'phone' : 'Please enter a valid phone number',
@@ -49,7 +49,8 @@
             });
         },
         write : function (msg) {
-            return this.options.errorTemplate.replace(/></, '>' + msg + '<');
+            var self = this;
+            return $('<' + self.options.errorMessageElement + '/>').text(msg);
         },
         clearErrors : function () {
             var self = this;
