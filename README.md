@@ -1,6 +1,8 @@
 #Form
 A lightweight form validation wrapper module to polyfill and standardise HTML5 forms. 
 
+Demo: [http://mjbp.github.io/form] (http://mjbp.github.io/form)
+
 ###Why?
 HTML5 forms are rather good but we need 1/ better browser support and 2/ standardised validation errors for our projects.
 
@@ -72,6 +74,9 @@ Full example passing in all options:
         });
     </script>
 ```
+
+###To Do
+* option to list errors at top
 
 ###License
 [MIT] (http://opensource.org/licenses/MIT)
