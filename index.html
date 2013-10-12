@@ -3,46 +3,57 @@
 <head>
     <meta charset=utf-8>
     <title>Form</title>
+    <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
 	<style>
-        *{-moz-box-sizing: border-box;-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-font-smoothing:subpixel-antialiased;margin: 0;padding: 0;border: 0;outline: 0;vertical-align: baseline;}
+        *{box-sizing:border-box;margin: 0;padding: 0;border: 0;outline: 0;vertical-align: baseline;}
+        body {font-family:'PT Sans', sans-serif;background:#f1f1f1;color:#191919;font-size:100%}
+        *:focus {outline: none;}
+        *:invalid {box-shadow:none}
+        .form-row {position:relative;}
         label {display:block;margin:2% 0 1% 5%;}
         input,
-        textarea {display:block; border:1px solid grey;width:70%;margin:0 0 2% 5%;}
-        input[type="submit"] {background:grey;color:#000;}
-        .error {border:1px solid red;}
-        .error-message {margin-left:5%;}
+        textarea {display:block; box-shadow:none; border:1px solid rgba(0,0,0,0.4);width:50%;margin:0 0 2% 5%;padding:1%;border-radius:5px}
+        input[type="submit"] {background:rgba(0,0,0,0.4);border:0 none;color:#fff;width:auto;padding:1% 5%;cursor:pointer}
+        input[type="submit"]:hover {background:rgba(0,0,0,0.5);}
+        input:invalid {border:1px solid rgba(0,0,0,0.8);}
+        .form-error,
+        .form-error:invalid {border:1px solid red;}
+        .form-error-message {position:absolute;left:0%;text-align:right; top:0;width:56%;color:red;font-style:italic}
+        .form-error-list {width:50%;margin:1% 0 2% 5%;padding:1%;background:red;color:#fff;}
+        .form-error-list ul {padding-left:4%;}
     </style>
 </head>
 <body>		
-	<form class="registration-form" action="/test">
+    <a href="https://github.com/mjbp/form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+    <form class="test-form" action="/" novalidate>
         <fieldset>
             <div class="form-row">
-                <label for="registration_name">Name:<span>*</span></label>
-                <input type="text" id="registration_name" value="" required>
+                <label for="test-name">Name:<span>*</span></label>
+                <input type="text" id="test-name" placeholder="test" value="" required>
             </div>
             <div class="form-row">
-                <label for="registration_company">Company:<span>*</span></label>
-                <input type="text" id="registration_company" value="" required>
+                <label for="test-company">Company:<span>*</span></label>
+                <input type="text" id="test-company" placeholder="test" value="" required>
             </div>
             <div class="form-row">
-                <label for="registration_address_1">Address:<span>*</span></label>
-                <textarea id="registration_address_1" required></textarea>           
+                <label for="test-address-1">Address:<span>*</span></label>
+                <textarea id="test-address-1" required></textarea>           
             </div>
             <div class="form-row">
-                <label for="registration_postcode">Postcode:<span>*</span></label>
-                <input type="text" id="registration_postcode" value="" required>
+                <label for="test-postcode">Postcode:<span>*</span></label>
+                <input type="text" id="test-postcode" value="" required>
             </div>
             <div class="form-row">
-                <label for="registration_telephone">Telephone:<span>*</span></label>
-                <input type="tel" id="registration_telephone" value="" required>
+                <label for="test-telephone">Telephone:<span>*</span></label>
+                <input type="tel" id="test-telephone" pattern="\d+" value="" required>
             </div>
             <div class="form-row">
-                <label for="registration_mobile">Mobile:</label>
-                <input type="text" id="registration_mobile" value="">
+                <label for="test-mobile">Mobile:</label>
+                <input type="text" id="test-mobile" value="">
             </div>
             <div class="form-row">
-                <label for="registration_email">Email:<span>*</span></label>
-                <input type="email" id="registration_email" value="" required>
+                <label for="test-email">Email:<span>*</span></label>
+                <input type="email" id="test-email" value="" required>
             </div>
             <div class="form-row submit">
                 <input type="submit" value="Submit">
@@ -50,27 +61,27 @@
         </fieldset>
     </form>
     
-    <form class="registration-form" action="/test">
+    <form class="test-form" action="/">
         <fieldset>
             <div class="form-row">
-                <label for="registration_name_2">Name:<span>*</span></label>
-                <input type="text" id="registration_name_2" value="" required>
+                <label for="test-name-2">Name:<span>*</span></label>
+                <input type="text" id="test-name-2" value="" required>
             </div>
             <div class="form-row">
-                <label for="registration_company_2">Company:<span>*</span></label>
-                <input type="text" id="registration_company_2" value="" required>
+                <label for="test-company-2">Company:<span>*</span></label>
+                <input type="text" id="test-company-2" value="" required>
             </div>
             <div class="form-row submit">
-                <input type="submit" value="Subit">
+                <input type="submit" value="Submit">
             </div>
         </fieldset>
     </form>
 		
 	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script src="js/form.min.js"></script>
+	<script src="js/jquery.form.min.js"></script>
 	<script>
-        //$('.registration-form').Form({ errorMessages : {'missing': 'Fields marked topshop are required'}});
-        Form.init("form", {errorMessages : {'missing': 'Fields marked topshop are required'}});
+        $('.test-form').Form();
+        //Form.init(".test-form");
 	</script>
 </body>
 </html>
