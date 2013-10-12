@@ -21,20 +21,22 @@
     
     var defaults = {
             displayMessages : true,
-            errorMessagesClass : 'error-message',
+            listMessages : true,
+            listTitle : 'Errors were found in the form:',
+            errorMessagesClass : 'form-error-message',
             errorMessageElement : 'p',
             errorMessages : {
-                'missing' : 'Fields marked * are required',
-                'phone' : 'Please enter a valid phone number',
-                'dob' : 'Please enter a valid date of birth',
-                'email' : 'Please enter a valid email address'
+                'required' : 'Fields marked * are required',
+                'tel' : 'Enter a valid phone number',
+                'dob' : 'Enter a valid date of birth',
+                'email' : 'Enter a valid email address'
             },
             patterns : {
                 email : "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
                 tel : "[\\w\\d\\s\\(\\)\\.+-]+"
             },
-            no : function () {},
-            yes : false
+            fail : function () {},
+            pass : false
         };
     
     function extend(b, a) {
@@ -62,6 +64,7 @@
     Plugin.prototype = {
         init: function () {
             var self = this;
+            this.fields = this.element.querySelectorAll('input, textarea');
             this.element.querySelector('input[type=submit]').addEventListener('click', this, false);
         },
         handleEvent : function (e) {
@@ -80,19 +83,47 @@
         },
         clearErrors : function () {
             var self = this,
-                fields = this.element.querySelectorAll('input, textarea'),
                 er,
                 i,
-                l = fields.length;
+                l = self.fields.length;
             
             for (i = 0; i < l; i += 1) {
-                fields[i].className = fields[i].className.replace(/\serror/g, '');
-                er = fields[i].nextElementSibling;
+                self.fields[i].className = self.fields[i].className.replace(/\sform-error/g, '');
+                er = self.fields[i].nextElementSibling;
                 if (er) {
                     er.parentNode.removeChild(er);
                 }
             }
             return this;
+        },
+        listErrorMessages : function () {
+            var self = this,
+                i,
+                listHolder = document.createElement('dl'),
+                listTitle = document.createElement('dt'),
+                listDescription = document.createElement('dd'),
+                list = document.createElement('ul'),
+                item,
+                l = self.errors.length,
+                tmp = {};
+            
+            listTitle.innerHTML = self.options.listTitle;
+            listHolder.appendChild(listTitle);
+            listHolder.appendChild(listDescription);
+            listHolder.className = 'form-error-list';
+            listDescription.appendChild(list);
+            
+            for (i = 0; i < l; i += 1) {
+                tmp[self.errors[i][1]] = self.options.errorMessages[self.errors[i][1]];
+            }
+            for (i in tmp) {
+                if (tmp.hasOwnProperty(i)) {
+                    item = document.createElement('li');
+                    item.innerHTML = tmp[i];
+                    list.appendChild(item);
+                }
+            }
+            self.element.insertBefore(listHolder, self.element.firstChild);
         },
         displayErrorMessages : function () {
             var self = this,
@@ -100,19 +131,17 @@
                 el,
                 elParent,
                 l = self.errors.length,
-                tmp;
-            
+                tmp,
+                li;
             for (i = 0; i < l; i += 1) {
                 tmp = self.write(self.options.errorMessages[self.errors[i][1]]);
                 el = document.getElementById(self.errors[i][0]);
                 elParent = el.parentNode;
-                //console.log(el);
                 elParent.insertBefore(tmp, el.nextSibling);
             }
         },
         test : function () {
             var self = this,
-                fields,
                 field,
                 type,
                 pattern,
@@ -123,23 +152,22 @@
             
             this.errors = [];
             
-            fields = this.element.querySelectorAll('input, textarea');
-            l = fields.length;
+            l = self.fields.length;
             
             for (i = 0; i < l; i += 1) {
-                field = fields[i];
+                field = self.fields[i];
                 
-                if (field.getAttribute('type') !== 'hidden' && field.getAttribute('novalidate') === null && field.getAttribute('type') !== 'submit') {
-                    if (field.getAttribute('required') !== null && (field.value === "")) {
-                        field.className += ' error';
-                        self.errors.push([field.getAttribute('id'), 'missing']);
+                if (field.getAttribute('type') !== 'hidden' && field.getAttribute('novalidate') === null && field.getAttribute('type') !== 'submit' && field.getAttribute('required') !== null) {
+                    if (field.value === "") {
+                        field.className += ' form-error';
+                        self.errors.push([field.getAttribute('id'), 'required']);
                     } else {
-                        if (field.getAttribute('required') !== null) {
-                            type = field.getAttribute('type');
-                            pattern = field.getAttribute('pattern') || self.options.patterns[type];
+                        type = field.getAttribute('type');
+                        pattern = field.getAttribute('pattern') || self.options.patterns[type];
+                        if (pattern !== undefined) {
                             regExp = new RegExp(pattern, "");
                             if (!regExp.test(field.value)) {
-                                field.className += ' error';
+                                field.className += ' form-error';
                                 self.errors.push([field.getAttribute('id'), type]);
                             }
                         }
@@ -149,11 +177,15 @@
             
             if (self.errors.length) {
                 if (!!self.options.displayMessages) {
-                    self.displayErrorMessages();
+                    if (!!self.options.listMessages) {
+                        self.listErrorMessages();
+                    } else {
+                        self.displayErrorMessages();
+                    }
                 }
-                this.options.no.call();
+                this.options.fail.call();
             } else {
-                go = this.options.yes ? this.options.yes.call() : this.element.submit();
+                go = this.options.pass ? this.options.pass.call() : this.element.submit();
             }
         }
     };
@@ -166,7 +198,9 @@
                 l = elements.length;
             
             for (i = 0; i < l; i += 1) {
-                forms[i] = new Plugin(elements[i], options);
+                if (!elements[i].hasAttribute('novalidate')) {
+                    forms[i] = new Plugin(elements[i], options);
+                }
             }
         }
     };

@@ -13,20 +13,22 @@
     var pluginName = "Form",
         defaults = {
             displayMessages : true,
-            errorMessagesClass : 'error-message',
+            listMessages : true,
+            listTitle : 'Errors were found in the form:',
+            errorMessagesClass : 'form-error-message',
             errorMessageElement : 'p',
             errorMessages : {
-                'missing' : 'Fields marked * are required',
-                'phone' : 'Please enter a valid phone number',
-                'dob' : 'Please enter a valid date of birth',
-                'email' : 'Please enter a valid email address'
+                'required' : 'Fields marked * are required',
+                'tel' : 'Enter a valid phone number',
+                'dob' : 'Enter a valid date of birth',
+                'email' : 'Enter a valid email address'
             },
             patterns : {
                 email : "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
                 tel : "[\\w\\d\\s\\(\\)\\.+-]+"
             },
-            no : function () {},
-            yes : false
+            fail : function () {},
+            pass : false
         };
 
     function Plugin(element, options) {
@@ -45,8 +47,41 @@
             $(this.element).find('input[type=submit]').on("click", function (e) {
                 e.preventDefault();
                 self.clearErrors()
+                    .clearPlaceholders()
                     .test();
             });
+            
+            this.placeHolders();
+        },
+        clearPlaceholders : function () {
+            $(this.element).find('.form-placeholder').each(function (i, f) {
+                if ($(f)[0].value === $(f).attr('placeholder')) {
+                    $(f)[0].value = '';
+                }
+            });
+            return this;
+        },
+        placeHolders : function () {
+            var i,
+                test = 'placeholder' in document.createElement('input'),
+                fields = $(this.element).find(':input:not(:hidden, :submit)'),
+                l = fields.length,
+                focus = function () {
+                    $(this)[0].value = '';
+                },
+                blur = function () {
+                    $(this)[0].value = $(this).attr('placeholder');
+                };
+            if (!test) {
+                $.each(fields, function (i, f) {
+                    if ($(f).attr('placeholder') !== undefined) {
+                        $(f)[0].value = $(f).attr('placeholder');
+                        $(f).addClass('form-placeholder');
+                        $([f]).on('focus', focus)
+                              .on('blur', blur);
+                    }
+                });
+            }
         },
         write : function (msg) {
             var self = this;
@@ -54,12 +89,33 @@
         },
         clearErrors : function () {
             var self = this;
-            
-            if ($(self.element).find('.error').length) {
-                $('.error').removeClass('error');
-                $('.error-message').remove();
+            if ($(self.element).find('.form-error-list').length) {
+                $(self.element).find('.form-error-list').remove();
+            }
+            if ($(self.element).find('.form-error').length) {
+                $(self.element).find('.form-error').removeClass('form-error');
+                $(self.element).find('.form-error-message').remove();
             }
             return this;
+        },
+        listErrorMessages : function () {
+            var self = this,
+                i,
+                listHolder = $('<dl class="form-error-list"><dt>' + self.options.listTitle + '</dt><dd><ul></ul></dd></dl>'),
+                l = self.errors.length,
+                tmp = {},
+                li;
+            
+            
+            for (i = 0; i < l; i += 1) {
+                tmp[self.errors[i][1]] = self.options.errorMessages[self.errors[i][1]];
+            }
+            for (i in tmp) {
+                if (tmp.hasOwnProperty(i)) {
+                    $(listHolder).find('ul').append('<li>' + tmp[i] + '</li>');
+                }
+            }
+            $(self.element).prepend(listHolder);
         },
         displayErrorMessages : function () {
             var self = this,
@@ -88,16 +144,18 @@
                 
                 if (field.attr('type') !== 'hidden' && !field.attr('novalidate') && field.attr('type') !== 'submit') {
                     if (field.attr('required') && (field.val() === "" || !$.trim(field.val()))) {
-                        field.addClass('error');
-                        self.errors.push([$(field).attr('id'), 'missing']);
+                        field.addClass('form-error');
+                        self.errors.push([$(field).attr('id'), 'required']);
                     } else {
                         if (field.attr('required')) {
                             type = field.attr('type');
                             pattern = field.attr('pattern') || self.options.patterns[type];
-                            regExp = new RegExp(pattern, "");
-                            if (!regExp.test(field.val())) {
-                                field.addClass('error');
-                                self.errors.push([$(field).attr('id'), type]);
+                            if (pattern !== undefined) {
+                                regExp = new RegExp(pattern, "");
+                                if (!regExp.test(field.val())) {
+                                    field.addClass('form-error');
+                                    self.errors.push([$(field).attr('id'), type]);
+                                }
                             }
                         }
                     }
@@ -106,11 +164,16 @@
             });
             if (self.errors.length) {
                 if (!!self.options.displayMessages) {
-                    self.displayErrorMessages();
+                    if (!!self.options.listMessages) {
+                        self.listErrorMessages();
+                    } else {
+                        self.displayErrorMessages();
+                    }
                 }
-                this.options.no.call();
+                this.placeHolders();
+                this.options.fail.call();
             } else {
-                go = this.options.yes ? this.options.yes.call() : $(this.element).submit();
+                go = this.options.pass ? this.options.pass.call() : $(this.element).submit();
             }
         }
     };
