@@ -73,9 +73,6 @@ Full example passing in all options:
     </script>
 ```
 
-###To Do
-* option to list errors at top
-
 ###License
 [MIT] (http://opensource.org/licenses/MIT)
 
