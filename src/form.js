@@ -89,8 +89,8 @@
                 l = self.fields.length;
             
             for (i = 0; i < l; i += 1) {
-                if (self.fields[i].className.indexOf('form-error') > -1) {
-                    self.fields[i].className = self.fields[i].className.split('form-error').join('');
+                if (self.fields[i].parentNode.className.indexOf('form-error') > -1) {
+                    self.fields[i].parentNode.className = self.fields[i].parentNode.className.split('form-error').join('');
                     if (!self.options.listMessages) {
                         er = self.fields[i].nextElementSibling;
                         if (er) {
