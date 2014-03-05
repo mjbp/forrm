@@ -1,10 +1,12 @@
 #Form
-A lightweight form validation wrapper module to polyfill and standardise HTML5 forms. 
+A lightweight form validation wrapper module to polyfill and standardise HTML5 form validation behaviour. 
 
 Demo: [http://mjbp.github.io/form] (http://mjbp.github.io/form)
 
 ###Why?
-HTML5 forms are rather good but we need 1/ better browser support and 2/ standardised validation errors for our projects.
+HTML5 forms are rather good but branding and UI design requirements determined default browser form validation to be unsatisfactory or unacceptable. The choice we faced was between abandoning html5 client-side form validation or taking control of the browser validation behaviour. 
+
+This script is our attempt at the latter.
 
 ###Getting started
 Code your form(s) in HTML5 using new input types. Validation criteria for a field should be set using the pattern attribute. Set required and novalidate attributes as needed.
@@ -62,8 +64,8 @@ Full example passing in all options:
             errorMessages : {
                 'missing' : 'This field is required',
                 'phone' : 'Real phone number?',
-                'dob' : 'Wrong dob format, brah',
-                'email' : 'Wrong email format, brah'
+                'dob' : 'Wrong dob format',
+                'email' : 'Wrong email format'
             },
             no : function () {
                 alert('no!');
@@ -74,9 +76,6 @@ Full example passing in all options:
         });
     </script>
 ```
-
-###To Do
-* option to list errors at top
 
 ###License
 [MIT] (http://opensource.org/licenses/MIT)
