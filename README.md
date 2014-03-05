@@ -9,7 +9,7 @@ HTML5 forms are rather good but branding and UI design requirements determined d
 This script is our attempt at the latter.
 
 ###Getting started
-Code your form(s) in HTML5 using new input types. Validation criteria for a field should be set using the pattern attribute. Set required and novalidate attributes as needed.
+Code your form(s) in HTML5 using new input types. Validation criteria for a field should be set using the pattern attribute. Set required (aria-required) and novalidate attributes as needed.
 
 Form comes in two flavours - vanilla (requires a modern browser and only standardises form validation errors) and jQuery (requires jQuery and supplies legacy browser support).
 
