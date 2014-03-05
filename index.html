@@ -9,15 +9,31 @@
         body {font-family:'PT Sans', sans-serif;background:#f1f1f1;color:#191919;font-size:100%}
         *:focus {outline: none;}
         *:invalid {box-shadow:none}
-        .form-row {position:relative;}
-        label {display:block;margin:2% 0 1% 5%;}
+        .form-row {position:relative;margin-bottom: 2%; }
+        label,
+        legend {display:block;margin:2% 0 1% 5%;}
         input,
-        textarea {display:block; box-shadow:none; border:1px solid rgba(0,0,0,0.4);width:50%;margin:0 0 2% 5%;padding:1%;border-radius:5px}
+        textarea {font-family:'PT Sans', sans-serif;display:block; box-shadow:none; border:1px solid rgba(0,0,0,0.4);width:50%;margin:0 0 0 5%;padding:1%;border-radius:5px}
+        .form-row-checkbox, 
+        .form-row-radio { position: relative; margin-bottom:0}
+        .form-row-checkbox fieldset, 
+        .form-row-radio fieldset {margin-bottom:2%}
+        input[type=radio],
+        input[type=checkbox] { display: none; }
+        .form-row-checkbox label,
+        .form-row-radio label { display: inline-block; cursor: pointer; position: relative; padding-left: 25px; margin-right: 15px; }
+        .form-row-checkbox label:before, .form-row-radio label:before { content: ""; display: inline-block; width: 20px; height: 20px; margin-right: 10px; position: absolute; left: 0; bottom: 1px; background-color: #fff; }
+        .form-row-radio label:before { border-radius: 10px; }
+        .form-row-checkbox label:before { border-radius: 4px; }
+        .form-row-radio input[type=radio]:checked + label:before { content: "\2022"; font-size: 30px; text-align: center; line-height: 15px; }
+        .form-row-checkbox input[type=checkbox]:checked + label:before { content: "\2713"; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5); text-align: center; line-height: 20px; }
         input[type="submit"] {background:rgba(0,0,0,0.4);border:0 none;color:#fff;width:auto;padding:1% 5%;cursor:pointer}
         input[type="submit"]:hover {background:rgba(0,0,0,0.5);}
-        input:invalid {border:1px solid rgba(0,0,0,0.8);}
+        input:focus:not(input[type="submit"]) {border:1px solid rgba(0,0,0,0.8);}
         .form-error,
-        .form-error:invalid {border:1px solid red;}
+        .form-error label:before {border:1px solid red;}
+        .form-error.form-row-checkbox,
+        .form-error.form-row-radio {border:0 none;}
         .form-error-message {position:absolute;left:0%;text-align:right; top:0;width:56%;color:red;font-style:italic}
         .form-error-list {width:50%;margin:1% 0 2% 5%;padding:1%;background:red;color:#fff;}
         .form-error-list ul {padding-left:4%;}
@@ -25,35 +41,61 @@
 </head>
 <body>		
     <a href="https://github.com/mjbp/form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
-    <form class="test-form" action="/" novalidate>
+    <form class="test-form" action="/">
         <fieldset>
             <div class="form-row">
-                <label for="test-name">Name:<span>*</span></label>
-                <input type="text" id="test-name" placeholder="test" value="" required>
+                <label for="test-name">Text:<span>*</span></label>
+                <input type="text" id="test-name" placeholder="text required" value="" required aria-required="true">
             </div>
             <div class="form-row">
-                <label for="test-company">Company:<span>*</span></label>
-                <input type="text" id="test-company" placeholder="test" value="" required>
+                <label for="test-company">Text:<span>*</span></label>
+                <input type="text" id="test-company" placeholder="text required" value="" required aria-required="true">
             </div>
             <div class="form-row">
-                <label for="test-address-1">Address:<span>*</span></label>
-                <textarea id="test-address-1" required></textarea>           
+                <label for="test-address-1">Text:<span>*</span></label>
+                <textarea id="test-address-1" placeholder="text required" required></textarea>           
             </div>
             <div class="form-row">
-                <label for="test-postcode">Postcode:<span>*</span></label>
-                <input type="text" id="test-postcode" value="" required>
+                <label for="test-postcode">Text:<span>*</span></label>
+                <input type="text" id="test-postcode" placeholder="text required" value="" required aria-required="true">
             </div>
             <div class="form-row">
                 <label for="test-telephone">Telephone:<span>*</span></label>
-                <input type="tel" id="test-telephone" pattern="\d+" value="" required>
+                <input type="tel" id="test-telephone" placeholder="telephone number required" pattern="\d+" value="" required aria-required="true">
             </div>
             <div class="form-row">
-                <label for="test-mobile">Mobile:</label>
-                <input type="text" id="test-mobile" value="">
+                <label for="test-mobile">Telephone:</label>
+                <input type="tel" id="test-mobile" value="">
             </div>
             <div class="form-row">
                 <label for="test-email">Email:<span>*</span></label>
-                <input type="email" id="test-email" value="" required>
+                <input type="email" id="test-email" placeholder="email required" value="" required aria-required="true">
+            </div>
+            <div class="form-row form-row-radio">
+                <fieldset>
+                    <legend>Radio button title:<span>*</span></legend>
+                     <div class="form-row form-row-radio">
+                        <input type="radio" id="test-radio-1" name="test-radio" value="option-1" required aria-required="true">
+                        <label for="test-radio-1">Option 1</label>
+                    </div>
+                     <div class="form-row form-row-radio">
+                        <input type="radio" id="test-radio-2" name="test-radio" value="option-2" required aria-required="true">
+                        <label for="test-radio-2">Option 2</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-row form-row-checkbox">
+                <fieldset>
+                    <legend>Checkbox button title:<span>*</span></legend>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-1" name="test-checkbox" value="option-1" required aria-required="true">
+                        <label for="test-checkbox-1">Option 1</label>
+                    </div>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-2" name="test-checkbox" value="option-2" required aria-required="true">
+                        <label for="test-checkbox-2">Option 2</label>
+                    </div>
+                </fieldset>
             </div>
             <div class="form-row submit">
                 <input type="submit" value="Submit">
@@ -65,11 +107,11 @@
         <fieldset>
             <div class="form-row">
                 <label for="test-name-2">Name:<span>*</span></label>
-                <input type="text" id="test-name-2" value="" required>
+                <input type="text" placeholder="text required" id="test-name-2" value="" required aria-required="true">
             </div>
             <div class="form-row">
                 <label for="test-company-2">Company:<span>*</span></label>
-                <input type="text" id="test-company-2" value="" required>
+                <input type="text" placeholder="text required" id="test-company-2" value="" required aria-required="true">
             </div>
             <div class="form-row submit">
                 <input type="submit" value="Submit">
@@ -77,11 +119,11 @@
         </fieldset>
     </form>
 		
-	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-	<script src="js/jquery.form.min.js"></script>
+	<!--<script src="http://code.jquery.com/jquery-latest.min.js"></script>-->
+	<script src="js/form.min.js"></script>
 	<script>
-        $('.test-form').Form();
-        //Form.init(".test-form");
+        //$('.test-form').Form();
+        Form.init(".test-form");
 	</script>
 </body>
 </html>
