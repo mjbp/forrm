@@ -180,7 +180,7 @@
                             pattern = field.attr('pattern') || self.options.patterns[type];
                             if (pattern !== undefined) {
                                 regExp = new RegExp(pattern, "");
-                                if (!regExp.test(field.val)) {
+                                if (!regExp.test(field.value)) {
                                     self.addError(field, type);
                                 }
                             }
