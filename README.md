@@ -60,6 +60,8 @@ Full example passing in all options:
     <script>
         Form.init('form', {
             displayMessages : true,
+            listMessages : true,
+            listTitle : 'Error list'
             errorMessagesClass : 'awesome-error-messages',
             errorMessages : {
                 'missing' : 'This field is required',
