@@ -2,7 +2,7 @@
 /*global define, console*/
 /*!
  * @name        Form, lightweight vanilla js HTML5 form validation module
- * @version     Sept 13  
+ * @version     Jul 14  
  * @author      mjbp
  * Licensed under the MIT license
  */
@@ -66,6 +66,42 @@
             var self = this;
             this.fields = this.element.querySelectorAll('input, textarea');
             this.element.querySelector('input[type=submit]').addEventListener('click', this, false);
+            
+            this.placeHolders();
+        },
+        clearPlaceholders : function () {
+            var i, l = this.fields.length;
+            
+            for (i = 0; i < l; i += 1) {
+                if (!!this.fields[i].getAttribute('placeholder')) {
+                    this.fields[i].value = "";
+                }
+            }
+            return this;
+        },
+        placeHolders : function () {
+            var i,
+                test = 'placeholder' in document.createElement('input'),
+                l = this.fields.length,
+                focus = function () {
+                    this.value = '';
+                    this.className = this.className.split('form-placeholder').join('');
+                },
+                blur = function () {
+                    console.log(this);
+                    this.value = this.getAttribute('placeholder');
+                    this.className += ' form-placeholder';
+                };
+            if (test) {
+                for (i = 0; i < l; i += 1) {
+                    if (!!this.fields[i].getAttribute('placeholder')) {
+                        this.fields[i].value = this.fields[i].getAttribute('placeholder');
+                        this.fields[i].className += 'form-placeholder';
+                        this.fields[i].addEventListener('focus', focus, false);
+                        this.fields[i].addEventListener('blur', blur, false);
+                    }
+                }
+            }
         },
         handleEvent : function (e) {
             if (e.type === 'click') {

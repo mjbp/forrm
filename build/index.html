@@ -6,104 +6,127 @@
     <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
 	<style>
         *{box-sizing:border-box;margin: 0;padding: 0;border: 0;outline: 0;vertical-align: baseline;}
-        body {font-family:'PT Sans', sans-serif;background:#f1f1f1;color:#191919;font-size:100%}
+        body {font-family:'PT Sans', sans-serif;background:#f1f1f1;color:#191919;font-size:110%}
         *:focus {outline: none;}
         *:invalid {box-shadow:none}
+        form {width:80%;margin:40px auto;}
         .form-row {position:relative;margin-bottom: 2%; }
-        label,
-        legend {display:block;margin:2% 0 1% 5%;}
-        input,
-        textarea {font-family:'PT Sans', sans-serif;display:block; box-shadow:none; border:1px solid rgba(0,0,0,0.4);width:50%;margin:0 0 0 5%;padding:1%;border-radius:5px}
-        .form-row-checkbox, 
-        .form-row-radio { position: relative; margin-bottom:0}
-        .form-row-checkbox fieldset, 
-        .form-row-radio fieldset {margin-bottom:2%}
-        input[type=radio],
-        input[type=checkbox] { display: none; }
-        .form-row-checkbox label,
-        .form-row-radio label { display: inline-block; cursor: pointer; position: relative; padding-left: 25px; margin-right: 15px; }
-        .form-row-checkbox label:before, .form-row-radio label:before { content: ""; display: inline-block; width: 20px; height: 20px; margin-right: 10px; position: absolute; left: 0; bottom: 1px; background-color: #fff; }
-        .form-row-radio label:before { border-radius: 10px; }
-        .form-row-checkbox label:before { border-radius: 4px; }
-        .form-row-radio input[type=radio]:checked + label:before { content: "\2022"; font-size: 30px; text-align: center; line-height: 15px; }
-        .form-row-checkbox input[type=checkbox]:checked + label:before { content: "\2713"; text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5); text-align: center; line-height: 20px; }
-        input[type="submit"] {background:rgba(0,0,0,0.4);border:0 none;color:#fff;width:auto;padding:1% 5%;cursor:pointer}
-        input[type="submit"]:hover {background:rgba(0,0,0,0.5);}
-        input:focus:not(input[type="submit"]) {border:1px solid rgba(0,0,0,0.8);}
-        .form-error,
-        .form-error label:before {border:1px solid red;}
-        .form-error.form-row-checkbox,
-        .form-error.form-row-radio {border:0 none;}
-        .form-error-message {position:absolute;left:0%;text-align:right; top:0;width:56%;color:red;font-style:italic}
-        .form-error-list {width:50%;margin:1% 0 2% 5%;padding:1%;background:red;color:#fff;}
-        .form-error-list ul {padding-left:4%;}
+        label { display: block; margin-bottom: .25em; cursor: pointer; }
+        input, textarea { display: block; padding: 1%; border-radius: 4px; border: 0 none; width: 100%; background: #e6e6e6; }
+        input:focus :not(input[type=submit]), textarea:focus :not(input[type=submit]) { background: #dedede; }
+
+        .form-row-checkbox,
+        .form-row-radio { position: relative; }
+        .form-row-checkbox legend,
+        .form-row-radio legend { margin-bottom: .25em; }
+        .form-row-checkbox .form-row-radio,
+        .form-row-checkbox .form-row-checkbox,
+        .form-row-radio .form-row-radio,
+        .form-row-radio .form-row-checkbox { margin-bottom: 0; }
+        
+        input[type=radio], input[type=checkbox] { display: inline-block; width: 1em; height: 1em; cursor: pointer; margin-left: 0; }
+        input[type=radio] { border-radius: .5em; }
+        input[type=checkbox]:checked { color: rgba(0, 0, 0, 0.8); text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5); text-align: center; line-height: 1em; background: #e6e6e6 url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNC4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAgLS0+DQo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiIFsNCgk8IUVOVElUWSBuc19mbG93cyAiaHR0cDovL25zLmFkb2JlLmNvbS9GbG93cy8xLjAvIj4NCl0+DQo8c3ZnIHZlcnNpb249IjEuMSINCgkgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeG1sbnM6YT0iaHR0cDovL25zLmFkb2JlLmNvbS9BZG9iZVNWR1ZpZXdlckV4dGVuc2lvbnMvMy4wLyINCgkgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSI4cHgiIGhlaWdodD0iMTNweCIgdmlld0JveD0iMC40MDQgMC42NTUgOCAxMyIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwLjQwNCAwLjY1NSA4IDEzIg0KCSB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxkZWZzPg0KPC9kZWZzPg0KPHJlY3QgeT0iMi4wNjUiIGZpbGw9Im5vbmUiIHdpZHRoPSIxMi4wOTgiIGhlaWdodD0iMTMuNDU2Ii8+DQo8dGV4dCB0cmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAxIDAgMTMuMTA1NSkiIGZvbnQtZmFtaWx5PSInQ29uc29sYXMnIiBmb250LXNpemU9IjE2Ij7iiJo8L3RleHQ+DQo8L3N2Zz4NCg==) center no-repeat; }
+        input[type=radio]:checked { color: rgba(0, 0, 0, 0.8); text-align: center; line-height: 1em; background: #e6e6e6 url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiDQoJIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOmE9Imh0dHA6Ly9ucy5hZG9iZS5jb20vQWRvYmVTVkdWaWV3ZXJFeHRlbnNpb25zLzMuMC8iDQoJIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iOHB4IiBoZWlnaHQ9IjhweCIgdmlld0JveD0iMS4yIDE2Ljc4NyA4IDgiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMS4yIDE2Ljc4NyA4IDgiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGRlZnM+DQo8L2RlZnM+DQo8dGV4dCB0cmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAxIDAgMzAuMTMyMykiIGZvbnQtZmFtaWx5PSInTXlyaWFkUHJvLVJlZ3VsYXInIiBmb250LXNpemU9IjM2Ij7igKI8L3RleHQ+DQo8L3N2Zz4NCg==) center no-repeat; }
+
+        .form-row-checkbox label, .form-row-radio label { display: inline-block; position: relative; top: -3px; }
+
+        .form-row-submit { margin-bottom: 0; }
+        
+        button:hover { cursor: pointer; }
+
+        button, button:focus { outline: 0; background: transparent; }
+
+        button img { vertical-align: baseline; }
+
+        textarea { resize: none; }
+
+        input { -webkit-appearance: none; -webkit-border-radius: 0; border-radius: 0; }
+
+        input, textarea { outline: none; }
+
+        .button-add,
+        input[type=submit] { text-decoration: none; border-radius: 4px; width: auto; background: #3cb209; color: white; padding: .5em 2em; font-weight: 700; }
+        .button-add:hover, input[type=submit]:hover { cursor: pointer; background: rgba(60, 178, 9, 0.8); color: #fff; }
+
+        /* errors */
+        .form-error label { color: rgba(255, 25, 16, 0.9); }
+        .form-error-message {position:absolute;left:0%;text-align:right; top:0;width:100%;color:red;font-style:italic}
+
+        .form-error input,
+        .form-error textarea { box-shadow: 0px 0px 5px 0px rgba(255, 25, 16, 0.9); background: rgba(255, 25, 16, 0.1); }
+
+        .form-error-list { width: 100%; margin: 0 0 1.5em 0; padding: 3%; background: rgba(255, 25, 16, 0.1); color: rgba(255, 25, 16, 0.9); position: relative; }
+
+        .form-error-list dt { margin-bottom: 1em; }
+        .form-error-list ul { padding-left: 1em; margin-left: 0; }
     </style>
 </head>
 <body>		
     <a href="https://github.com/mjbp/form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
-    <form class="test-form" action="/">
+    <form class="test-form-1" action="/">
         <fieldset>
             <div class="form-row">
-                <label for="test-name">Text:<span>*</span></label>
-                <input type="text" id="test-name" placeholder="text required" value="" required aria-required="true">
+                <label for="test-field1">Field 1:</label>
+                <input type="text" id="test-field1" value="" required aria-required="true">
             </div>
             <div class="form-row">
-                <label for="test-company">Text:<span>*</span></label>
-                <input type="text" id="test-company" placeholder="text required" value="" required aria-required="true">
+                <label for="test-field2">Field 2:</label>
+                <input type="text" id="test-field2" value="" required aria-required="true">
             </div>
             <div class="form-row">
-                <label for="test-address-1">Text:<span>*</span></label>
-                <textarea id="test-address-1" placeholder="text required" required></textarea>           
+                <label for="test-field3">Field 3:</label>
+                <textarea id="test-field3" required aria-required="true"></textarea>           
             </div>
             <div class="form-row">
-                <label for="test-postcode">Text:<span>*</span></label>
-                <input type="text" id="test-postcode" placeholder="text required" value="" required aria-required="true">
+                <label for="test-field4">Field 4:</label>
+                <input type="text" id="test-field4" value="" required aria-required="true">
             </div>
             <div class="form-row">
-                <label for="test-telephone">Telephone:<span>*</span></label>
-                <input type="tel" id="test-telephone" placeholder="telephone number required" pattern="\d+" value="" required aria-required="true">
+                <label for="test-telephone">Telephone:</label>
+                <input type="tel" id="test-telephone" pattern="\d+" value="" required aria-required="true">
             </div>
             <div class="form-row">
-                <label for="test-mobile">Telephone:</label>
-                <input type="tel" id="test-mobile" value="">
+                <label for="test-mobile">Mobile:</label>
+                <input type="tel" id="test-mobile" placeholder="optional" value="">
             </div>
             <div class="form-row">
-                <label for="test-email">Email:<span>*</span></label>
-                <input type="email" id="test-email" placeholder="email required" value="" required aria-required="true">
+                <label for="test-email">Email:<span></span></label>
+                <input type="email" id="test-email" value="" required aria-required="true">
             </div>
             <div class="form-row form-row-radio">
                 <fieldset>
-                    <legend>Radio button title:<span>*</span></legend>
+                    <legend>Radio button title:</legend>
                      <div class="form-row form-row-radio">
                         <input type="radio" id="test-radio-1" name="test-radio" value="option-1" required aria-required="true">
-                        <label for="test-radio-1">Option 1</label>
+                        <label for="test-radio-1">Option 1<span></span></label>
                     </div>
                      <div class="form-row form-row-radio">
                         <input type="radio" id="test-radio-2" name="test-radio" value="option-2" required aria-required="true">
-                        <label for="test-radio-2">Option 2</label>
+                        <label for="test-radio-2">Option 2<span></span></label>
                     </div>
                 </fieldset>
             </div>
             <div class="form-row form-row-checkbox">
                 <fieldset>
-                    <legend>Checkbox button title:<span>*</span></legend>
-                     <div class="form-row form-row-checkbox">
+                    <legend>Checkbox button title:</legend>
+                     <div class="form-row form-row-radio">
                         <input type="checkbox" id="test-checkbox-1" name="test-checkbox" value="option-1" required aria-required="true">
-                        <label for="test-checkbox-1">Option 1</label>
+                        <label for="test-checkbox-1">Option 1<span></span></label>
                     </div>
-                     <div class="form-row form-row-checkbox">
+                     <div class="form-row form-row-radio">
                         <input type="checkbox" id="test-checkbox-2" name="test-checkbox" value="option-2" required aria-required="true">
-                        <label for="test-checkbox-2">Option 2</label>
+                        <label for="test-checkbox-2">Option 2<span></span></label>
                     </div>
                 </fieldset>
             </div>
-            <div class="form-row submit">
+            <div class="form-row form-row-submit">
                 <input type="submit" value="Submit">
-            </div>    
+            </div> 
         </fieldset>
     </form>
     
-    <form class="test-form" action="/">
+    <form class="test-form-2" action="/">
         <fieldset>
             <div class="form-row">
                 <label for="test-name-2">Name:<span>*</span></label>
@@ -122,8 +145,8 @@
 	<!--<script src="http://code.jquery.com/jquery-latest.min.js"></script>-->
 	<script src="js/form.min.js"></script>
 	<script>
-        //$('.test-form').Form();
-        Form.init(".test-form");
+        //$('form').Form();
+        Form.init("form");
 	</script>
 </body>
 </html>

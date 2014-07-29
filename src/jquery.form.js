@@ -7,7 +7,7 @@
  * Licensed under the MIT license
  */
 
-;(function ($, window, document) {
+(function ($, window, document) {
     "use strict";
     
     var pluginName = "Form",
@@ -55,8 +55,8 @@
         },
         clearPlaceholders : function () {
             $(this.element).find('.form-placeholder').each(function (i, f) {
-                if ($(f)[0].value === $(f).attr('placeholder')) {
-                    $(f)[0].value = '';
+                if ($(f)[0].val() === $(f).attr('placeholder')) {
+                    $(f)[0].val('');
                 }
             });
             return this;
@@ -67,15 +67,15 @@
                 fields = $(this.element).find(':input:not(:hidden, :submit)'),
                 l = fields.length,
                 focus = function () {
-                    $(this)[0].value = '';
+                    $(this)[0].val('');
                 },
                 blur = function () {
-                    $(this)[0].value = $(this).attr('placeholder');
+                    $(this)[0].val($(this).attr('placeholder'));
                 };
             if (!test) {
                 $.each(fields, function (i, f) {
                     if ($(f).attr('placeholder') !== undefined) {
-                        $(f)[0].value = $(f).attr('placeholder');
+                        $(f)[0].val($(f).attr('placeholder'));
                         $(f).addClass('form-placeholder');
                         $([f]).on('focus', focus)
                               .on('blur', blur);
@@ -129,9 +129,7 @@
                 if ($(el).parent().find('.' + self.options.errorMessagesClass).length === 0) {
                     $(el).after(tmp);
                 }
-                
             }
-            
         },
         addError : function (f, er, g) {
             var self = this,
@@ -163,6 +161,7 @@
                     pattern;
                 
                 if (field.attr('type') !== 'hidden' && field.attr('novalidate') === undefined && field.attr('type') !== 'submit' && field.attr('required') !== undefined) {
+                    field.attr('aria-invalid', false);
                     if (field.val() === "") {
                         self.addError(field, 'required');
                     } else {
@@ -180,7 +179,7 @@
                             pattern = field.attr('pattern') || self.options.patterns[type];
                             if (pattern !== undefined) {
                                 regExp = new RegExp(pattern, "");
-                                if (!regExp.test(field.val()) {
+                                if (!regExp.test(field.val())) {
                                     self.addError(field, type);
                                 }
                             }
@@ -190,7 +189,7 @@
                 
             });
             
-            $.each(checkedGroup, function(i, v) {
+            $.each(checkedGroup, function (i, v) {
                 if (v === 'not-checked') {
                     fs = document.getElementsByName(i);
                     $.each(fs, function (index) {
