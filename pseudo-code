@@ -1,0 +1,20 @@
+Static form...
+
+Iterates over all eligible fields (not submit && not hidden && not novalidate)
+If no pattern, set pattern attribute to form default
+Polyfill placeholder if necessary
+Add aria- values (aria-valid/invalid)
+setCustomValidity message based on field/type (polyfill for some browers)
+
+form submitted..
+prevent submissin (if necessary)
+each element vaidates itself from the top...
+checkValidity() for boolean (or use our polyfilled test)
+
+
+If errors
+Add aria roles to alert
+
+
+
+Loading from json...

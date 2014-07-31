@@ -54,53 +54,61 @@
         return b;
     }
     
-    function Plugin(element, options) {
+    function Element(element, parent) {
+        this.DOMElement = element;
+        this.parent = parent;
+        this.init();
+    }
+    Element.prototype = {
+        init : function () {
+            var PHTest = 'placeholder' in document.createElement('input');
+            
+            if (!PHTest) {
+                this.placeHolder();
+            }
+        },
+        placeHolder : function () {
+            var focus = function (e) {
+                    e.stopPropagation();
+                    this.value = '';
+                    this.className = this.className.split('form-placeholder').join('');
+                },
+                blur = function (e) {
+                    e.stopPropagation();
+                    this.value = this.getAttribute('placeholder');
+                    this.className += ' form-placeholder';
+                };
+            if (!!this.DOMElement.getAttribute('placeholder')) {
+                this.DOMElement.value = this.DOMElement.getAttribute('placeholder').toString();
+                
+                //console.log(this.DOMElement.value);
+                this.DOMElement.className += ' form-placeholder';
+                this.DOMElement.addEventListener('focus', focus, false);
+                this.DOMElement.addEventListener('blur', blur, false);
+            }
+        },
+        validate : function () {
+            return this.DOMElement.validity;
+        }
+    };
+    
+    function Form(element, options) {
         this.element = element;
         this.options = extend(defaults, options);
 
         this.init();
     }
     
-    Plugin.prototype = {
+    Form.prototype = {
         init: function () {
-            var self = this;
+            var i, l, tmp, self = this;
             this.fields = this.element.querySelectorAll('input, textarea');
+            this.elements = [];
+            l = this.fields.length;
             this.element.querySelector('input[type=submit]').addEventListener('click', this, false);
             
-            this.placeHolders();
-        },
-        clearPlaceholders : function () {
-            var i, l = this.fields.length;
-            
             for (i = 0; i < l; i += 1) {
-                if (!!this.fields[i].getAttribute('placeholder')) {
-                    this.fields[i].value = "";
-                }
-            }
-            return this;
-        },
-        placeHolders : function () {
-            var i,
-                test = 'placeholder' in document.createElement('input'),
-                l = this.fields.length,
-                focus = function () {
-                    this.value = '';
-                    this.className = this.className.split('form-placeholder').join('');
-                },
-                blur = function () {
-                    console.log(this);
-                    this.value = this.getAttribute('placeholder');
-                    this.className += ' form-placeholder';
-                };
-            if (test) {
-                for (i = 0; i < l; i += 1) {
-                    if (!!this.fields[i].getAttribute('placeholder')) {
-                        this.fields[i].value = this.fields[i].getAttribute('placeholder');
-                        this.fields[i].className += 'form-placeholder';
-                        this.fields[i].addEventListener('focus', focus, false);
-                        this.fields[i].addEventListener('blur', blur, false);
-                    }
-                }
+                this.elements[i] = new Element(this.fields[i], this);
             }
         },
         handleEvent : function (e) {
@@ -204,6 +212,19 @@
             self.errors.push([a, er]);
         },
         test : function () {
+            var l = this.elements.length,
+                i,
+                el,
+                elementValidityState;
+            
+            for (i = 0; i < l; i += 1) {
+                el = this.elements[i].DOMElement;
+                if (el.getAttribute('type') !== 'submit' && el.getAttribute('required') !== null && el.getAttribute('type') !== 'hidden' && el.getAttribute('novalidate') === null) {
+                    console.log(this.elements[i].validate());
+                }
+            }
+        }/*
+        test : function () {
             var self = this,
                 checkedGroup = {},
                 field,
@@ -270,8 +291,9 @@
             } else {
                 go = this.options.pass ? this.options.pass.call() : this.element.submit();
             }
-        }
+        }*/
     };
+    
     
     return {
         init : function (el, options) {
@@ -282,7 +304,7 @@
             
             for (i = 0; i < l; i += 1) {
                 if (!elements[i].hasAttribute('novalidate')) {
-                    forms[i] = new Plugin(elements[i], options);
+                    forms[i] = new Form(elements[i], options);
                 }
             }
         }
