@@ -3,17 +3,17 @@
 <head>
     <meta charset=utf-8>
     <title>Form</title>
-    <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet'>
 	<style>
         *{box-sizing:border-box;margin: 0;padding: 0;border: 0;outline: 0;vertical-align: baseline;}
-        body {font-family:'PT Sans', sans-serif;background:#f1f1f1;color:#191919;font-size:110%}
+        body {font-family:'Open Sans', sans-serif;background:#f1f1f1;color:#191919;font-size:110%}
         *:focus {outline: none;}
         *:invalid {box-shadow:none}
         form {width:80%;margin:40px auto;}
         .form-row {position:relative;margin-bottom: 2%; }
-        label { display: block; margin-bottom: .25em; cursor: pointer; }
-        input, textarea { display: block; padding: 1%; border-radius: 4px; border: 0 none; width: 100%; background: #e6e6e6; }
-        input:focus :not(input[type=submit]), textarea:focus :not(input[type=submit]) { background: #dedede; }
+        label { font-size:.9rem; display: block; margin-bottom: .25em; cursor: pointer; font-weight:800}
+        input, textarea { font-family:'Open Sans', sans-serif;font-size:1rem;display: block; padding: 1%; border-radius: 4px; border: 0 none; width: 100%; background: #e6e6e6; }
+        input:hover :not(input[type=submit]), textarea:hover :not(input[type=submit]) { background: #f1f1f1; }
 
         .form-row-checkbox,
         .form-row-radio{ position: relative; }
@@ -48,12 +48,16 @@
         input[type=submit] { text-decoration: none; border-radius: 4px; width: auto; background: #3cb209; color: white; padding: .5em 2em; font-weight: 700; }
         .button-add:hover, input[type=submit]:hover { cursor: pointer; background: rgba(60, 178, 9, 0.8); color: #fff; }
 
-        /* errors */
+        /* Input States */
+        .dirty {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
+        .dirty:valid {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
+        
         .form-error-message {position:absolute;left:0%;text-align:right; top:0;width:100%;color:red;font-style:italic}
 
         .form-row-checkbox.form-error input,
         .form-row-radio.form-error input,
-        .form-error { box-shadow: 0px 0px 5px 0px rgba(255, 25, 16, 0.9); background: rgba(255, 25, 16, 0.1); }
+        .form-error,
+        .dirty:not:invalid { box-shadow: 0px 0px 5px 0px rgba(255, 25, 16, 0.9); background: rgba(255, 25, 16, 0.1); }
         .form-row-checkbox.form-error,
         .form-row-radio.form-error {background:transparent;box-shadow:none;}
 
