@@ -1,17 +1,25 @@
 /*jslint browser:true,nomen:true*/
-/*global jQuery,console*/
+/*global define, console*/
 /*!
- * @name        Form, lightweight jQuery HTML5 form validation plugin
- * @version     Sept 13  
+ * @name        Form, lightweight vanilla js HTML5 form validation module
+ * @version     Jul 14
  * @author      mjbp
  * Licensed under the MIT license
  */
+(function (name, context, definition) {
+    'use strict';
+    if (typeof define === 'function' && define.amd) {
+        define(definition);
+    } else {
+        context[name] = definition();
+    }
+}('Form', this, function (name, context) {
+    'use strict';
 
-(function ($, window, document) {
-    "use strict";
-    
-    var pluginName = "Form",
-        defaults = {
+    name = name || 'Form';
+    context = context || this;
+
+    var defaults = {
             augmentHTML5 : true,
             customErrorMessage : false,
             displayMessages : true,
@@ -42,17 +50,31 @@
             pass : false
         };
 
-    function PluginChild(element, parent) {
+    function extend(b, a) {
+        var prop = null;
+        for (prop in a) {
+            if (a.hasOwnProperty(prop)) {
+                if (a[prop] && a[prop].constructor && a[prop].constructor === Object) {
+                    b[prop] = b[prop] || {};
+                    extend(b[prop], a[prop]);
+                } else {
+                    b[prop] = a[prop];
+                }
+            }
+        }
+        return b;
+    }
+
+    function Element(element, parent) {
         this.DOMElement = element;
         this.parent = parent;
         this.init();
     }
 
-    PluginChild.prototype = {
+    Element.prototype = {
         init : function () {
             this.ph = 'placeholder' in document.createElement('input');
-
-            this.type = $(this.DOMElement).attr('type') || 'text';
+            this.type = this.DOMElement.getAttribute('type') || 'text';
 
             this.DOMElement.validityState = this.DOMElement.validityState || this.defaultValidityState();
             this.DOMElement.checkValidity = this.DOMElement.checkValidity || this.getValidityState;
@@ -104,30 +126,29 @@
         placeHolder : function () {
             var focus = function (e) {
                     e.stopPropagation();
-                    $(this).val()
-                        .removeClass('form-placeholder');
+                    this.value = '';
+                    this.className = this.className.split('form-placeholder').join('');
                 },
                 blur = function (e) {
                     e.stopPropagation();
-                    if ($(this).val() === '') {
-                        e.stopPropagation();
-                        $(this).val($(this).attr('placeholder'))
-                            .addClass('form-placeholder');
+                    if (this.value === '') {
+                        this.value = this.getAttribute('placeholder');
+                        this.className += ' form-placeholder';
                     }
                 };
 
             if (!!this.DOMElement.getAttribute('placeholder')) {
-                $(this.DOMElement).on('focus', focus)
-                    .on('blur', blur, false);
-                if ($(this.DOMElement).val() === '') {
-                    $(this.DOMElement).val($(this.DOMElement).attr('placeholder'))
-                        .addClass('form-placeholder');
+                this.DOMElement.addEventListener('focus', focus, false);
+                this.DOMElement.addEventListener('blur', blur, false);
+                if (this.DOMElement.value === '') {
+                    this.DOMElement.value = this.DOMElement.getAttribute('placeholder');
+                    this.DOMElement.className += ' form-placeholder';
                 }
             }
         },
         clearPlaceholder : function () {
-            if ($(this.DOMElement).val() === $(this.DOMElement).attr('placeholder')) {
-                $(this.DOMElement).val('');
+            if (this.DOMElement.value === this.DOMElement.getAttribute('placeholder')) {
+                this.DOMElement.value = '';
             }
             return this;
         },
@@ -135,13 +156,12 @@
             var r = false,
                 v = null,
                 regExp = null,
-                value = $(this.DOMElement).val(),
-                pattern = $(this.DOMElement).attr('pattern') || this.parent.options.patterns[this.type];
-
+                value = this.DOMElement.value,
+                pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type];
             if (!this.ph) {
                 this.clearPlaceholder();
             }
-            //polyfill if necessary
+            //polyfillif necessary
             if (!this.parent.HTML5) {
                 this.setValidityState();
             }
@@ -174,76 +194,116 @@
         }
     };
 
-    function Plugin(element, options) {
+    function Form(element, options) {
         this.element = element;
-        this.options = $.extend(true, {}, defaults, options);
-        this._defaults = defaults;
-        this._name = pluginName;
-        this.elements = [];
+        this.options = extend(defaults, options);
 
         this.init();
     }
 
-    Plugin.prototype = {
+    Form.prototype = {
         HTML5 : false,
         groups : [],
         init: function () {
-            var self = this;
+            var i = 0,
+                l = 0,
+                self = this;
             this.HTML5 = 'noValidate' in document.createElement('form');
-            
+
             if (!this.HTML5 || this.options.augmentHTML5) {
+                this.fields = this.element.querySelectorAll('input, textarea');
+                this.elements = [];
+                l = this.fields.length;
+                this.element.querySelector('input[type=submit]').addEventListener('click', this, false);
+                this.element.querySelector('input[type=submit]').addEventListener('onkeypress', this, false);
 
-                $(this.element).find('input, textarea').each(function () {
-                    self.elements.push(new PluginChild(this, self));
-                });
-
-                $(this.element).find('input[type=submit]').on("click", function (e) {
+                for (i = 0; i < l; i += 1) {
+                    this.elements[i] = new Element(this.fields[i], this);
+                }
+            }
+        },
+        handleEvent : function (e) {
+            if (!this.HTML5 || this.options.augmentHTML5) {
+                if (e.type === 'click') {
                     e.preventDefault();
-                    self.clearErrors()
+                    this.clearErrors()
                         .test();
-                });
+                }
             }
         },
         writeInline : function (msg) {
-            var self = this;
-            return $('<' + self.options.errorMessageElement + ' role="alert"/>').addClass(self.options.errorMessagesClass).text(msg);
+            var self = this,
+                r = document.createElement(self.options.errorMessageElement);
+            r.textContent = msg;
+            r.className = self.options.errorMessagesClass;
+            r.setAttribute('role', 'alert');
+            return r;
         },
         clearErrors : function () {
-            var self = this;
-            if ($(self.element).find('.form-error-list').length) {
-                $(self.element).find('.form-error-list').remove();
-            }
-            if ($(self.element).find('.form-error').length) {
-                $(self.element).find('.form-error').removeClass('form-error');
-                $(self.element).find('.form-error-message').remove();
-            }
-            if ($(self.element).find('[aria-labelledBy]')) {
-                $(self.element).find('[aria-labelledBy]').removeAttr('aria-labelledBy');
-            }
-            if ($(self.element).find('[aria-invalid]')) {
-                $(self.element).find('[aria-invalid]').removeAttr('aria-invalidy');
-            }
-            return this;
-        },
-        listErrorMessages : function () {
             var self = this,
-                er,
-                listHolder = $('<dl class="form-error-list"><dt>' + self.options.listTitle + '</dt><dd><ol></ol></dd></dl>'),
-                tmp = {},
-                li;
-            
-            for (er in self.errors) {
-                if (self.errors.hasOwnProperty(er)) {
-                    if (er !== 'hasErrors') {
-                        $(listHolder).find('ol').append('<li><a id=' + er + '-error' + '" href="#' + self.errors[er].id + '">' + self.errors[er].error + '</a></li>');
+                er = null,
+                i  = null,
+                l = self.fields.length;
+
+            if (self.element.querySelectorAll('.form-error').length > 0) {
+                for (i = 0; i < l; i += 1) {
+                    if (self.fields[i].className.indexOf('form-error') > -1) {
+                        self.fields[i].className = self.fields[i].className.split('form-error').join('');
+                        if (!self.options.listMessages) {
+                            self.fields[i].removeAttribute('aria-labelledBy');
+                            self.fields[i].removeAttribute('aria-invalid');
+                            er = self.fields[i].nextElementSibling;
+                            if (er) {
+                                er.parentNode.removeChild(er);
+                            }
+                        }
                     }
                 }
             }
-            $(self.element).prepend(listHolder);
-            $('html, body').animate({
-                scrollTop: $(listHolder).offset().top
-            }, 500);
-            //window.scrollTo(0, listHolder.offsetTop);
+            return self;
+        },
+        listErrorMessages : function () {
+            var self = this,
+                i = 0,
+                oldListHolder = this.element.querySelector('.form-error-list'),
+                listHolder = document.createElement('dl'),
+                listTitle = document.createElement('dt'),
+                listDescription = document.createElement('dd'),
+                list = document.createElement('ol'),
+                listItem = document.createElement('li'),
+                link = document.createElement('a'),
+                item = null,
+                itemLink = null,
+                er = null,
+                l = self.errors.length,
+                errByType = {};
+
+            if (oldListHolder) {
+                oldListHolder.parentElement.removeChild(oldListHolder);
+            }
+            listTitle.innerHTML = self.options.listTitle;
+            listHolder.appendChild(listTitle);
+            listHolder.appendChild(listDescription);
+            listHolder.className = 'form-error-list';
+            listHolder.setAttribute('role', 'alert');
+            listDescription.appendChild(list);
+
+            for (er in self.errors) {
+                if (self.errors.hasOwnProperty(er)) {
+                    if (er !== 'hasErrors') {
+                        item = listItem.cloneNode(true);
+                        itemLink = link.cloneNode(true);
+                        itemLink.setAttribute('href', '#' + self.errors[er].id);
+                        itemLink.setAttribute('id', er + '-error');
+                        itemLink.innerHTML = self.errors[er].error;
+                        item.appendChild(itemLink);
+                        list.appendChild(item);
+                    }
+                }
+            }
+
+            self.element.insertBefore(listHolder, self.element.firstChild);
+            window.scrollTo(0, listHolder.offsetTop);
             listHolder.focus();
         },
         displayInlineErrorMessages : function () {
@@ -272,10 +332,7 @@
                     }
                 }
             }
-            $('html, body').animate({
-                scrollTop: $(this.element).offset().top
-            }, 50);
-            //window.scrollTo(0, this.element.offsetTop);
+            window.scrollTo(0, this.element.offsetTop);
             document.getElementsByClassName(self.options.errorMessagesClass)[0].focus();
         },
         addError : function (f, er, g) {
@@ -284,11 +341,11 @@
                 a = null,
                 id = null,
                 t = null;
-            a = g ? $(field).attr('name') : $(field).attr('id');
-            id = $(field).attr('id');
+            a = g ? field.getAttribute('name') : field.getAttribute('id');
+            id = field.getAttribute('id');
             t = g ? field.parentNode : field;
-            $(t).addClass('form-error');
-            $(field).attr('aria-invalid', 'true');
+            t.className += ' form-error';
+            field.setAttribute('aria-invalid', 'true');
             self.errors.hasErrors = true;
             self.errors[a] = {'error': er, 'id': id};
         },
@@ -299,11 +356,10 @@
                 go = null,
                 l = this.elements.length,
                 self = this;
-            
-            console.log(this);
+
             this.errors = {};
             this.groups = [];
-            
+
             for (i = 0; i < l; i += 1) {
                 el = this.elements[i].DOMElement;
                 if (el.getAttribute('type') !== 'submit' && el.getAttribute('required') !== null && el.getAttribute('type') !== 'hidden' && el.getAttribute('novalidate') === null) {
@@ -317,7 +373,7 @@
                     }
                 }
             }
-            
+
             if (this.errors.hasErrors) {
                 if (!!self.options.displayMessages) {
                     if (!!self.options.listMessages) {
@@ -328,18 +384,26 @@
                 }
                 this.options.fail.call();
             } else {
-                //go = this.options.pass ? this.options.pass.call() : $(this.element).submit();
+                go = this.options.pass ? this.options.pass.call() : this.element.submit();
             }
         }
     };
 
-    $.fn[pluginName] = function (options) {
-        return this.each(function () {
-            if (!$.data(this, "plugin_" + pluginName)) {
-                $.data(this, "plugin_" + pluginName,
-                    new Plugin(this, options));
-            }
-        });
-    };
 
-}(jQuery, window, document, undefined));
+    return {
+        init : function (el, options) {
+            var elements = document.querySelectorAll(el),
+                forms = [],
+                i = null,
+                l = elements.length;
+
+            for (i = 0; i < l; i += 1) {
+                if (!elements[i].hasAttribute('novalidate')) {
+                    forms[i] = new Form(elements[i], options);
+                }
+            }
+        }
+    };
+}));
+
+
