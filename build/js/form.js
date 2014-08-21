@@ -120,7 +120,7 @@
             }
             this.DOMElement.validationMessage = m;
             return this;
-            //To do: set other validity states
+            //To do: set other validity states and refactor
 
         },
         placeHolder : function () {
@@ -152,6 +152,12 @@
             }
             return this;
         },
+        /*
+         * Move error display/hide to element
+         *      - add/remove error class/aria
+         *      - add/remove item from form error list
+         *      - show/hide error inline message
+         */
         validate : function () {
             var r = false,
                 v = null,

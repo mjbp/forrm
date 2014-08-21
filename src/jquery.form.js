@@ -328,7 +328,7 @@
                 }
                 this.options.fail.call();
             } else {
-                //go = this.options.pass ? this.options.pass.call() : $(this.element).submit();
+                go = this.options.pass ? this.options.pass.call() : $(this.element).submit();
             }
         }
     };
