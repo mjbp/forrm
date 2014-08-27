@@ -135,8 +135,8 @@
                 };
             this.type = this.DOMElement.getAttribute('type') || 'text';
             this.errorGroup = this.DOMElement.getAttribute('id');
-            this.DOMElement.validityState = this.DOMElement.validityState || this.defaultValidityState();
-            this.DOMElement.checkValidity = this.DOMElement.checkValidity || this.getValidityState;
+            this.validityState = this.DOMElement.validityState || this.defaultValidityState();
+            //this.checkValidity = this.DOMElement.checkValidity || this.getValidityState;
 
             //this needs to expand for different input types - file, select, etc
             updateEvent = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'file') && 'change' || 'input';
@@ -163,26 +163,26 @@
             var regExp,
                 pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type];
 
-            this.DOMElement.validationMessage = null;
+            this.validationMessage = null;
             if (this.DOMElement.value.replace( /^\s+/g, '' ).replace( /\s+$/g, '' ) === "" || ((this.type === 'radio' || this.type === 'checkbox') && !this.DOMElement.checked)) {
-                this.DOMElement.validityState.valid = false;
-                this.DOMElement.validityState.valueMissing = true;
-                this.DOMElement.validationMessage = this.parent.options.errorMessages.valueMissing[this.type];
+                this.validityState.valid = false;
+                this.validityState.valueMissing = true;
+                this.validationMessage = this.parent.options.errorMessages[this.type].valueMissing;
             } else {
                 //check min, max and
 
-                this.DOMElement.validityState.valueMissing = false;
+                this.validityState.valueMissing = false;
                 regExp = new RegExp(pattern, "");
                 if (!regExp.test(this.DOMElement.value)) {
-                    this.DOMElement.validityState.valid = false;
+                    this.validityState.valid = false;
                     if (this.type === 'text') {
-                        this.DOMElement.validityState.patternMismatch = true;
+                        this.validityState.patternMismatch = true;
                     } else {
-                        this.DOMElement.validityState.typeMismatch = true;
+                        this.validityState.typeMismatch = true;
                     }
-                    this.DOMElement.validationMessage = this.parent.options.errorMessages.patternMismatch[this.type];
+                    this.validationMessage = this.parent.options.errorMessages[this.type].patternMismatch;
                 } else {
-                    this.DOMElement.validityState.valid = true;
+                    this.validityState.valid = true;
                 }
             }
 
@@ -200,7 +200,6 @@
             if (this.DOMElement.className.indexOf(this.parent.options.errorClass) === -1) {
                 this.DOMElement.className += ' ' + this.parent.options.errorClass;
             }
-            this.DOMElement.className = this.DOMElement.className.split(this.parent.options.successClass).join('');
             this.DOMElement.setAttribute('aria-invalid', 'true');
             this.parent.manageValidationList(this.errorGroup, error);
             return this;
@@ -224,7 +223,7 @@
             if (!this.parent.HTML5) {
                 this.setValidityState();
             }
-            v = this.DOMElement.checkValidity();
+            v = this.DOMElement.checkValidity ? this.DOMElement.checkValidity() : this.getValidityState();
             if (!v) {
                 this.addError(this.getError());
             } else {
@@ -234,9 +233,9 @@
         },
         getError : function () {
             if (this.parent.options.customErrorMessage) {
-                return (this.parent.options.errorMessages[this.type][this.DOMElement.validity.valueMissing && 'valueMissing' || this.DOMElement.validity.patternMismatch && 'patternMismatch' || this.DOMElement.validity.typeMismatch && 'typeMismatch']);
+                return (this.parent.options.errorMessages[this.type][this.validityState.valueMissing && 'valueMissing' || this.validityState.patternMismatch && 'patternMismatch' || this.validityState.typeMismatch && 'typeMismatch']);
             } else {
-                return this.DOMElement.validationMessage;
+                return this.DOMElement.validationMessage || this.validationMessage;
             }
         }
     };
@@ -289,7 +288,8 @@
                 if (!this.parent.HTML5) {
                     this.elements[i].setValidityState();
                 }
-                v = this.elements[i].DOMElement.checkValidity();
+                v = this.elements[i].DOMElement.checkValidity ? this.elements[i].DOMElement.checkValidity() : this.elements[i].getValidityState();
+
                 if (!v) {
                     if (!!this.valid) {
                         this.valid = false;
