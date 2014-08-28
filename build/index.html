@@ -16,7 +16,7 @@
         input { /*-webkit-appearance: none; -webkit-border-radius: 0; */border-radius: 0; }
         input, textarea { }
         label { font-size:.9rem; display: block; margin-bottom: .25em; cursor: pointer; font-weight:800}
-        input, textarea { font-family:'Open Sans', sans-serif;font-size:1rem;display: block; padding: 1%; border-radius: 4px; border: 0 none; width: 100%; background: #e6e6e6;outline: none;  }
+        input, textarea, select { font-family:'Open Sans', sans-serif;font-size:1rem;display: block; padding: 1%; border-radius: 4px; border: 0 none; width: 100%; background: #e6e6e6;outline: none;  }
         input:hover :not(input[type=submit]), textarea:hover :not(input[type=submit]) { background: #f1f1f1; }
 
 
@@ -44,12 +44,15 @@
         input[type=submit]:valid{ text-decoration: none; border-radius: 4px; width: auto; background: #3cb209; color: white; padding: .5em 2em; font-weight: 700; }
         .button-add:hover, input[type=submit]:hover { cursor: pointer; background: rgba(60, 178, 9, 0.8); color: #fff; }
 
+        input[type=range] {}
+
         /* Input States */
 
-        div[data-optional]{opacity:0.4}
-        div[data-optional]:focus{opacity:1}
+        div[data-optional] input,
+        div[data-optional] label {opacity:0.5}
+        div[data-optional] input:focus{opacity:1}
         
-        .form-error-message {position:absolute;left:0%;text-align:right; top:0;width:100%;color:red;font-style:italic}
+        .form-error-message {position:absolute;right:0%;text-align:right; top:0;width:40%;color:red;font-style:italic}
 
         .form-row-checkbox.form-error label:before,
         .form-row-radio.form-error label:before,
@@ -58,6 +61,7 @@
         input:valid,
         textarea:valid,
         .form-error:valid {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
+        .form-success {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
 
 
         .form-row-checkbox.form-error,
@@ -92,7 +96,7 @@
             </div>
             <div class="form-row">
                 <label for="test-telephone">Telephone: *</label>
-                <input type="tel" id="test-telephone" pattern="\d+" value="" required aria-required="true">
+                <input type="tel" id="test-telephone" pattern="[\d-]+" value="" required aria-required="true">
             </div>
             <div data-optional="true" class="form-row">
                 <label for="test-mobile">Mobile:</label>
@@ -112,6 +116,10 @@
                      <div class="form-row form-row-radio">
                         <input type="radio" id="test-radio-2" name="test-radio" value="option-2" required aria-required="true">
                         <label for="test-radio-2">Option 2</label>
+                    </div>
+                     <div class="form-row form-row-radio">
+                        <input type="radio" id="test-radio-3" name="test-radio" value="option-3" required aria-required="true">
+                        <label for="test-radio-3">Option 2</label>
                     </div>
                 </fieldset>
             </div>
@@ -152,6 +160,24 @@
             <div class="form-row">
                 <label for="test-field-2-2">Field 2: *</label>
                 <input type="text" id="test-field-2-2" value="" placeholder="Placeholder" required aria-required="true">
+            </div>
+            <div class="form-row form-row-select">
+                <label for="test-select">Select: *</label>
+                <select id="test-select" required aria-required="true">
+                    <option value="">Chooose</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="form-row form-row-file">
+                <label for="test-file">File upload: *</label>
+                <input type="file" id="test-file" required aria-required="true">
+            </div>
+            <div class="form-row form-row-search">
+                <label for="test-search">Search: *</label>
+                <input id="test-search" type="search" required aria-required="true">
             </div>
             <div class="form-row submit">
                 <input type="submit" value="Submit">

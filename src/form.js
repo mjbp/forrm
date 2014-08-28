@@ -2,9 +2,23 @@
 /*global define, console*/
 /*!
  * @name        Form, lightweight vanilla js HTML5 form validation module
- * @version     Jul 14  
+ * @version     Aug 14
  * @author      mjbp
  * Licensed under the MIT license
+ */
+
+/*
+ * ROADMAP:
+ * field types - range?
+ * max, maxlength, min, minlength
+ * conditionals - group one required/min number of group required
+ * multi-step (hidden/reveal) - validate each step independently to reveal the next, display step number/total steps
+ * placeholder for hints??
+ * add UTILS to polyfill forEach?, addEventListener
+ *
+ *
+ * not supported input types: month, image, time, week, date, datetime, datetime-local
+ *
  */
 (function (name, context, definition) {
     'use strict';
@@ -21,24 +35,53 @@
     
     var defaults = {
             augmentHTML5 : true,
-            customErrorMessage : false,
+            customErrorMessage : true,
             displayMessages : true,
-            listMessages : true,
+            successClass : 'form-success',
+            errorClass : 'form-error',
+            listMessages : false,
             listTitle : 'We couldn\'t submit the form, please check your answers:',
             errorMessagesClass : 'form-error-message',
             errorMessageElement : 'p',
             errorMessages : {
-                'valueMissing' : {
-                    'text' : 'This field is required',
-                    'email' : 'This field is required',
-                    'tel' : 'This field is required',
-                    'checkbox' : 'Check at least one of the required boxes',
-                    'radio' : 'Select one of the required radio options'
+                'text': {
+                    'valueMissing' : 'This field is required',
+                    'patternMismatch' : 'Match the requested format'
                 },
-                'patternMismatch' : {
-                    'tel' : 'Enter a valid phone number',
-                    'email' : 'Enter a valid email address',
-                    'text' : 'Please match the requested format'
+                'url': {
+                    'valueMissing' : 'This field is required',
+                    'patternMismatch' : 'Enter a valid URL',
+                    'typeMismatch' : 'Enter a valid URL'
+                },
+                'search': {
+                    'valueMissing' : 'This field is required',
+                    'patternMismatch' : 'Match the requested format'
+                },
+                'email': {
+                    'valueMissing' : 'This field is required',
+                    'patternMismatch' : 'Enter a valid email address',
+                    'typeMismatch' : 'Enter a valid email address'
+                },
+                'tel': {
+                    'valueMissing' : 'This field is required',
+                    'patternMismatch' : 'Enter a valid phone number'
+                },
+                'select': {
+                    'valueMissing' : 'Choose an option'
+                },
+                'checkbox': {
+                    'valueMissing' : 'Check at least one of the required boxes'
+                },
+                'radio': {
+                    'valueMissing' : 'Select one of the required radio options'
+                },
+                'number': {
+                    'valueMissing' : 'This field is required',
+                    'patternMismatch' : 'Enter a valid number',
+                    'typeMismatch' : 'Enter a valid number'
+                },
+                'file': {
+                    'valueMissing' : 'Choose a file'
                 }
             },
             patterns : {
@@ -65,6 +108,13 @@
         return b;
     }
     
+    /*
+     * Element wrapper class
+     *
+     * @param  {DOM node} a single form input element
+     * @param  {instance of Form class} reference to parent form element
+     *
+     */
     function Element(element, parent) {
         this.DOMElement = element;
         this.parent = parent;
@@ -73,14 +123,27 @@
 
     Element.prototype = {
         init : function () {
-            this.ph = 'placeholder' in document.createElement('input');
-            this.type = this.DOMElement.getAttribute('type') || 'text';
+            var updateEvent,
+                self = this,
+                liveCheck = function (e) {
+                    if (!self.parent.liveValidating) {
+                        return;
+                    }
+                    self.parent.validationList[self.errorGroup].element.validate();
+                    if (!self.parent.options.listMessages) {
+                        self.parent.UI.updateInlineErrors(self);
+                    } else {
+                        self.parent.UI.listErrorMessages();
+                    }
+                };
+            this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || this.DOMElement.tagName.toLowerCase();
+            this.errorGroup = this.DOMElement.getAttribute('id');
+            this.validityState = this.DOMElement.validityState || this.defaultValidityState();
 
-            this.DOMElement.validityState = this.DOMElement.validityState || this.defaultValidityState();
-            this.DOMElement.checkValidity = this.DOMElement.checkValidity || this.getValidityState;
-            if (!this.ph) {
-                this.placeHolder();
-            }
+            //this needs to expand for different input types - file, select, etc
+            updateEvent = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'file') && 'change' ||'input';
+
+            this.DOMElement.addEventListener(updateEvent, liveCheck, false);
         },
         defaultValidityState : function () {
             return {
@@ -100,178 +163,241 @@
         },
         setValidityState : function () {
             var regExp,
-                pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type],
-                m = null;
+                pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type];
 
-            if (this.DOMElement.value === "" || ((this.type === 'radio' || this.type === 'checkbox') && !this.DOMElement.checked)) {
-                this.DOMElement.validityState.valid = false;
-                this.DOMElement.validityState.valueMissing = true;
-                m = this.parent.options.errorMessages.valueMissing[this.type];
+            this.validationMessage = null;
+            if (this.DOMElement.value.replace( /^\s+/g, '' ).replace( /\s+$/g, '' ) === "" || ((this.type === 'radio' || this.type === 'checkbox') && !this.DOMElement.checked)) {
+                this.validityState.valid = false;
+                this.validityState.valueMissing = true;
+                this.validationMessage = this.parent.options.errorMessages[this.type].valueMissing;
             } else {
-                this.DOMElement.validityState.valueMissing = false;
+                //check min, max and
+
+                this.validityState.valueMissing = false;
                 regExp = new RegExp(pattern, "");
                 if (!regExp.test(this.DOMElement.value)) {
-                    this.DOMElement.validityState.valid = false;
-                    this.DOMElement.validityState.patternMismatch = true;
-                    m = this.parent.options.errorMessages.patternMismatch[this.type];
+                    this.validityState.valid = false;
+                    if (this.type === 'text') {
+                        this.validityState.patternMismatch = true;
+                    } else {
+                        this.validityState.typeMismatch = true;
+                    }
+                    this.validationMessage = this.parent.options.errorMessages[this.type].patternMismatch;
                 } else {
-                    this.DOMElement.validityState.valid = true;
+                    this.validityState.valid = true;
                 }
             }
-            this.DOMElement.validationMessage = m;
+
             return this;
             //To do: set other validity states and refactor
 
         },
-        placeHolder : function () {
-            var focus = function (e) {
-                    e.stopPropagation();
-                    this.value = '';
-                    this.className = this.className.split('form-placeholder').join('');
-                },
-                blur = function (e) {
-                    e.stopPropagation();
-                    if (this.value === '') {
-                        this.value = this.getAttribute('placeholder');
-                        this.className += ' form-placeholder';
-                    }
-                };
-
-            if (!!this.DOMElement.getAttribute('placeholder')) {
-                this.DOMElement.addEventListener('focus', focus, false);
-                this.DOMElement.addEventListener('blur', blur, false);
-                if (this.DOMElement.value === '') {
-                    this.DOMElement.value = this.DOMElement.getAttribute('placeholder');
-                    this.DOMElement.className += ' form-placeholder';
-                }
-            }
+        setGroup : function (g) {
+            this.group = g;
+            this.errorGroup = g.name;
+            this.validate = g.validate;
+            return this;
         },
-        clearPlaceholder : function () {
-            if (this.DOMElement.value === this.DOMElement.getAttribute('placeholder')) {
-                this.DOMElement.value = '';
+        addError : function (error) {
+            this.DOMElement.className = this.DOMElement.className.split(' ' + this.parent.options.successClass).join('');
+            if (this.DOMElement.className.indexOf(this.parent.options.errorClass) === -1) {
+                this.DOMElement.className += ' ' + this.parent.options.errorClass;
+            }
+            this.DOMElement.setAttribute('aria-invalid', 'true');
+            this.parent.manageValidationList(this.errorGroup, error);
+            return this;
+        },
+        removeError : function () {
+            this.DOMElement.className = this.DOMElement.className.split(' ' + this.parent.options.errorClass).join('');
+            this.DOMElement.setAttribute('aria-invalid', 'false');
+            this.DOMElement.removeAttribute('aria-labelledby');
+            this.parent.manageValidationList(this.errorGroup, null);
+            return this;
+        },
+        addSuccess : function () {
+            this.removeError();
+            if (this.DOMElement.className.indexOf(this.parent.options.successClass) === -1) {
+                this.DOMElement.className += ' ' + this.parent.options.successClass;
             }
             return this;
         },
-        /*
-         * Move error display/hide to element
-         *      - add/remove error class/aria
-         *      - add/remove item from form error list
-         *      - show/hide error inline message
-         */
         validate : function () {
-            var r = false,
-                v = null,
-                regExp = null,
-                value = this.DOMElement.value,
-                pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type];
-            if (!this.ph) {
-                this.clearPlaceholder();
-            }
-            //polyfillif necessary
+            var v;
             if (!this.parent.HTML5) {
                 this.setValidityState();
             }
-            v = this.DOMElement.checkValidity();
+            v = this.DOMElement.checkValidity ? this.DOMElement.checkValidity() : this.getValidityState();
             if (!v) {
-                //if we want to use our custom error messages
-                if (this.parent.options.customErrorMessage) {
-                    if (this.type === 'radio' || this.type === 'checkbox') {
-                        if (this.parent.groups[this.DOMElement.getAttribute('name')] !== 'checked') {
-                            this.parent.groups[this.DOMElement.getAttribute('name')] = 'not-checked';
-                            return this.parent.options.errorMessages.valueMissing[this.type];
-                        }
-                    } else {
-                        return (this.DOMElement.validity.valueMissing && this.parent.options.errorMessages.valueMissing[this.type]) ||
-                            (this.DOMElement.validity.patternMismatch && this.parent.options.errorMessages.patternMismatch[this.type]);
-                    }
-                } else {
-                    //show the default ones
-                    return this.DOMElement.validationMessage;
-                }
+                this.addError(this.getError());
             } else {
-                if (this.type === 'checkbox' || this.type === 'radio') {
-                    this.parent.groups[this.DOMElement.getAttribute('name')] = 'checked';
-                    if (this.parent.errors[this.DOMElement.getAttribute('name')]) {
-                        delete this.parent.errors[this.DOMElement.getAttribute('name')];
-                    }
-                }
-                return false;
+                this.addSuccess();
+            }
+
+        },
+        getError : function () {
+            if (this.parent.options.customErrorMessage) {
+                return (this.parent.options.errorMessages[this.type][this.validityState.valueMissing && 'valueMissing' || this.validityState.patternMismatch && 'patternMismatch' || this.validityState.typeMismatch && 'typeMismatch']);
+            } else {
+                return this.DOMElement.validationMessage || this.validationMessage;
             }
         }
     };
     
-    function Form(element, options) {
-        this.element = element;
-        this.options = extend(defaults, options);
 
-        this.init();
+    /*
+     * Group wrapper class
+     *
+     * @param {String} name
+     * @param {Array} array of nodes
+     *
+     */
+    function Group(name, els) {
+        if (name === 'undefined') {
+            throw new Error('Nae name');
+        }
+        this.name = name;
+        this.elements = els;
+        this.parent = els[0].parent;
+
+        this.init(els);
     }
     
-    Form.prototype = {
-        HTML5 : false,
-        groups : [],
-        init: function () {
-            var i = 0,
-                l = 0,
-                self = this;
-            this.HTML5 = 'noValidate' in document.createElement('form');
-            
-            if (!this.HTML5 || this.options.augmentHTML5) {
-                this.fields = this.element.querySelectorAll('input, textarea');
-                this.elements = [];
-                l = this.fields.length;
-                this.element.querySelector('input[type=submit]').addEventListener('click', this, false);
-                this.element.querySelector('input[type=submit]').addEventListener('onkeypress', this, false);
+    Group.prototype = {
+        init : function () {
+            this.valid = true;
+        },
+        addError : function (error) {
+            for (var i = 0; i < this.elements.length; i++) {
+                if (this.elements[i].DOMElement.parentElement.className.indexOf(' ' + this.parent.options.errorClass) === -1) {
+                    this.elements[i].DOMElement.parentElement.className += ' ' + this.parent.options.errorClass;
+                }
+                this.elements[i].DOMElement.setAttribute('aria-invalid', 'true');
+            }
+            this.parent.manageValidationList(this.name, error);
+            return this;
+        },
+        removeError : function () {
+            for (var i = 0; i < this.elements.length; i++) {
+                this.elements[i].DOMElement.setAttribute('aria-invalid', 'false');
+                this.elements[i].DOMElement.removeAttribute('aria-labelledby');
+                this.elements[i].DOMElement.parentNode.className = this.elements[i].DOMElement.parentNode.className.split(' ' + this.parent.options.errorClass).join('');
+            }
+            this.parent.manageValidationList(this.name, null);
+        },
+        validate : function () {
+            var v,
+                error = null;
+            for (var i = 0; i < this.elements.length; i++) {
+                if (!this.parent.HTML5) {
+                    this.elements[i].setValidityState();
+                }
+                v = this.elements[i].DOMElement.checkValidity ? this.elements[i].DOMElement.checkValidity() : this.elements[i].getValidityState();
 
-                for (i = 0; i < l; i += 1) {
-                    this.elements[i] = new Element(this.fields[i], this);
+                if (!v) {
+                    if (!!this.valid) {
+                        this.valid = false;
+                        error = this.elements[i].getError();
+                    }
+                } else {
+                    //it's true but is a grouped input with a collective state
+                    this.valid = true;
+                    this.removeError();
+                    return;
                 }
             }
-        },
-        handleEvent : function (e) {
-            if (!this.HTML5 || this.options.augmentHTML5) {
-                if (e.type === 'click') {
-                    e.preventDefault();
-                    this.clearErrors()
-                        .test();
-                }
+            if (!!error) {
+                this.addError(error);
             }
         },
-        writeInline : function (msg) {
-            var self = this,
-                r = document.createElement(self.options.errorMessageElement);
-            r.textContent = msg;
-            r.className = self.options.errorMessagesClass;
-            r.setAttribute('role', 'alert');
-            return r;
+        getName : function() {
+            return this.name;
+        }
+
+    };
+
+
+     /*
+     * UI wrapper class
+     *
+     * @param   {Form} Parent form
+     * @roadMap Use templating to bypass DOM manipulation horrorshow
+     *
+     */
+    function UI(form) {
+        if (form === 'undefined') {
+            throw new Error('Nae form');
+        }
+        this.parent = form;
+        this.init();
+    }
+
+    UI.prototype = {
+        init : function () {
+            if (!!this.parent.options.displayMessages) {
+                this.write = !!this.parent.options.listMessages ? this.listErrorMessages : this.displayInlineErrorMessages;
+            } else {
+                this.write = function () {return this;};
+            }
         },
-        clearErrors : function () {
-            var self = this,
-                er = null,
-                i  = null,
-                l = self.fields.length;
+        addInlineError : function (erId) {
+            var el,
+                msg = document.createElement(this.parent.options.errorMessageElement);
+            msg.textContent = this.parent.validationList[erId].error;
+            msg.className = this.parent.options.errorMessagesClass;
+            msg.setAttribute('role', 'alert');
+            msg.setAttribute('id', erId + '-error');
+            el = document.getElementById(erId) || document.getElementsByName(erId)[0];
+            el.setAttribute('aria-labelledBy', erId + '-error');
+            el.parentNode.insertBefore(msg, el.nextSibling);
             
-            if (self.element.querySelectorAll('.form-error').length > 0) {
-                for (i = 0; i < l; i += 1) {
-                    if (self.fields[i].className.indexOf('form-error') > -1) {
-                        self.fields[i].className = self.fields[i].className.split('form-error').join('');
-                        if (!self.options.listMessages) {
-                            self.fields[i].removeAttribute('aria-labelledBy');
-                            self.fields[i].removeAttribute('aria-invalid');
-                            er = self.fields[i].nextElementSibling;
-                            if (er) {
-                                er.parentNode.removeChild(er);
-                            }
-                        }
+            return;
+        },
+        clearInlineErrors : function () {
+            var errorMessages = this.parent.DOMElement.querySelectorAll('.form-error-message');
+
+            if (errorMessages.length === 0) {
+                return;
+            }
+            for(var i = 0; i < errorMessages.length; i++) {
+                errorMessages[i].parentNode.removeChild(errorMessages[i]);
+            }
+
+            return this;
+        },
+        updateInlineErrors : function (el) {
+            var errorField = document.getElementById(el.DOMElement.getAttribute('id') + '-error') || document.getElementById(el.DOMElement.getAttribute('name') + '-error');
+
+            if (!el.parent.validationList[el.errorGroup].error) {
+                if (!errorField) {
+                    return this;
+                } else {
+                    errorField.parentNode.removeChild(errorField);
+                    return this;
+                }
+            } else {
+                if (!errorField) {
+                    this.addInlineError(el.errorGroup);
+                    return this;
+                } else {
+                    errorField.textContent = el.parent.validationList[el.errorGroup].error;
+                    return this;
+                }
+            }
+        },
+        displayInlineErrorMessages : function () {
+            this.clearInlineErrors();
+
+            for (var er in this.parent.validationList) {
+                if (this.parent.validationList.hasOwnProperty(er)) {
+                    if (er !== 'countErrors' && !!this.parent.validationList[er].error) {
+                        this.addInlineError(er);
                     }
                 }
             }
-            return self;
         },
         listErrorMessages : function () {
-            var self = this,
-                i = 0,
-                oldListHolder = this.element.querySelector('.form-error-list'),
+            var i = 0,
+                oldListHolder = this.parent.DOMElement.querySelector('.form-error-list'),
                 listHolder = document.createElement('dl'),
                 listTitle = document.createElement('dt'),
                 listDescription = document.createElement('dd'),
@@ -279,118 +405,160 @@
                 listItem = document.createElement('li'),
                 link = document.createElement('a'),
                 item = null,
-                itemLink = null,
-                er = null,
-                l = self.errors.length,
-                errByType = {};
+                itemLink = null;
+
+            this.errorListHolder = listHolder;
 
             if (oldListHolder) {
                 oldListHolder.parentElement.removeChild(oldListHolder);
             }
-            listTitle.innerHTML = self.options.listTitle;
+            if (this.parent.validationList.countErrors === 0) {
+                return this;
+            }
+            listTitle.innerHTML = this.parent.options.listTitle;
             listHolder.appendChild(listTitle);
             listHolder.appendChild(listDescription);
             listHolder.className = 'form-error-list';
             listHolder.setAttribute('role', 'alert');
             listDescription.appendChild(list);
             
-            for (er in self.errors) {
-                if (self.errors.hasOwnProperty(er)) {
-                    if (er !== 'hasErrors') {
+            for (var er in this.parent.validationList) {
+                if (this.parent.validationList.hasOwnProperty(er)) {
+                    if (er !== 'countErrors' && !!this.parent.validationList[er].error) {
                         item = listItem.cloneNode(true);
                         itemLink = link.cloneNode(true);
-                        itemLink.setAttribute('href', '#' + self.errors[er].id);
+                        itemLink.setAttribute('href', '#' + this.parent.validationList[er].id);
                         itemLink.setAttribute('id', er + '-error');
-                        itemLink.innerHTML = self.errors[er].error;
+                        itemLink.innerHTML = this.parent.validationList[er].error;
                         item.appendChild(itemLink);
                         list.appendChild(item);
                     }
                 }
             }
 
-            self.element.insertBefore(listHolder, self.element.firstChild);
-            window.scrollTo(0, listHolder.offsetTop);
-            listHolder.focus();
-        },
-        displayInlineErrorMessages : function () {
-            var self = this,
-                er = null,
-                el = null,
-                elParent = null,
-                tmp = null,
-                tmpId = null,
-                li = null;
+            this.parent.DOMElement.insertBefore(listHolder, this.parent.DOMElement.firstChild);
+        }
+    };
 
-            console.log('To do\n - test displaying of inline errors');
 
-            for (er in self.errors) {
-                if (self.errors.hasOwnProperty(er)) {
-                    if (er !== 'hasErrors') {
-                        tmp = self.writeInline(self.errors[er].error);
-                        el = document.getElementById(er) !== null ? document.getElementById(self.errors[er].id) : document.getElementsByName(er)[0];
-                        tmpId = self.errors[er].id + '-error';
-                        tmp.setAttribute('id', tmpId);
-                        el.setAttribute('aria-labelledBy', tmpId);
-                        elParent = el.parentNode;
-                        if (elParent.getElementsByClassName(self.options.errorMessagesClass).length === 0) {
-                            elParent.insertBefore(tmp, el.nextSibling);
+    /*
+     * Form wrapper class
+     *
+     * @param {DOM node} a single form element
+     * @param  {object} to extend defaults{}
+     *
+     */
+    function Form(element, options) {
+        if (element === 'undefined') {
+            throw new Error('Nae element');
+        }
+        this.DOMElement = element;
+        this.options = extend(defaults, options);
+
+        this.init();
+    }
+
+    Form.prototype = {
+        HTML5 : false,
+        groups : {},
+        init: function () {
+            var tmpGroups = [],
+                self = this;
+            this.HTML5 = 'noValidate' in document.createElement('form');
+            this.liveValidating = false;
+
+            if (!this.HTML5 || this.options.augmentHTML5) {
+                this.fields = this.DOMElement.querySelectorAll('input, textarea, select');
+                this.validatebleElements = {};
+                this.DOMElement.querySelector('input[type=submit]').addEventListener('click', this, false);
+                this.DOMElement.querySelector('input[type=submit]').addEventListener('onkeypress', this, false);
+
+                for (var i = 0; i < this.fields.length; i += 1) {
+                    if (this.fields[i].getAttribute('type') !== 'submit' && this.fields[i].getAttribute('type') !== 'reset' && this.fields[i].getAttribute('type') !== 'button' && this.fields[i].getAttribute('required') !== null && this.fields[i].getAttribute('type') !== 'hidden' && this.fields[i].getAttribute('novalidate') === null) {
+                        this.validatebleElements[this.fields[i].getAttribute('id')] = new Element(this.fields[i], this);
+                        /* This part needs re-thinkin to deal with data-grouping */
+                        if (this.fields[i].getAttribute('type') === 'checkbox' || this.fields[i].getAttribute('type') === 'radio') {
+                            tmpGroups.push(this.validatebleElements[this.fields[i].getAttribute('id')]);
+                        }
+                        if ((this.fields[i].getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) {
+                            if (tmpGroups.length > 0) {
+                                this.groups[this.fields[i].getAttribute('name')] = new Group(this.fields[i].getAttribute('name'), tmpGroups);
+                                for (var j = 0; j < tmpGroups.length; j++) {
+                                   tmpGroups[j].setGroup(this.groups[this.fields[i].getAttribute('name')]);
+                                }
+                                tmpGroups = [];
+                            }
                         }
                     }
                 }
+                this.UI = new UI(this);
+                this.makeValidationList();
             }
-            window.scrollTo(0, this.element.offsetTop);
-            document.getElementsByClassName(self.options.errorMessagesClass)[0].focus();
         },
-        addError : function (f, er, g) {
-            var self = this,
-                field = f,
-                a = null,
-                id = null,
-                t = null;
-            a = g ? field.getAttribute('name') : field.getAttribute('id');
-            id = field.getAttribute('id');
-            t = g ? field.parentNode : field;
-            t.className += ' form-error';
-            field.setAttribute('aria-invalid', 'true');
-            self.errors.hasErrors = true;
-            self.errors[a] = {'error': er, 'id': id};
+        handleEvent : function (e) {
+            if (!this.HTML5 || this.options.augmentHTML5) {
+                this.liveValidating = true;
+                if (e.type === 'click' || e.type === 'onkeypress') {
+                    e.preventDefault();
+                    this.test();
+                }
+            }
+        },
+        makeValidationList : function () {
+            this.validationList = {};
+
+            for (var i in this.validatebleElements) {
+                if (this.validatebleElements.hasOwnProperty(i)) {
+                    this.validationList[this.validatebleElements[i].errorGroup] = {
+                        'error': null,
+                        'element': (this.groups[this.validatebleElements[i].errorGroup] || this.validatebleElements[i]),
+                        'id': this.groups[this.validatebleElements[i].errorGroup] ? document.getElementsByName(this.validatebleElements[i].errorGroup)[0].getAttribute('id') : document.getElementById(this.validatebleElements[i].errorGroup).getAttribute('id')
+                    };
+                }
+            }
+            this.validationList.countErrors = 0;
+            return this;
+        },
+        manageValidationList : function (erId, er) {
+            if (!!er) {
+                if (this.validationList[erId].error === null) {
+                    this.validationList.countErrors += 1;
+                }
+            } else {
+                if (this.validationList.countErrors > 0) {
+                    this.validationList.countErrors -= 1;
+                }
+            }
+            this.validationList[erId].error = er;
+            return this;
         },
         test : function () {
-            var i = null,
-                el = null,
+            var el = null,
                 er = null,
                 go = null,
-                l = this.elements.length,
+                l = this.validatebleElements.length,
                 self = this;
 
-            this.errors = {};
-            this.groups = [];
+            this.makeValidationList();
             
-            for (i = 0; i < l; i += 1) {
-                el = this.elements[i].DOMElement;
-                if (el.getAttribute('type') !== 'submit' && el.getAttribute('required') !== null && el.getAttribute('type') !== 'hidden' && el.getAttribute('novalidate') === null) {
-                    er = this.elements[i].validate();
-                    if (er) {
-                        self.addError(this.elements[i].DOMElement, er, (this.elements[i].type === 'checkbox' || this.elements[i].type === 'radio'));
-                        if (!this.elements[i].ph) {
-                            this.elements[i].placeHolder();
-                        }
-
-                    }
+            for (var i in this.validationList) {
+                if (this.validationList.hasOwnProperty(i) && i !== 'countErrors') {
+                    this.validationList[i].element.validate();
                 }
             }
             
-            if (this.errors.hasErrors) {
-                if (!!self.options.displayMessages) {
-                    if (!!self.options.listMessages) {
-                        self.listErrorMessages();
-                    } else {
-                        self.displayInlineErrorMessages();
-                    }
+            if (this.validationList.countErrors > 0) {
+                self.UI.write();
+                if (!this.options.listMessages) {
+                    window.scrollTo(0, this.DOMElement.offsetTop);
+                    document.getElementsByClassName(this.options.errorMessagesClass)[0].focus();
+                } else {
+                    window.scrollTo(0, this.UI.errorListHolder.offsetTop);
+                    this.UI.errorListHolder.focus();
                 }
                 this.options.fail.call();
             } else {
-                go = this.options.pass ? this.options.pass.call() : this.element.submit();
+                go = this.options.pass ? this.options.pass.call() : this.DOMElement.submit();
             }
         }
     };
