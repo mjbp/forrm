@@ -35,7 +35,7 @@
 
     var defaults = {
             augmentHTML5 : true,
-            customErrorMessage : true,
+            customErrorMessage : false,
             displayMessages : true,
             successClass : 'form-success',
             errorClass : 'form-error',
@@ -93,6 +93,7 @@
             pass : false
         };
 
+    //Object extend
     function extend(b, a) {
         var prop = null;
         for (prop in a) {
@@ -107,6 +108,21 @@
         }
         return b;
     }
+
+    //Custom event polyfill
+    (function () {
+      function CustomEvent ( event, params ) {
+        params = params || { bubbles: false, cancelable: false, detail: undefined };
+        var evt = document.createEvent( 'CustomEvent' );
+        evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+        return evt;
+       }
+
+      CustomEvent.prototype = window.Event.prototype;
+
+      window.CustomEvent = CustomEvent;
+    })();
+
 
     /*
      * Element wrapper class
@@ -125,7 +141,7 @@
         init : function () {
             var updateEvent,
                 self = this,
-                liveCheck = function (e) {
+                liveValidate = function () {
                     if (!self.parent.liveValidating) {
                         return;
                     }
@@ -134,16 +150,14 @@
                         self.parent.UI.updateInlineErrors(self);
                     } else {
                         self.parent.UI.listErrorMessages();
-                    }
+            }
                 };
             this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || this.DOMElement.tagName.toLowerCase();
+            this.validationTrigger = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'select') && 'click' || this.type === 'file' && 'change' || 'keyup';
             this.errorGroup = this.DOMElement.getAttribute('id');
             this.validityState = this.DOMElement.validityState || this.defaultValidityState();
 
-            //this needs to expand for different input types - file, select, etc
-            updateEvent = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'file') && 'change' ||'input';
-
-            this.DOMElement.addEventListener(updateEvent, liveCheck, false);
+            this.DOMElement.addEventListener(this.validationTrigger, liveValidate, false);
         },
         defaultValidityState : function () {
             return {
