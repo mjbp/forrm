@@ -66,6 +66,9 @@
                     'valueMissing' : 'This field is required',
                     'patternMismatch' : 'Enter a valid phone number'
                 },
+                'select': {
+                    'valueMissing' : 'Choose an option'
+                },
                 'checkbox': {
                     'valueMissing' : 'Check at least one of the required boxes'
                 },
@@ -122,7 +125,7 @@
         init : function () {
             var updateEvent,
                 self = this,
-                liveCheck = function () {
+                liveCheck = function (e) {
                     if (!self.parent.liveValidating) {
                         return;
                     }
@@ -130,16 +133,15 @@
                     if (!self.parent.options.listMessages) {
                         self.parent.UI.updateInlineErrors(self);
                     } else {
-                        self.parent.UI.listErrorMessages(   );
+                        self.parent.UI.listErrorMessages();
                     }
                 };
-            this.type = this.DOMElement.getAttribute('type') || 'text';
+            this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || this.DOMElement.tagName.toLowerCase();
             this.errorGroup = this.DOMElement.getAttribute('id');
             this.validityState = this.DOMElement.validityState || this.defaultValidityState();
-            //this.checkValidity = this.DOMElement.checkValidity || this.getValidityState;
 
             //this needs to expand for different input types - file, select, etc
-            updateEvent = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'file') && 'change' || 'input';
+            updateEvent = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'file') && 'change' ||'input';
 
             this.DOMElement.addEventListener(updateEvent, liveCheck, false);
         },
@@ -197,6 +199,7 @@
             return this;
         },
         addError : function (error) {
+            this.DOMElement.className = this.DOMElement.className.split(' ' + this.parent.options.successClass).join('');
             if (this.DOMElement.className.indexOf(this.parent.options.errorClass) === -1) {
                 this.DOMElement.className += ' ' + this.parent.options.errorClass;
             }
