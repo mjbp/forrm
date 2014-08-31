@@ -35,6 +35,7 @@
     
     var defaults = {
             augmentHTML5 : true,
+            autocomplete : false,
             customErrorMessage : false,
             displayMessages : true,
             successClass : 'form-success',
@@ -93,36 +94,48 @@
             pass : false
         };
     
-    //Object extend
-    function extend(b, a) {
-        var prop = null;
-        for (prop in a) {
-            if (a.hasOwnProperty(prop)) {
-                if (a[prop] && a[prop].constructor && a[prop].constructor === Object) {
-                    b[prop] = b[prop] || {};
-                    extend(b[prop], a[prop]);
-                } else {
-                    b[prop] = a[prop];
+    var toolkit = {
+        extend: function (b, a) {
+            var p = null;
+            for (p in a) {
+                if (a.hasOwnProperty(p)) {
+                    if (a[p] && a[p].constructor && a[p].constructor === Object) {
+                        b[p] = b[p] || {};
+                        toolkit.extend(b[p], a[[]]);
+                    } else {
+                        b[p] = a[p];
+                    }
                 }
             }
+            return b;
+        },
+        forEach: function (a, fn, scope) {
+            var i, l = a.length;
+            if ([].forEach) {
+                return a.forEach(fn);
+            }
+            for (i = 0; i < l; i += 1) {
+                if (a.hasOwnProperty(i)) {
+                    fn.call(scope, a[i], i, a);
+                }
+            }
+        },
+        on : function (element, event, fn) {
+            if (element.addEventListener) {
+                element.addEventListener(event, fn, false);
+            } else {
+                element.attachEvent('on' + event, fn);
+            }
+        },
+        preventDefault : function (e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            } else {
+                e.returnValue = false;
+            }
+            return;
         }
-        return b;
-    }
-    
-    //Custom event polyfill
-    (function () {
-      function CustomEvent ( event, params ) {
-        params = params || { bubbles: false, cancelable: false, detail: undefined };
-        var evt = document.createEvent( 'CustomEvent' );
-        evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-        return evt;
-       }
-
-      CustomEvent.prototype = window.Event.prototype;
-
-      window.CustomEvent = CustomEvent;
-    })();
-
+    };
 
     /*
      * Element wrapper class
@@ -155,11 +168,19 @@
             this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || this.DOMElement.tagName.toLowerCase();
             this.validationTrigger = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'select') && 'click' || this.type === 'file' && 'change' || 'keyup';
             this.errorGroup = this.DOMElement.getAttribute('id');
-            this.validityState = this.DOMElement.validityState || this.defaultValidityState();
+            this.validity = this.DOMElement.validity || this.defaultValidity();
 
-            this.DOMElement.addEventListener(this.validationTrigger, liveValidate, false);
+            if ('autocomplete' in this.DOMElement && !this.parent.options.autocomplete) {
+                this.DOMElement.setAttribute('autocomplete', 'off');
+            }
+            //setTimeout/Interval if autocomplete is on ;_;
+            //IE onpropertychange and equivalents to detect autofill change?
+            //http://stackoverflow.com/questions/13861035/onpropertychange-only-working-in-ie-browser , lol
+
+            //does bean trigger change on autocomplete?????
+            toolkit.on(this.DOMElement, this.validationTrigger, liveValidate);
         },
-        defaultValidityState : function () {
+        defaultValidity : function () {
             return {
                 valid: false,
                 stepMismatch: false,
@@ -172,33 +193,32 @@
                 valueMissing: true
             };
         },
-        getValidityState : function () {
-            return this.validityState.valid;
+        getValidity : function () {
+            return this.validity.valid;
         },
-        setValidityState : function () {
+        setValidity : function () {
             var regExp,
                 pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type];
 
             this.validationMessage = null;
             if (this.DOMElement.value.replace( /^\s+/g, '' ).replace( /\s+$/g, '' ) === "" || ((this.type === 'radio' || this.type === 'checkbox') && !this.DOMElement.checked)) {
-                this.validityState.valid = false;
-                this.validityState.valueMissing = true;
+                this.validity.valid = false;
+                this.validity.valueMissing = true;
                 this.validationMessage = this.parent.options.errorMessages[this.type].valueMissing;
             } else {
-                //check min, max and
-
-                this.validityState.valueMissing = false;
+                //check min, max... all the containts
+                this.validity.valueMissing = false;
                 regExp = new RegExp(pattern, "");
                 if (!regExp.test(this.DOMElement.value)) {
-                    this.validityState.valid = false;
+                    this.validity.valid = false;
                     if (this.type === 'text') {
-                        this.validityState.patternMismatch = true;
+                        this.validity.patternMismatch = true;
                     } else {
-                        this.validityState.typeMismatch = true;
+                        this.validity.typeMismatch = true;
                     }
                     this.validationMessage = this.parent.options.errorMessages[this.type].patternMismatch;
                 } else {
-                    this.validityState.valid = true;
+                    this.validity.valid = true;
                 }
             }
 
@@ -209,20 +229,27 @@
         setGroup : function (g) {
             this.group = g;
             this.errorGroup = g.name;
-            this.validate = g.validate;
             return this;
-        },
+        },/*
+        validationFactory : function (success, failure) {
+            //rename
+            //accept success and failure functions
+            //do the same for adderror and success functions, accept targets (DOMElement || DOMElement.parentNode
+            //OR, should the target always be the parent??
+            return function () {
+            };
+        },*/
         addError : function (error) {
-            this.DOMElement.className = this.DOMElement.className.split(' ' + this.parent.options.successClass).join('');
-            if (this.DOMElement.className.indexOf(this.parent.options.errorClass) === -1) {
-                this.DOMElement.className += ' ' + this.parent.options.errorClass;
+            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.successClass).join('');
+            if (this.DOMElement.parentNode.className.indexOf(this.parent.options.errorClass) === -1) {
+                this.DOMElement.parentNode.className += ' ' + this.parent.options.errorClass;
             }
             this.DOMElement.setAttribute('aria-invalid', 'true');
             this.parent.manageValidationList(this.errorGroup, error);
             return this;
         },
         removeError : function () {
-            this.DOMElement.className = this.DOMElement.className.split(' ' + this.parent.options.errorClass).join('');
+            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.errorClass).join('');
             this.DOMElement.setAttribute('aria-invalid', 'false');
             this.DOMElement.removeAttribute('aria-labelledby');
             this.parent.manageValidationList(this.errorGroup, null);
@@ -230,27 +257,27 @@
         },
         addSuccess : function () {
             this.removeError();
-            if (this.DOMElement.className.indexOf(this.parent.options.successClass) === -1) {
-                this.DOMElement.className += ' ' + this.parent.options.successClass;
+            if (this.DOMElement.parentNode.className.indexOf(this.parent.options.successClass) === -1) {
+                this.DOMElement.parentNode.className += ' ' + this.parent.options.successClass;
             }
             return this;
         },
-        validate : function () {
-            var v;
+        test : function () {
             if (!this.parent.HTML5) {
-                this.setValidityState();
+                this.setValidity();
             }
-            v = this.DOMElement.checkValidity ? this.DOMElement.checkValidity() : this.getValidityState();
-            if (!v) {
+            return (this.DOMElement.checkValidity instanceof Function && this.DOMElement.checkValidity()) || this.getValidity();
+        },
+        validate : function () {
+            if (!this.test()) {
                 this.addError(this.getError());
             } else {
                 this.addSuccess();
             }
-
         },
         getError : function () {
             if (this.parent.options.customErrorMessage) {
-                return (this.parent.options.errorMessages[this.type][this.validityState.valueMissing && 'valueMissing' || this.validityState.patternMismatch && 'patternMismatch' || this.validityState.typeMismatch && 'typeMismatch']);
+                return (this.parent.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
             } else {
                 return this.DOMElement.validationMessage || this.validationMessage;
             }
@@ -282,40 +309,34 @@
         },
         addError : function (error) {
             for (var i = 0; i < this.elements.length; i++) {
-                if (this.elements[i].DOMElement.parentElement.className.indexOf(' ' + this.parent.options.errorClass) === -1) {
-                    this.elements[i].DOMElement.parentElement.className += ' ' + this.parent.options.errorClass;
-                }
-                this.elements[i].DOMElement.setAttribute('aria-invalid', 'true');
+                this.elements[i].addError(error);
             }
-            this.parent.manageValidationList(this.name, error);
             return this;
         },
         removeError : function () {
             for (var i = 0; i < this.elements.length; i++) {
-                this.elements[i].DOMElement.setAttribute('aria-invalid', 'false');
-                this.elements[i].DOMElement.removeAttribute('aria-labelledby');
-                this.elements[i].DOMElement.parentNode.className = this.elements[i].DOMElement.parentNode.className.split(' ' + this.parent.options.errorClass).join('');
+                this.elements[i].removeError();
             }
-            this.parent.manageValidationList(this.name, null);
+        },
+        addSuccess : function () {
+            this.removeError();
+            for (var i = 0; i < this.elements.length; i++) {
+                this.elements[i].addSuccess();
+            }
+            return this;
         },
         validate : function () {
             var v,
                 error = null;
             for (var i = 0; i < this.elements.length; i++) {
-                if (!this.parent.HTML5) {
-                    this.elements[i].setValidityState();
-                }
-                v = this.elements[i].DOMElement.checkValidity ? this.elements[i].DOMElement.checkValidity() : this.elements[i].getValidityState();
-
-                if (!v) {
+                if (!this.elements[i].test()) {
                     if (!!this.valid) {
                         this.valid = false;
                         error = this.elements[i].getError();
                     }
                 } else {
-                    //it's true but is a grouped input with a collective state
                     this.valid = true;
-                    this.removeError();
+                    this.addSuccess();
                     return;
                 }
             }
@@ -326,7 +347,6 @@
         getName : function() {
             return this.name;
         }
-
     };
 
 
@@ -467,7 +487,7 @@
             throw new Error('Nae element');
         }
         this.DOMElement = element;
-        this.options = extend(defaults, options);
+        this.options = toolkit.extend(defaults, options);
 
         this.init();
     }
@@ -482,10 +502,19 @@
             this.liveValidating = false;
 
             if (!this.HTML5 || this.options.augmentHTML5) {
+                if ('autocomplete' in this.DOMElement && !this.options.autocomplete) {
+                    this.DOMElement.setAttribute('autocomplete', 'off');
+                }
+
                 this.fields = this.DOMElement.querySelectorAll('input, textarea, select');
                 this.validatebleElements = {};
-                this.DOMElement.querySelector('input[type=submit]').addEventListener('click', this, false);
-                this.DOMElement.querySelector('input[type=submit]').addEventListener('onkeypress', this, false);
+
+                toolkit.on(this.DOMElement.querySelector('input[type=submit]'), 'click', function (e) {
+                    self.handleEvent.call(self, e);
+                });
+                toolkit.on(this.DOMElement.querySelector('input[type=submit]'), 'onkeypress', function (e) {
+                    self.handleEvent.call(self, e);
+                });
 
                 for (var i = 0; i < this.fields.length; i += 1) {
                     if (this.fields[i].getAttribute('type') !== 'submit' && this.fields[i].getAttribute('type') !== 'reset' && this.fields[i].getAttribute('type') !== 'button' && this.fields[i].getAttribute('required') !== null && this.fields[i].getAttribute('type') !== 'hidden' && this.fields[i].getAttribute('novalidate') === null) {
@@ -513,7 +542,7 @@
             if (!this.HTML5 || this.options.augmentHTML5) {
                 this.liveValidating = true;
                 if (e.type === 'click' || e.type === 'onkeypress') {
-                    e.preventDefault();
+                    toolkit.preventDefault(e);
                     this.test();
                 }
             }
@@ -553,6 +582,7 @@
                 l = this.validatebleElements.length,
                 self = this;
 
+
             this.makeValidationList();
             
             for (var i in this.validationList) {
@@ -565,14 +595,15 @@
                 self.UI.write();
                 if (!this.options.listMessages) {
                     window.scrollTo(0, this.DOMElement.offsetTop);
-                    document.getElementsByClassName(this.options.errorMessagesClass)[0].focus();
+                    //document.getElementsByClassName(this.options.errorMessagesClass)[0].focus();
+                    document.querySelector('.' + this.options.errorMessagesClass).focus();
                 } else {
                     window.scrollTo(0, this.UI.errorListHolder.offsetTop);
                     this.UI.errorListHolder.focus();
                 }
                 this.options.fail.call();
             } else {
-                go = this.options.pass ? this.options.pass.call() : this.DOMElement.submit();
+                //go = this.options.pass ? this.options.pass.call() : this.DOMElement.submit();
             }
         }
     };
