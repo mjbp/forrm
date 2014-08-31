@@ -56,12 +56,13 @@
 
         .form-row-checkbox.form-error label:before,
         .form-row-radio.form-error label:before,
-        .form-error { box-shadow: 0px 0px 5px 0px rgba(255, 25, 16, 0.9); background: rgba(255, 25, 16, 0.1); }
+        .form-error input,
+        .form-error select { box-shadow: 0px 0px 5px 0px rgba(255, 25, 16, 0.9); background: rgba(255, 25, 16, 0.1); }
 
         input:valid,
         textarea:valid,
         .form-error:valid {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
-        .form-success {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
+        input.form-success {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
 
 
         .form-row-checkbox.form-error,
@@ -84,15 +85,15 @@
             </div>
             <div class="form-row">
                 <label for="test-field2">Field 2: *</label>
-                <input type="text" id="test-field2" value="" required aria-required="true">
+                <input type="text" id="test-field2" id="test-field2" value="" required aria-required="true">
             </div>
             <div class="form-row">
                 <label for="test-field3">Field 3: *</label>
-                <textarea id="test-field3" required aria-required="true"></textarea>           
+                <textarea id="test-field3" name="test-field3" required aria-required="true"></textarea>
             </div>
             <div class="form-row">
-                <label for="test-field4">Field 4: *</label>
-                <input type="text" id="test-field4" value="" required aria-required="true">
+                <label for="name">Name: *</label>
+                <input type="text" name="name" id="name" value="" required aria-required="true">
             </div>
             <div class="form-row">
                 <label for="test-telephone">Telephone: *</label>
@@ -103,8 +104,8 @@
                 <input type="tel" id="test-mobile" value="">
             </div>
             <div class="form-row">
-                <label for="test-email">Email: *</label>
-                <input type="email" id="test-email" value="" required aria-required="true">
+                <label for="email">Email: *</label>
+                <input type="email" id="email" value="" required aria-required="true">
             </div>
             <div class="form-row form-row-radio">
                 <fieldset>
