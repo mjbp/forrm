@@ -1,5 +1,5 @@
 /*jslint browser:true,nomen:true*/
-/*global define, console*/
+/*global define, console, bean*/
 /*!
  * @name        Form, lightweight vanilla js HTML5 form validation module
  * @version     Aug 14
@@ -14,7 +14,6 @@
  * conditionals - group one required/min number of group required
  * multi-step (hidden/reveal) - validate each step independently to reveal the next, display step number/total steps
  * placeholder for hints??
- * add UTILS to polyfill forEach?, addEventListener
  *
  *
  * not supported input types: month, image, time, week, date, datetime, datetime-local
@@ -35,7 +34,7 @@
 
     var defaults = {
             augmentHTML5 : true,
-            autocomplete : false,
+            autocomplete : true,
             customErrorMessage : false,
             displayMessages : true,
             successClass : 'form-success',
@@ -120,11 +119,15 @@
                 }
             }
         },
-        on : function (element, event, fn) {
-            if (element.addEventListener) {
-                element.addEventListener(event, fn, false);
-            } else {
-                element.attachEvent('on' + event, fn);
+        on : function (element, events, fn) {
+            var evts = events.split(' ');
+
+            for (var i = 0; i < evts.length; i++) {
+                if (element.addEventListener) {
+                    element.addEventListener(evts[i], fn, false);
+                } else {
+                    element.attachEvent('on' + evts[i], fn);
+                }
             }
         },
         preventDefault : function (e) {
@@ -158,6 +161,11 @@
                     if (!self.parent.liveValidating) {
                         return;
                     }
+                    //TO DO
+                    //check if value has changed against saved data attibute
+                    //only validate if value has changed
+                    //save to data attribute
+
                     self.parent.validationList[self.errorGroup].element.validate();
                     if (!self.parent.options.listMessages) {
                         self.parent.UI.updateInlineErrors(self);
@@ -173,12 +181,7 @@
             if ('autocomplete' in this.DOMElement && !this.parent.options.autocomplete) {
                 this.DOMElement.setAttribute('autocomplete', 'off');
             }
-            //setTimeout/Interval if autocomplete is on ;_;
-            //IE onpropertychange and equivalents to detect autofill change?
-            //http://stackoverflow.com/questions/13861035/onpropertychange-only-working-in-ie-browser , lol
-
-            //does bean trigger change on autocomplete?????
-            toolkit.on(this.DOMElement, this.validationTrigger, liveValidate);
+            toolkit.on(this.DOMElement, 'propertychange keyup input paste change', liveValidate);
         },
         defaultValidity : function () {
             return {
@@ -509,10 +512,7 @@
                 this.fields = this.DOMElement.querySelectorAll('input, textarea, select');
                 this.validatebleElements = {};
 
-                toolkit.on(this.DOMElement.querySelector('input[type=submit]'), 'click', function (e) {
-                    self.handleEvent.call(self, e);
-                });
-                toolkit.on(this.DOMElement.querySelector('input[type=submit]'), 'onkeypress', function (e) {
+                toolkit.on(this.DOMElement.querySelector('input[type=submit]'), 'click onkeypress', function (e) {
                     self.handleEvent.call(self, e);
                 });
 
