@@ -1,5 +1,5 @@
 /*jslint browser:true,nomen:true*/
-/*global define, console, bean*/
+/*global define, console*/
 /*!
  * @name        Form, lightweight vanilla js HTML5 form validation module
  * @version     Aug 14
@@ -9,14 +9,11 @@
 
 /*
  * ROADMAP:
- * field types - range?
- * max, maxlength, min, minlength
  * conditionals - group one required/min number of group required
  * multi-step (hidden/reveal) - validate each step independently to reveal the next, display step number/total steps
- * placeholder for hints??
  *
  *
- * not supported input types: month, image, time, week, date, datetime, datetime-local
+ * not supported input types: month, image, time, week, date, datetime, datetime-local, range, or datalist
  *
  */
 (function (name, context, definition) {
@@ -35,7 +32,7 @@
     var defaults = {
             augmentHTML5 : true,
             autocomplete : true,
-            customErrorMessage : false,
+            customErrorMessage : true,
             displayMessages : true,
             successClass : 'form-success',
             errorClass : 'form-error',
@@ -85,60 +82,60 @@
                 }
             },
             patterns : {
+                //very simple checks, let most through
+                //not even attempting to validate urls by regex
                 email : "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
                 //email : "[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\\.[a-z0-9-]+)+",
-                tel : "[\\w\\d\\s\\(\\)\\.+-]+"
+                tel : '[\\w\\d\\s\\(\\)\\.+-]+',
+                number : '[\\d]',
+                color: '/^#?([a-f0-9]{6}|[a-f0-9]{3})$/'
             },
             fail : function () {},
             pass : false
-        };
-
-    var toolkit = {
-        extend: function (b, a) {
-            var p = null;
-            for (p in a) {
-                if (a.hasOwnProperty(p)) {
-                    if (a[p] && a[p].constructor && a[p].constructor === Object) {
-                        b[p] = b[p] || {};
-                        toolkit.extend(b[p], a[[]]);
-                    } else {
-                        b[p] = a[p];
+        },
+        unvalidateable = ['submit', 'reset', 'button', 'hidden'],
+        toolkit = {
+            extend: function (){
+                for(var i = 1; i < arguments.length; i++) {
+                    for(var key in arguments[i]) {
+                        if(arguments[i].hasOwnProperty(key)) {
+                            arguments[0][key] = arguments[i][key];
+                        }
                     }
                 }
-            }
-            return b;
-        },
-        forEach: function (a, fn, scope) {
-            var i, l = a.length;
-            if ([].forEach) {
-                return a.forEach(fn);
-            }
-            for (i = 0; i < l; i += 1) {
-                if (a.hasOwnProperty(i)) {
-                    fn.call(scope, a[i], i, a);
+                return arguments[0];
+            },
+            forEach: function (a, fn, scope) {
+                var i, l = a.length;
+                if ([].forEach) {
+                    return a.forEach(fn);
                 }
-            }
-        },
-        on : function (element, events, fn) {
-            var evts = events.split(' ');
+                for (i = 0; i < l; i += 1) {
+                    if (a.hasOwnProperty(i)) {
+                        fn.call(scope, a[i], i, a);
+                    }
+                }
+            },
+            on : function (element, events, fn) {
+                var evts = events.split(' ');
 
-            for (var i = 0; i < evts.length; i++) {
-                if (element.addEventListener) {
-                    element.addEventListener(evts[i], fn, false);
-                } else {
-                    element.attachEvent('on' + evts[i], fn);
+                for (var i = 0; i < evts.length; i++) {
+                    if (element.addEventListener) {
+                        element.addEventListener(evts[i], fn, false);
+                    } else {
+                        element.attachEvent('on' + evts[i], fn);
+                    }
                 }
+            },
+            preventDefault : function (e) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                } else {
+                    e.returnValue = false;
+                }
+                return;
             }
-        },
-        preventDefault : function (e) {
-            if (e.preventDefault) {
-                e.preventDefault();
-            } else {
-                e.returnValue = false;
-            }
-            return;
-        }
-    };
+        };
 
     /*
      * Element wrapper class
@@ -174,6 +171,12 @@
             }
                 };
             this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || this.DOMElement.tagName.toLowerCase();
+
+            //if customMessages is set, check if type exists in errorMessages object
+            if(!!(this.parent.options.customErrorMessage) && !(this.type in this.parent.options.errorMessages)) {
+                this.type = 'text';
+            }
+
             this.validationTrigger = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'select') && 'click' || this.type === 'file' && 'change' || 'keyup';
             this.errorGroup = this.DOMElement.getAttribute('id');
             this.validity = this.DOMElement.validity || this.defaultValidity();
@@ -201,7 +204,8 @@
         },
         setValidity : function () {
             var regExp,
-                pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type];
+                pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type],
+                list;
 
             this.validationMessage = null;
             if (this.DOMElement.value.replace( /^\s+/g, '' ).replace( /\s+$/g, '' ) === "" || ((this.type === 'radio' || this.type === 'checkbox') && !this.DOMElement.checked)) {
@@ -221,6 +225,7 @@
                     }
                     this.validationMessage = this.parent.options.errorMessages[this.type].patternMismatch;
                 } else {
+                    //passed everything
                     this.validity.valid = true;
                 }
             }
@@ -516,18 +521,21 @@
                     self.handleEvent.call(self, e);
                 });
 
-                for (var i = 0; i < this.fields.length; i += 1) {
-                    if (this.fields[i].getAttribute('type') !== 'submit' && this.fields[i].getAttribute('type') !== 'reset' && this.fields[i].getAttribute('type') !== 'button' && this.fields[i].getAttribute('required') !== null && this.fields[i].getAttribute('type') !== 'hidden' && this.fields[i].getAttribute('novalidate') === null) {
-                        this.validatebleElements[this.fields[i].getAttribute('id')] = new Element(this.fields[i], this);
+                //****
+                //var i = 0; i < this.fields.length; i += 1
+                //improve - var i = 0, field; field = this.fields[i]; i++) {
+                for (var i = 0, field; field = this.fields[i]; i++) {
+                    if (!(unvalidateable[field.getAttribute('type')]) && field.getAttribute('disabled') !== null && field.getAttribute('required') !== null && field.getAttribute('novalidate') === null) {
+                        this.validatebleElements[field.getAttribute('id')] = new Element(field, this);
                         /* This part needs re-thinkin to deal with data-grouping */
-                        if (this.fields[i].getAttribute('type') === 'checkbox' || this.fields[i].getAttribute('type') === 'radio') {
-                            tmpGroups.push(this.validatebleElements[this.fields[i].getAttribute('id')]);
+                        if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio') {
+                            tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
                         }
-                        if ((this.fields[i].getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) {
+                        if ((field.getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) {
                             if (tmpGroups.length > 0) {
-                                this.groups[this.fields[i].getAttribute('name')] = new Group(this.fields[i].getAttribute('name'), tmpGroups);
+                                this.groups[field.getAttribute('name')] = new Group(field.getAttribute('name'), tmpGroups);
                                 for (var j = 0; j < tmpGroups.length; j++) {
-                                   tmpGroups[j].setGroup(this.groups[this.fields[i].getAttribute('name')]);
+                                   tmpGroups[j].setGroup(this.groups[field.getAttribute('name')]);
                                 }
                                 tmpGroups = [];
                             }
@@ -603,7 +611,7 @@
                 }
                 this.options.fail.call();
             } else {
-                //go = this.options.pass ? this.options.pass.call() : this.DOMElement.submit();
+                go = this.options.pass ? this.options.pass.call() : this.DOMElement.submit();
             }
         }
     };
