@@ -93,7 +93,6 @@
             fail : function () {},
             pass : false
         },
-        unvalidateable = ['submit', 'reset', 'button', 'hidden'],
         toolkit = {
             extend: function (){
                 for(var i = 1; i < arguments.length; i++) {
@@ -521,11 +520,15 @@
                     self.handleEvent.call(self, e);
                 });
 
-                //****
-                //var i = 0; i < this.fields.length; i += 1
-                //improve - var i = 0, field; field = this.fields[i]; i++) {
                 for (var i = 0, field; field = this.fields[i]; i++) {
-                    if (!(unvalidateable[field.getAttribute('type')]) && field.getAttribute('disabled') !== null && field.getAttribute('required') !== null && field.getAttribute('novalidate') === null) {
+                    //console.log(field.getAttribute('type'));
+                    if (field.getAttribute('type') !== 'submit' &&
+                        field.getAttribute('type') !== 'reset' &&
+                        field.getAttribute('type') !== 'button' &&
+                        field.getAttribute('type') !== 'hidden' &&
+                        field.getAttribute('disabled') === null &&
+                        field.getAttribute('required') !== null &&
+                        field.getAttribute('novalidate') === null) {
                         this.validatebleElements[field.getAttribute('id')] = new Element(field, this);
                         /* This part needs re-thinkin to deal with data-grouping */
                         if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio') {
@@ -611,7 +614,7 @@
                 }
                 this.options.fail.call();
             } else {
-                go = this.options.pass ? this.options.pass.call() : this.DOMElement.submit();
+                //go = this.options.pass ? this.options.pass.call() : this.DOMElement.submit();
             }
         }
     };
