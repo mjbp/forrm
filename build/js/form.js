@@ -25,10 +25,10 @@
     }
 }('Form', this, function (name, context) {
     'use strict';
-    
+
     name = name || 'Form';
     context = context || this;
-    
+
     var defaults = {
             augmentHTML5 : true,
             autocomplete : true,
@@ -291,7 +291,7 @@
             }
         }
     };
-    
+
 
     /*
      * Group wrapper class
@@ -310,7 +310,7 @@
 
         this.init(els);
     }
-    
+
     Group.prototype = {
         init : function () {
             this.valid = true;
@@ -391,7 +391,7 @@
             el = document.getElementById(erId) || document.getElementsByName(erId)[0];
             el.setAttribute('aria-labelledBy', erId + '-error');
             el.parentNode.insertBefore(msg, el.nextSibling);
-            
+
             return;
         },
         clearInlineErrors : function () {
@@ -463,7 +463,7 @@
             listHolder.className = 'form-error-list';
             listHolder.setAttribute('role', 'alert');
             listDescription.appendChild(list);
-            
+
             for (var er in this.parent.validationList) {
                 if (this.parent.validationList.hasOwnProperty(er)) {
                     if (er !== 'countErrors' && !!this.parent.validationList[er].error) {
@@ -592,13 +592,13 @@
 
 
             this.makeValidationList();
-            
+
             for (var i in this.validationList) {
                 if (this.validationList.hasOwnProperty(i) && i !== 'countErrors') {
                     this.validationList[i].element.validate();
                 }
             }
-            
+
             if (this.validationList.countErrors > 0) {
                 self.UI.write();
                 if (!this.options.listMessages) {
@@ -615,15 +615,15 @@
             }
         }
     };
-    
-    
+
+
     return {
         init : function (el, options) {
             var elements = document.querySelectorAll(el),
                 forms = [],
                 i = null,
                 l = elements.length;
-            
+
             for (i = 0; i < l; i += 1) {
                 if (!elements[i].hasAttribute('novalidate')) {
                     forms[i] = new Form(elements[i], options);
@@ -632,5 +632,5 @@
         }
     };
 }));
-    
+
 

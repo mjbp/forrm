@@ -2,14 +2,14 @@
 /*global jQuery,console*/
 /*!
  * @name        Form, lightweight jQuery HTML5 form validation plugin
- * @version     Sept 13  
+ * @version     Sept 13
  * @author      mjbp
  * Licensed under the MIT license
  */
 
 (function ($, window, document) {
     "use strict";
-    
+
     var pluginName = "Form",
         defaults = {
             augmentHTML5 : true,
@@ -190,7 +190,7 @@
         init: function () {
             var self = this;
             this.HTML5 = 'noValidate' in document.createElement('form');
-            
+
             if (!this.HTML5 || this.options.augmentHTML5) {
 
                 $(this.element).find('input, textarea').each(function () {
@@ -231,7 +231,7 @@
                 listHolder = $('<dl class="form-error-list"><dt>' + self.options.listTitle + '</dt><dd><ol></ol></dd></dl>'),
                 tmp = {},
                 li;
-            
+
             for (er in self.errors) {
                 if (self.errors.hasOwnProperty(er)) {
                     if (er !== 'hasErrors') {
@@ -299,11 +299,11 @@
                 go = null,
                 l = this.elements.length,
                 self = this;
-            
+
             console.log(this);
             this.errors = {};
             this.groups = [];
-            
+
             for (i = 0; i < l; i += 1) {
                 el = this.elements[i].DOMElement;
                 if (el.getAttribute('type') !== 'submit' && el.getAttribute('required') !== null && el.getAttribute('type') !== 'hidden' && el.getAttribute('novalidate') === null) {
@@ -317,7 +317,7 @@
                     }
                 }
             }
-            
+
             if (this.errors.hasErrors) {
                 if (!!self.options.displayMessages) {
                     if (!!self.options.listMessages) {
