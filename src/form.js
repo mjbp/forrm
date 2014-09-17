@@ -9,8 +9,14 @@
 
 /*
  * ROADMAP:
- * conditionals - group one required/min number of group required
- * multi-step (hidden/reveal) - validate each step independently to reveal the next, display step number/total steps
+ * conditionals
+ *  - one required for custom group √
+ *    - min number of group required
+ *  - reveal named field(s) once valid
+ *
+ * multi-step (hidden/reveal)
+ *  - validate each step independently to reveal the next, display step number/total steps
+ *
  *
  *
  * not supported input types: month, image, time, week, date, datetime, datetime-local, range, or datalist
@@ -32,7 +38,7 @@
     var defaults = {
             augmentHTML5 : true,
             autocomplete : true,
-            customErrorMessage : true,
+            customErrorMessage : false,
             displayMessages : true,
             successClass : 'form-success',
             errorClass : 'form-error',
@@ -237,15 +243,7 @@
             this.group = g;
             this.errorGroup = g.name;
             return this;
-        },/*
-        validationFactory : function (success, failure) {
-            //rename
-            //accept success and failure functions
-            //do the same for adderror and success functions, accept targets (DOMElement || DOMElement.parentNode
-            //OR, should the target always be the parent??
-            return function () {
-            };
-        },*/
+        },
         addError : function (error) {
             this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.successClass).join('');
             if (this.DOMElement.parentNode.className.indexOf(this.parent.options.errorClass) === -1) {
@@ -299,12 +297,13 @@
      * @param {Array} array of nodes
      *
      */
-    function Group(name, els) {
+    function Group(name, els, type) {
         if (name === 'undefined') {
             throw new Error('Nae name');
         }
         this.name = name;
         this.elements = els;
+        this.type = type;
         this.parent = els[0].parent;
 
         this.init(els);
@@ -387,7 +386,7 @@
             msg.className = this.parent.options.errorMessagesClass;
             msg.setAttribute('role', 'alert');
             msg.setAttribute('id', erId + '-error');
-            el = document.getElementById(erId) || document.getElementsByName(erId)[0];
+            el = document.getElementById(this.parent.validationList[erId].id);
             el.setAttribute('aria-labelledBy', erId + '-error');
             el.parentNode.insertBefore(msg, el.nextSibling);
             
@@ -406,8 +405,7 @@
             return this;
         },
         updateInlineErrors : function (el) {
-            var errorField = document.getElementById(el.DOMElement.getAttribute('id') + '-error') || document.getElementById(el.DOMElement.getAttribute('name') + '-error');
-
+            var errorField = document.getElementById(el.errorGroup + '-error');
             if (!el.parent.validationList[el.errorGroup].error) {
                 if (!errorField) {
                     return this;
@@ -531,14 +529,19 @@
                         field.getAttribute('novalidate') === null) {
                         this.validatebleElements[field.getAttribute('id')] = new Element(field, this);
                         /* This part needs re-thinkin to deal with data-grouping */
-                        if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio') {
+                        if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-form-group') !== null) {
                             tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
                         }
-                        if ((field.getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) {
+
+                        //if it's the last of it's group
+                        if ((!(field.getAttribute('data-form-group')) && (field.getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) || field.getAttribute('data-form-group') !== this.fields[i + 1].getAttribute('data-form-group')) {
                             if (tmpGroups.length > 0) {
-                                this.groups[field.getAttribute('name')] = new Group(field.getAttribute('name'), tmpGroups);
+                                var groupName = field.getAttribute('data-form-group') || field.getAttribute('name'),
+                                    groupType = field.getAttribute('data-form-group') ? 'custom' : 'checked';
+                                this.groups[groupName] = new Group(groupName, tmpGroups, groupType);
                                 for (var j = 0; j < tmpGroups.length; j++) {
-                                   tmpGroups[j].setGroup(this.groups[field.getAttribute('name')]);
+
+                                   tmpGroups[j].setGroup(this.groups[groupName]);
                                 }
                                 tmpGroups = [];
                             }
@@ -563,10 +566,17 @@
 
             for (var i in this.validatebleElements) {
                 if (this.validatebleElements.hasOwnProperty(i)) {
+                    //if in a group
+                    //check if group type is 'checked elements' or 'custom' (i.e., set by data attribute)
+                    //if custom, set validationList id as first element in group, otherwise first elementByName
+
                     this.validationList[this.validatebleElements[i].errorGroup] = {
                         'error': null,
                         'element': (this.groups[this.validatebleElements[i].errorGroup] || this.validatebleElements[i]),
-                        'id': this.groups[this.validatebleElements[i].errorGroup] ? document.getElementsByName(this.validatebleElements[i].errorGroup)[0].getAttribute('id') : document.getElementById(this.validatebleElements[i].errorGroup).getAttribute('id')
+                        'id': !!(this.groups[this.validatebleElements[i].errorGroup]) ?
+                                this.groups[this.validatebleElements[i].errorGroup].elements[0].DOMElement.getAttribute('id') :
+                                //document.getElementsByName(this.validatebleElements[i].errorGroup)[0].getAttribute('id') :
+                        document.getElementById(this.validatebleElements[i].errorGroup).getAttribute('id')
                     };
                 }
             }
@@ -592,7 +602,6 @@
                 go = null,
                 l = this.validatebleElements.length,
                 self = this;
-
 
             this.makeValidationList();
             
