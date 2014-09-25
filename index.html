@@ -65,6 +65,7 @@
         .form-error:valid {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
         input.form-success {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
 
+        .form-group {border-left:2px solid red;padding-left:2%;}
 
         .form-row-checkbox.form-error,
         .form-row-radio.form-error {background:transparent;box-shadow:none;}
@@ -80,17 +81,19 @@
     <a href="https://github.com/mjbp/form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
     <form class="test-form-1" action="/">
         <fieldset>
-            <div class="form-row">
-                <label for="test-field1">Field 1: *</label>
-                <input type="text" id="test-field1" value="" required aria-required="true" data-form-group="test-group">
-            </div>
-            <div class="form-row">
-                <label for="test-field2">Field 2: *</label>
-                <input type="text" id="test-field2" id="test-field2" value="" required aria-required="true" data-form-group="test-group">
-            </div>
+            <fieldset class="form-group">
+                <div class="form-row">
+                    <label for="test-field1">Field 1: *</label>
+                    <input type="text" id="test-field1" value="" required aria-required="true" data-form-group="test-group">
+                </div>
+                <div class="form-row">
+                    <label for="test-field2">Field 2: *</label>
+                    <input type="text" id="test-field2" id="test-field2" value="" required aria-required="true" data-form-group="test-group">
+                </div>
+            </fieldset>
             <div class="form-row">
                 <label for="test-field3">Field 3: *</label>
-                <textarea id="test-field3" name="test-field3" required aria-required="true" data-form-group="test-group"></textarea>
+                <textarea id="test-field3" name="test-field3" required aria-required="true"></textarea>
             </div>
             <div class="form-row">
                 <label for="name">Name: *</label>
