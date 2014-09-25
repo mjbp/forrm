@@ -9,6 +9,7 @@
 
 /*
  * ROADMAP:
+ * minlength attribute polyfill
  * conditionals
  *  - one required for custom group √
  *    - min number of group required
