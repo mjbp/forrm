@@ -176,7 +176,7 @@
                         self.parent.UI.listErrorMessages();
             }
                 };
-            this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || this.DOMElement.tagName.toLowerCase();
+            this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || (this.DOMElement.tagName.toLowerCase() === 'textarea') && 'text' || this.DOMElement.tagName.toLowerCase();
 
             //if customMessages is set, check if type exists in errorMessages object
             if(!!(this.parent.options.customErrorMessage) && !(this.type in this.parent.options.errorMessages)) {
