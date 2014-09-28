@@ -83,29 +83,25 @@
         <fieldset>
             <fieldset class="form-group">
                 <div class="form-row">
-                    <label for="test-field1">Field 1: *</label>
-                    <input type="text" id="test-field1" value="" required aria-required="true" data-form-group="test-group">
+                    <label for="test-text-1">Text: *</label>
+                    <input type="text" id="test-text-1" name="test-text-1" value="" required aria-required="true" data-form-group="test-group">
                 </div>
                 <div class="form-row">
-                    <label for="test-field2">Field 2: *</label>
-                    <input type="text" id="test-field2" id="test-field2" value="" required aria-required="true" data-form-group="test-group">
+                    <label for="test-text-2">Text: *</label>
+                    <input type="text" id="test-text-2" name="test-text-2" value="" required aria-required="true" data-form-group="test-group">
                 </div>
             </fieldset>
             <div class="form-row">
-                <label for="test-field3">Field 3: *</label>
+                <label for="test-textarea">Textarea: *</label>
                 <textarea id="test-field3" name="test-field3" required aria-required="true"></textarea>
-            </div>
-            <div class="form-row">
-                <label for="name">Name: *</label>
-                <input type="text" name="name" id="name" value="" required aria-required="true">
             </div>
             <div class="form-row">
                 <label for="test-telephone">Telephone: *</label>
                 <input type="tel" id="test-telephone" pattern="[\d-]+" value="" required aria-required="true">
             </div>
-            <div data-optional="true" class="form-row">
+            <div class="form-row">
                 <label for="test-mobile">Mobile:</label>
-                <input type="tel" id="test-mobile" value="">
+                <input type="tel" id="test-mobile" name="test-mobile" value="">
             </div>
             <div class="form-row">
                 <label for="email">Email: *</label>
@@ -203,11 +199,11 @@
     </form>
 		
 	<!--<script src="http://code.jquery.com/jquery-latest.min.js"></script>-->
-	<script src="js/form.js"></script>
+	<script src="js/forrm.js"></script>
 	<script>
         //$('form').Form();
-        Form.init(".test-form-1");
-        Form.init(".test-form-2");
+        Forrm.init(".test-form-1");
+        Forrm.init(".test-form-2");
 	</script>
 </body>
 </html>
