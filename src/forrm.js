@@ -1,8 +1,8 @@
 /*jslint browser:true,nomen:true*/
 /*global define, console*/
 /*!
- * @name        Form, lightweight vanilla js HTML5 form validation module
- * @version     Aug 14
+ * @name        Forrm, lightweight vanilla js HTML5 form validation based on constraintValidation API
+ * @version     Sept 14
  * @author      mjbp
  * Licensed under the MIT license
  */
@@ -19,8 +19,6 @@
  *  - validate each step independently to reveal the next, display step number/total steps
  *
  *
- *
- * not supported input types: month, image, time, week, date, datetime, datetime-local, range, or datalist
  *
  */
 (function (name, context, definition) {
@@ -295,7 +293,6 @@
         }
     };
 
-
     /*
      * Group wrapper class
      *
@@ -360,7 +357,6 @@
             return this.name;
         }
     };
-
 
      /*
      * UI wrapper class
@@ -484,7 +480,6 @@
             this.parent.DOMElement.insertBefore(listHolder, this.parent.DOMElement.firstChild);
         }
     };
-
 
     /*
      * Forrm wrapper class
