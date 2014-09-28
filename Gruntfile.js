@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     uglify: {
 		js: {
             files : {
-                'build/js/form.min.js' : 'src/form.js',
+                'build/js/form.min.js' : 'src/forrm.js',
                 'build/js/jquery.form.min.js' : 'src/jquery.form.js',
             }
 		}
@@ -22,14 +22,24 @@ module.exports = function (grunt) {
     watch: {
         files : ['src/*.js'],
         tasks : ['uglify', 'copy']
-    }   
+    },
+    mocha: {
+      all: {
+        src: ['tests/testrunner.html'],
+      },
+      options: {
+        run: true
+      }
+    }
    
   });
     
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-mocha');
     
   grunt.registerTask('default', ['uglify', 'copy', 'watch']);
+  grunt.registerTask('test', ['mocha']);
 
 };

@@ -1,0 +1,91 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+</head>
+<body>
+    <form class="test-form" action="/">
+        <fieldset>
+            <div class="form-row">
+                <label for="test-field-1">Text field: *</label>
+                <input type="text" id="test-field-1" placeholder="Any text will do value" value="" required aria-required="true">
+            </div>
+            <div class="form-row">
+                <label for="test-field-2">Textarea: *</label>
+                <textarea id="test-field-2" placeholder="Multiline text" name="test-field-2" required aria-required="true"></textarea>
+            </div>
+            <div class="form-row">
+                <label for="test-telephone">Telephone: *</label>
+                <input type="tel" id="test-telephone" pattern="[\d-]+" placeholder="1234-56789" value="" required aria-required="true">
+            </div>
+            <div class="form-row">
+                <label for="test-optional">Mobile:</label>
+                <input type="tel" id="test-optional" name="test-optional" placeholder="Optional" value="">
+            </div>
+            <div class="form-row">
+                <label for="test-email">Email: *</label>
+                <input type="email" id="test-email" name="test-email" value="" placeholder="info@example.com" required aria-required="true">
+            </div>
+            <div class="form-row form-row-radio">
+                <fieldset>
+                    <legend>Radio button title: *</legend>
+                     <div class="form-row form-row-radio">
+                        <input type="radio" id="test-radio-1" name="test-radio" value="option-1" required aria-required="true">
+                        <label for="test-radio-1">Option 1</label>
+                    </div>
+                     <div class="form-row form-row-radio">
+                        <input type="radio" id="test-radio-2" name="test-radio" value="option-2" required aria-required="true">
+                        <label for="test-radio-2">Option 2</label>
+                    </div>
+                     <div class="form-row form-row-radio">
+                        <input type="radio" id="test-radio-3" name="test-radio" value="option-3" required aria-required="true">
+                        <label for="test-radio-3">Option 2</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-row form-row-checkbox">
+                <fieldset>
+                    <legend>Checkbox button title: *</legend>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-1" name="test-checkbox" value="option-1" required aria-required="true">
+                        <label for="test-checkbox-1">Option 1</label>
+                    </div>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-2" name="test-checkbox" value="option-2" required aria-required="true">
+                        <label for="test-checkbox-2">Option 2</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-row form-row-checkbox">
+                <fieldset>
+                    <legend>Required checkbox: *</legend>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-3" name="test-checkbox-3" value="1" required aria-required="true">
+                        <label for="test-checkbox-3">Option 1</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-row form-row-submit">
+                <input type="submit" value="Submit">
+            </div>
+        </fieldset>
+    </form>
+  <div id="mocha"></div>
+  <div id="messages"></div>
+  <div id="fixtures"></div>
+  <script src="../node_modules/mocha/mocha.js"></script>
+  <script src="../node_modules/chai/chai.js"></script>
+  <script src="../build/js/forrm.js"></script>
+
+  <script>
+    mocha.setup('bdd')
+    mocha.reporter('html');
+  </script>
+
+  <!-- Tests -->
+  <script src="test.js"></script>
+
+  <script>mocha.run();</script>
+</body>
+</html>

@@ -30,12 +30,12 @@
     } else {
         context[name] = definition();
     }
-}('Form', this, function (name, context) {
+}('Forrm', this, function (name, context) {
     'use strict';
-    
-    name = name || 'Form';
+
+    name = name || 'Forrm';
     context = context || this;
-    
+
     var defaults = {
             augmentHTML5 : true,
             autocomplete : true,
@@ -86,6 +86,10 @@
                 },
                 'file': {
                     'valueMissing' : 'Choose a file'
+                },
+                'group': {
+                    'valueMissing' : 'One of these fields is required',
+                    'patternMismatch' : 'Match the requested format one on of these fields'
                 }
             },
             patterns : {
@@ -174,7 +178,7 @@
                         self.parent.UI.updateInlineErrors(self);
                     } else {
                         self.parent.UI.listErrorMessages();
-            }
+                    }
                 };
             this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || (this.DOMElement.tagName.toLowerCase() === 'textarea') && 'text' || this.DOMElement.tagName.toLowerCase();
 
@@ -243,6 +247,7 @@
         setGroup : function (g) {
             this.group = g;
             this.errorGroup = g.name;
+            this.type = (g.type === 'custom') && 'group' || this.type;
             return this;
         },
         addError : function (error) {
@@ -282,14 +287,14 @@
             }
         },
         getError : function () {
-            if (this.parent.options.customErrorMessage) {
+            if (this.parent.options.customErrorMessage || this.type === 'group') {
                 return (this.parent.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
             } else {
                 return this.DOMElement.validationMessage || this.validationMessage;
             }
         }
     };
-    
+
 
     /*
      * Group wrapper class
@@ -309,7 +314,7 @@
 
         this.init(els);
     }
-    
+
     Group.prototype = {
         init : function () {
             this.valid = true;
@@ -390,7 +395,7 @@
             el = document.getElementById(this.parent.validationList[erId].id);
             el.setAttribute('aria-labelledBy', erId + '-error');
             el.parentNode.insertBefore(msg, el.nextSibling);
-            
+
             return;
         },
         clearInlineErrors : function () {
@@ -461,7 +466,7 @@
             listHolder.className = 'form-error-list';
             listHolder.setAttribute('role', 'alert');
             listDescription.appendChild(list);
-            
+
             for (var er in this.parent.validationList) {
                 if (this.parent.validationList.hasOwnProperty(er)) {
                     if (er !== 'countErrors' && !!this.parent.validationList[er].error) {
@@ -482,13 +487,13 @@
 
 
     /*
-     * Form wrapper class
+     * Forrm wrapper class
      *
      * @param {DOM node} a single form element
      * @param  {object} to extend defaults{}
      *
      */
-    function Form(element, options) {
+    function Forrm(element, options) {
         if (element === 'undefined') {
             throw new Error('Nae element');
         }
@@ -498,7 +503,7 @@
         this.init();
     }
 
-    Form.prototype = {
+    Forrm.prototype = {
         HTML5 : false,
         groups : {},
         init: function () {
@@ -605,13 +610,13 @@
                 self = this;
 
             this.makeValidationList();
-            
+
             for (var i in this.validationList) {
                 if (this.validationList.hasOwnProperty(i) && i !== 'countErrors') {
                     this.validationList[i].element.validate();
                 }
             }
-            
+
             if (this.validationList.countErrors > 0) {
                 self.UI.write();
                 if (!this.options.listMessages) {
@@ -628,22 +633,23 @@
             }
         }
     };
-    
-    
+
+
     return {
         init : function (el, options) {
             var elements = document.querySelectorAll(el),
-                forms = [],
+                forrms = [],
                 i = null,
                 l = elements.length;
-            
+
             for (i = 0; i < l; i += 1) {
                 if (!elements[i].hasAttribute('novalidate')) {
-                    forms[i] = new Form(elements[i], options);
+                    forrms[i] = new Forrm(elements[i], options);
                 }
             }
+            return forrms;
         }
     };
 }));
-    
+
 
