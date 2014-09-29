@@ -1,15 +1,17 @@
 /*jslint browser:true,nomen:true*/
 /*global define, console*/
 /*!
- * @name        Form, lightweight vanilla js HTML5 form validation module
- * @version     Aug 14
+ * @name        Forrm, lightweight vanilla js HTML5 form validation based on constraintValidation API
+ * @version     Sept 14
  * @author      mjbp
  * Licensed under the MIT license
  */
-
 /*
  * ROADMAP:
- * minlength attribute polyfill
+ * minlength attribute polyfill √(sort of, using pattern)
+ *
+ * set custom error message for field
+ *
  * conditionals
  *  - one required for custom group √
  *    - min number of group required
@@ -19,8 +21,6 @@
  *  - validate each step independently to reveal the next, display step number/total steps
  *
  *
- *
- * not supported input types: month, image, time, week, date, datetime, datetime-local, range, or datalist
  *
  */
 (function (name, context, definition) {
@@ -168,11 +168,6 @@
                     if (!self.parent.liveValidating) {
                         return;
                     }
-                    //TO DO
-                    //check if value has changed against saved data attibute
-                    //only validate if value has changed
-                    //save to data attribute
-
                     self.parent.validationList[self.errorGroup].element.validate();
                     if (!self.parent.options.listMessages) {
                         self.parent.UI.updateInlineErrors(self);
@@ -182,10 +177,19 @@
                 };
             this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || (this.DOMElement.tagName.toLowerCase() === 'textarea') && 'text' || this.DOMElement.tagName.toLowerCase();
 
-            //if customMessages is set, check if type exists in errorMessages object
+            //if customMessages is set, check if type exists in errorMessages object, otherwise set to default text field error
             if(!!(this.parent.options.customErrorMessage) && !(this.type in this.parent.options.errorMessages)) {
                 this.type = 'text';
             }
+
+            /*
+            //if minlength, set pattern attribute
+            if (this.DOMElement.getAttribute('minlength') !== 'null') {
+                //check if parenthesis already in place??
+                var currentPattern = this.DOMElement.getAttribute('pattern') || '.';
+                this.DOMElement.setAttribute('pattern', currentPattern + '{' + this.DOMElement.getAttribute('minlength') + ',}');
+                this.type = 'minlength';
+            }*/
 
             this.validationTrigger = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'select') && 'click' || this.type === 'file' && 'change' || 'keyup';
             this.errorGroup = this.DOMElement.getAttribute('id');
@@ -223,7 +227,6 @@
                 this.validity.valueMissing = true;
                 this.validationMessage = this.parent.options.errorMessages[this.type].valueMissing;
             } else {
-                //check min, max... all the containts
                 this.validity.valueMissing = false;
                 regExp = new RegExp(pattern, "");
                 if (!regExp.test(this.DOMElement.value)) {
@@ -250,24 +253,28 @@
             this.type = (g.type === 'custom') && 'group' || this.type;
             return this;
         },
-        addError : function (error) {
+        addError : function (error, groupPartial) {
             this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.successClass).join('');
             if (this.DOMElement.parentNode.className.indexOf(this.parent.options.errorClass) === -1) {
                 this.DOMElement.parentNode.className += ' ' + this.parent.options.errorClass;
             }
             this.DOMElement.setAttribute('aria-invalid', 'true');
-            this.parent.manageValidationList(this.errorGroup, error);
+            if (!groupPartial) {
+                this.parent.manageValidationList(this.errorGroup, error);
+            }
             return this;
         },
-        removeError : function () {
+        removeError : function (groupPartial) {
             this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.errorClass).join('');
             this.DOMElement.setAttribute('aria-invalid', 'false');
             this.DOMElement.removeAttribute('aria-labelledby');
-            this.parent.manageValidationList(this.errorGroup, null);
+            if (!groupPartial) {
+                this.parent.manageValidationList(this.errorGroup, null);
+            }
             return this;
         },
-        addSuccess : function () {
-            this.removeError();
+        addSuccess : function (groupPartial) {
+            this.removeError(groupPartial);
             if (this.DOMElement.parentNode.className.indexOf(this.parent.options.successClass) === -1) {
                 this.DOMElement.parentNode.className += ' ' + this.parent.options.successClass;
             }
@@ -295,7 +302,6 @@
         }
     };
 
-
     /*
      * Group wrapper class
      *
@@ -303,13 +309,14 @@
      * @param {Array} array of nodes
      *
      */
-    function Group(name, els, type) {
+    function Group(name, els, type, min) {
         if (name === 'undefined') {
             throw new Error('Nae name');
         }
         this.name = name;
         this.elements = els;
         this.type = type;
+        this.min = +min || 1;
         this.parent = els[0].parent;
 
         this.init(els);
@@ -338,18 +345,24 @@
             return this;
         },
         validate : function () {
-            var v,
-                error = null;
+            var error = null;
+            this.numValid = 0;
             for (var i = 0; i < this.elements.length; i++) {
                 if (!this.elements[i].test()) {
+                    this.elements[i].addError(null, true);
                     if (!!this.valid) {
                         this.valid = false;
                         error = this.elements[i].getError();
                     }
                 } else {
-                    this.valid = true;
-                    this.addSuccess();
-                    return;
+                    this.numValid++;
+                    if (this.numValid === +this.min) {
+                        this.valid = true;
+                        this.addSuccess();
+                        return;
+                    } else {
+                        this.elements[i].addSuccess(true);
+                    }
                 }
             }
             if (!!error) {
@@ -360,7 +373,6 @@
             return this.name;
         }
     };
-
 
      /*
      * UI wrapper class
@@ -394,7 +406,7 @@
             msg.setAttribute('id', erId + '-error');
             el = document.getElementById(this.parent.validationList[erId].id);
             el.setAttribute('aria-labelledBy', erId + '-error');
-            el.parentNode.insertBefore(msg, el.nextSibling);
+            el.parentNode.appendChild(msg);
 
             return;
         },
@@ -485,7 +497,6 @@
         }
     };
 
-
     /*
      * Forrm wrapper class
      *
@@ -535,16 +546,17 @@
                         field.getAttribute('novalidate') === null) {
                         this.validatebleElements[field.getAttribute('id')] = new Element(field, this);
                         /* This part needs re-thinkin to deal with data-grouping */
-                        if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-form-group') !== null) {
+                        if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-forrm-group') !== null) {
                             tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
                         }
 
                         //if it's the last of it's group
-                        if ((!(field.getAttribute('data-form-group')) && (field.getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) || field.getAttribute('data-form-group') !== this.fields[i + 1].getAttribute('data-form-group')) {
+                        if ((!(field.getAttribute('data-forrm-group')) && (field.getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) || field.getAttribute('data-forrm-group') !== this.fields[i + 1].getAttribute('data-forrm-group')) {
                             if (tmpGroups.length > 0) {
-                                var groupName = field.getAttribute('data-form-group') || field.getAttribute('name'),
-                                    groupType = field.getAttribute('data-form-group') ? 'custom' : 'checked';
-                                this.groups[groupName] = new Group(groupName, tmpGroups, groupType);
+                                var groupName = field.getAttribute('data-forrm-group') || field.getAttribute('name'),
+                                    groupType = field.getAttribute('data-forrm-group') ? 'custom' : 'checked',
+                                    groupMin = field.getAttribute('data-forrm-group-min') || 1;
+                                this.groups[groupName] = new Group(groupName, tmpGroups, groupType, groupMin);
                                 for (var j = 0; j < tmpGroups.length; j++) {
 
                                    tmpGroups[j].setGroup(this.groups[groupName]);

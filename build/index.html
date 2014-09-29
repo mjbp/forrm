@@ -65,7 +65,7 @@
         .form-error:valid {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
         input.form-success {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
 
-        .form-group {border-left:2px solid red;padding-left:2%;}
+        .form-group {border-left:2px solid #e6e6e6;padding-left:2%;}
 
         .form-row-checkbox.form-error,
         .form-row-radio.form-error {background:transparent;box-shadow:none;}
@@ -84,11 +84,15 @@
             <fieldset class="form-group">
                 <div class="form-row">
                     <label for="test-text-1">Text: *</label>
-                    <input type="text" id="test-text-1" name="test-text-1" value="" required aria-required="true" data-form-group="test-group">
+                    <input type="text" id="test-text-1" name="test-text-1" value="" required aria-required="true" data-forrm-group="test-group">
                 </div>
                 <div class="form-row">
                     <label for="test-text-2">Text: *</label>
-                    <input type="text" id="test-text-2" name="test-text-2" value="" required aria-required="true" data-form-group="test-group">
+                    <input type="text" id="test-text-2" name="test-text-2" value="" required aria-required="true" data-forrm-group="test-group">
+                </div>
+                <div class="form-row">
+                    <label for="test-text-3">Text: *</label>
+                    <input type="text" id="test-text-3" name="test-text-3" value="" required aria-required="true" data-forrm-group="test-group">
                 </div>
             </fieldset>
             <div class="form-row">
@@ -126,14 +130,35 @@
             </div>
             <div class="form-row form-row-checkbox">
                 <fieldset>
-                    <legend>Checkbox button title:</legend>
+                    <legend>Checkbox group, please check at least two:</legend>
                      <div class="form-row form-row-checkbox">
-                        <input type="checkbox" id="test-checkbox-1" name="test-checkbox" value="option-1" required aria-required="true">
+                        <input type="checkbox" id="test-checkbox-1" name="test-checkbox" data-forrm-group-min="2" value="option-1" required aria-required="true">
                         <label for="test-checkbox-1">Option 1</label>
                     </div>
                      <div class="form-row form-row-checkbox">
-                        <input type="checkbox" id="test-checkbox-2" name="test-checkbox" value="option-2" required aria-required="true">
+                        <input type="checkbox" id="test-checkbox-2" name="test-checkbox" data-forrm-group-min="2" value="option-2" required aria-required="true">
                         <label for="test-checkbox-2">Option 2</label>
+                    </div>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-3" name="test-checkbox" data-forrm-group-min="2" value="option-3" required aria-required="true">
+                        <label for="test-checkbox-3">Option 3</label>
+                    </div>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-4" name="test-checkbox" data-forrm-group-min="2" value="option-4" required aria-required="true">
+                        <label for="test-checkbox-4">Option 4</label>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-row form-row-checkbox">
+                <fieldset>
+                    <legend>Checkbox group, please check at least two:</legend>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-1-1" name="test-checkbox-2" value="option-1" required aria-required="true">
+                        <label for="test-checkbox-1-1">Option 1</label>
+                    </div>
+                     <div class="form-row form-row-checkbox">
+                        <input type="checkbox" id="test-checkbox-2-1" name="test-checkbox-2" value="option-2" required aria-required="true">
+                        <label for="test-checkbox-2-1">Option 2</label>
                     </div>
                 </fieldset>
             </div>
@@ -141,8 +166,8 @@
                 <fieldset>
                     <legend>Required checkbox: *</legend>
                      <div class="form-row form-row-checkbox">
-                        <input type="checkbox" id="test-checkbox-3" name="test-checkbox-3" value="1" required aria-required="true">
-                        <label for="test-checkbox-3">Option 1</label>
+                        <input type="checkbox" id="test-checkbox-5" name="test-checkbox-5" value="1" required aria-required="true">
+                        <label for="test-checkbox-5">Option 1</label>
                     </div>
                 </fieldset>
             </div>
