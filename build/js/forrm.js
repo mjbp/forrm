@@ -14,9 +14,9 @@
  *
  * conditionals
  *  - one required for custom group √
- *    - min number of group required
- *  - reveal named field(s) once valid
- *
+ *    - min number of group required √
+ *  - reveal named field(s) once valid √ (see below)
+ *      -> wrapper element given target class, all element children enabled and class removed from wrapper on antecedent validity
  * multi-step (hidden/reveal)
  *  - validate each step independently to reveal the next, display step number/total steps
  *
@@ -41,11 +41,11 @@
             autocomplete : true,
             customErrorMessage : false,
             displayMessages : true,
-            successClass : 'form-success',
-            errorClass : 'form-error',
+            successClass : 'forrm-success',
+            errorClass : 'forrm-error',
             listMessages : false,
             listTitle : 'We couldn\'t submit the form, please check your answers:',
-            errorMessagesClass : 'form-error-message',
+            errorMessagesClass : 'forrm-error-message',
             errorMessageElement : 'p',
             errorMessages : {
                 'text': {
@@ -195,9 +195,16 @@
             this.errorGroup = this.DOMElement.getAttribute('id');
             this.validity = this.DOMElement.validity || this.defaultValidity();
 
+            //set dependents for conditional
+            if (this.DOMElement.getAttribute('data-forrm-conditonal') !== null) {
+                var selector = this.DOMElement.getAttribute('data-forrm-conditonal');
+                this.dependents = document.querySelectorAll('.' + selector + ' input, ' + '.' + selector + ' textarea, ' + '.' + selector + 'select');
+            }
+
             if ('autocomplete' in this.DOMElement && !this.parent.options.autocomplete) {
                 this.DOMElement.setAttribute('autocomplete', 'off');
             }
+            //propertychange keyup input paste change
             toolkit.on(this.DOMElement, 'propertychange keyup input paste change', liveValidate);
         },
         defaultValidity : function () {
@@ -261,6 +268,10 @@
             this.DOMElement.setAttribute('aria-invalid', 'true');
             if (!groupPartial) {
                 this.parent.manageValidationList(this.errorGroup, error);
+
+                if (this.dependents !== undefined) {
+                    this.parent.UI.toggleConditional(this.dependents, null);
+                }
             }
             return this;
         },
@@ -270,6 +281,9 @@
             this.DOMElement.removeAttribute('aria-labelledby');
             if (!groupPartial) {
                 this.parent.manageValidationList(this.errorGroup, null);
+                if (this.dependents !== undefined) {
+                    this.parent.UI.toggleConditional(this.dependents, true);
+                }
             }
             return this;
         },
@@ -494,6 +508,18 @@
             }
 
             this.parent.DOMElement.insertBefore(listHolder, this.parent.DOMElement.firstChild);
+        },
+        toggleConditional : function (els, reveal) {
+            console.log(reveal);
+            for (var i = 0, el; el = els[i];++i) {
+                if (reveal !== null) {
+                    el.parentNode.className = el.parentNode.className.split(' forrm-disabled').join('');
+                    el.removeAttribute('disabled');
+                } else {
+                    el.parentNode.className = el.parentNode.className + ' forrm-disabled';
+                    el.setAttribute('disabled', 'disabled');
+                }
+            }
         }
     };
 
@@ -584,10 +610,6 @@
 
             for (var i in this.validatebleElements) {
                 if (this.validatebleElements.hasOwnProperty(i)) {
-                    //if in a group
-                    //check if group type is 'checked elements' or 'custom' (i.e., set by data attribute)
-                    //if custom, set validationList id as first element in group, otherwise first elementByName
-
                     this.validationList[this.validatebleElements[i].errorGroup] = {
                         'error': null,
                         'element': (this.groups[this.validatebleElements[i].errorGroup] || this.validatebleElements[i]),
