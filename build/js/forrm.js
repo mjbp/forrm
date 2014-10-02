@@ -157,6 +157,7 @@
     function Element(element, parent) {
         this.DOMElement = element;
         this.parent = parent;
+        this.forrm = parent.parent;
         this.init();
     }
 
@@ -169,16 +170,16 @@
                         return;
                     }
                     self.parent.validationList[self.errorGroup].element.validate();
-                    if (!self.parent.options.listMessages) {
-                        self.parent.UI.updateInlineErrors(self);
+                    if (!self.forrm.options.listMessages) {
+                        self.forrm.UI.updateInlineErrors(self);
                     } else {
-                        self.parent.UI.listErrorMessages();
+                        self.forrm.UI.listErrorMessages();
                     }
                 };
             this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || (this.DOMElement.tagName.toLowerCase() === 'textarea') && 'text' || this.DOMElement.tagName.toLowerCase();
 
             //if customMessages is set, check if type exists in errorMessages object, otherwise set to default text field error
-            if(!!(this.parent.options.customErrorMessage) && !(this.type in this.parent.options.errorMessages)) {
+            if(!!(this.forrm.options.customErrorMessage) && !(this.type in this.forrm.options.errorMessages)) {
                 this.type = 'text';
             }
 
@@ -201,7 +202,7 @@
                 this.dependents = document.querySelectorAll('.' + selector + ' input, ' + '.' + selector + ' textarea, ' + '.' + selector + 'select');
             }
 
-            if ('autocomplete' in this.DOMElement && !this.parent.options.autocomplete) {
+            if ('autocomplete' in this.DOMElement && !this.forrm.options.autocomplete) {
                 this.DOMElement.setAttribute('autocomplete', 'off');
             }
             //propertychange keyup input paste change
@@ -225,14 +226,14 @@
         },
         setValidity : function () {
             var regExp,
-                pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type],
+                pattern = this.DOMElement.getAttribute('pattern') || this.forrm.options.patterns[this.type],
                 list;
 
             this.validationMessage = null;
             if (this.DOMElement.value.replace( /^\s+/g, '' ).replace( /\s+$/g, '' ) === "" || ((this.type === 'radio' || this.type === 'checkbox') && !this.DOMElement.checked)) {
                 this.validity.valid = false;
                 this.validity.valueMissing = true;
-                this.validationMessage = this.parent.options.errorMessages[this.type].valueMissing;
+                this.validationMessage = this.forrm.options.errorMessages[this.type].valueMissing;
             } else {
                 this.validity.valueMissing = false;
                 regExp = new RegExp(pattern, "");
@@ -243,7 +244,7 @@
                     } else {
                         this.validity.typeMismatch = true;
                     }
-                    this.validationMessage = this.parent.options.errorMessages[this.type].patternMismatch;
+                    this.validationMessage = this.forrm.options.errorMessages[this.type].patternMismatch;
                 } else {
                     //passed everything
                     this.validity.valid = true;
@@ -261,22 +262,22 @@
             return this;
         },
         addError : function (error, groupPartial) {
-            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.successClass).join('');
-            if (this.DOMElement.parentNode.className.indexOf(this.parent.options.errorClass) === -1) {
-                this.DOMElement.parentNode.className += ' ' + this.parent.options.errorClass;
+            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.forrm.options.successClass).join('');
+            if (this.DOMElement.parentNode.className.indexOf(this.forrm.options.errorClass) === -1) {
+                this.DOMElement.parentNode.className += ' ' + this.forrm.options.errorClass;
             }
             this.DOMElement.setAttribute('aria-invalid', 'true');
             if (!groupPartial) {
                 this.parent.manageValidationList(this.errorGroup, error);
 
                 if (this.dependents !== undefined) {
-                    this.parent.UI.toggleConditional(this.dependents, null);
+                    this.forrm.UI.toggleConditional(this.dependents, null);
                 }
             }
             return this;
         },
         removeError : function (groupPartial) {
-            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.errorClass).join('');
+            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.forrm.options.errorClass).join('');
             this.DOMElement.setAttribute('aria-invalid', 'false');
             this.DOMElement.removeAttribute('aria-labelledby');
             if (!groupPartial) {
@@ -289,8 +290,8 @@
         },
         addSuccess : function (groupPartial) {
             this.removeError(groupPartial);
-            if (this.DOMElement.parentNode.className.indexOf(this.parent.options.successClass) === -1) {
-                this.DOMElement.parentNode.className += ' ' + this.parent.options.successClass;
+            if (this.DOMElement.parentNode.className.indexOf(this.forrm.options.successClass) === -1) {
+                this.DOMElement.parentNode.className += ' ' + this.forrm.options.successClass;
             }
             return this;
         },
@@ -308,8 +309,8 @@
             }
         },
         getError : function () {
-            if (this.parent.options.customErrorMessage || this.type === 'group') {
-                return (this.parent.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
+            if (this.forrm.options.customErrorMessage || this.type === 'group') {
+                return (this.forrm.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
             } else {
                 return this.DOMElement.validationMessage || this.validationMessage;
             }
@@ -414,6 +415,7 @@
         addInlineError : function (erId) {
             var el,
                 msg = document.createElement(this.parent.options.errorMessageElement);
+
             msg.textContent = this.parent.validationList[erId].error;
             msg.className = this.parent.options.errorMessagesClass;
             msg.setAttribute('role', 'alert');
@@ -457,7 +459,6 @@
         },
         displayInlineErrorMessages : function () {
             this.clearInlineErrors();
-
             for (var er in this.parent.validationList) {
                 if (this.parent.validationList.hasOwnProperty(er)) {
                     if (er !== 'countErrors' && !!this.parent.validationList[er].error) {
@@ -510,7 +511,6 @@
             this.parent.DOMElement.insertBefore(listHolder, this.parent.DOMElement.firstChild);
         },
         toggleConditional : function (els, reveal) {
-            console.log(reveal);
             for (var i = 0, el; el = els[i];++i) {
                 if (reveal !== null) {
                     el.parentNode.className = el.parentNode.className.split(' forrm-disabled').join('');
@@ -520,6 +520,160 @@
                     el.setAttribute('disabled', 'disabled');
                 }
             }
+        }
+    };
+
+    /*
+     * Step class
+     *
+     * @param {String} name
+     * @param {Array} array of nodes
+     *
+     */
+    function Step(el, parent, num) {
+        if (name === 'undefined') {
+            throw new Error('Nae name');
+        }
+        this.stepNum = num;
+        this.parent = parent;
+        this.DOMElement = el;
+
+        this.init();
+    }
+
+    Step.prototype = {
+        init : function () {
+            var tmpGroups = [],
+                self = this;
+
+            this.fields = this.DOMElement.querySelectorAll('input, textarea, select');
+            this.validatebleElements = {};
+            this.groups = {};
+
+            for (var i = 0, field; field = this.fields[i]; i++) {
+                if (field.getAttribute('type') !== 'submit' &&
+                    field.getAttribute('type') !== 'reset' &&
+                    field.getAttribute('type') !== 'button' &&
+                    field.getAttribute('type') !== 'hidden' &&
+                    field.getAttribute('disabled') === null &&
+                    field.getAttribute('required') !== null &&
+                    field.getAttribute('novalidate') === null) {
+                    this.validatebleElements[field.getAttribute('id')] = new Element(field, this);
+                    if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-forrm-group') !== null) {
+                        tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
+                    }
+
+                    if ((this.fields[i + 1] === undefined || !(field.getAttribute('data-forrm-group')) && (field.getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) || field.getAttribute('data-forrm-group') !== this.fields[i + 1].getAttribute('data-forrm-group')) {
+                        if (tmpGroups.length > 0) {
+                            var groupName = field.getAttribute('data-forrm-group') || field.getAttribute('name'),
+                                groupType = field.getAttribute('data-forrm-group') ? 'custom' : 'checked',
+                                groupMin = field.getAttribute('data-forrm-group-min') || 1;
+                            this.groups[groupName] = new Group(groupName, tmpGroups, groupType, groupMin);
+                            for (var j = 0; j < tmpGroups.length; j++) {
+
+                               tmpGroups[j].setGroup(this.groups[groupName]);
+                            }
+                            tmpGroups = [];
+                        }
+                    }
+                }
+            }
+
+            if (this.DOMElement.querySelector('input[type=submit]') !== null) {
+                toolkit.on(this.DOMElement.querySelector('input[type=submit]'), 'click onkeypress', function (e) {
+                    self.handleEvent.call(self, e);
+                });
+            }
+            if (this.parent.numSteps > 1) {
+                this.addButtons();
+            }
+
+            this.parent.UI = new UI(this.parent);
+            this.makeValidationList();
+            return this;
+        },
+        handleEvent : function (e) {
+            if (!this.HTML5 || this.options.augmentHTML5) {
+                this.liveValidating = true;
+                if (e.type === 'click' || e.type === 'onkeypress') {
+                    toolkit.preventDefault(e);
+                    this.parent.test();
+                }
+            }
+        },
+        hide : function () {
+            for (var i = 0, el; el = this.validatebleElements[i]; ++i) {
+                el.setAttribute('disabled', 'disabled');
+            }
+            this.DOMElement.style.display = "none";
+        },
+        show : function () {
+            for (var i = 0, el; el = this.validatebleElements[i]; ++i) {
+                el.removeAttribute('disabled');
+            }
+            this.DOMElement.style.display = "block";
+        },
+        addButtons : function () {
+            var self = this,
+                sbmt,
+                prv,
+                tpl = document.createElement('input');
+
+            sbmt = tpl.cloneNode(true);
+            sbmt.setAttribute('type', 'submit');
+
+            if (this.stepNum + 1 !== this.parent.numSteps) {
+                sbmt.className = "forrm-btn forrm-btn-submit";
+                sbmt.setAttribute('value', 'Submit');
+                toolkit.on(sbmt, 'click onkeypress', function (e) {
+                        self.handleEvent.call(self, e);
+                    });
+                this.DOMElement.appendChild(sbmt);
+            }
+
+            if (this.stepNum !== 0) {
+                prv = sbmt.cloneNode(true);
+                prv.className = "forrm-btn forrm-btn-previous";
+                prv.setAttribute('value', 'Previous');
+                toolkit.on(prv, 'click onkeypress', function () {
+                    self.parent.changeStep(false);
+                });
+                this.DOMElement.appendChild(prv);
+            }
+
+            return this;
+        },
+        makeValidationList : function () {
+            this.validationList = {};
+
+            for (var i in this.validatebleElements) {
+                if (this.validatebleElements.hasOwnProperty(i)) {
+                    this.validationList[this.validatebleElements[i].errorGroup] = {
+                        'error': null,
+                        'element': (this.groups[this.validatebleElements[i].errorGroup] || this.validatebleElements[i]),
+                        'id': !!(this.groups[this.validatebleElements[i].errorGroup]) ?
+                                this.groups[this.validatebleElements[i].errorGroup].elements[0].DOMElement.getAttribute('id') :
+                        document.getElementById(this.validatebleElements[i].errorGroup).getAttribute('id')
+                    };
+                }
+            }
+            this.validationList.countErrors = 0;
+            return this.validationList;
+        },
+        manageValidationList : function (erId, er) {
+            if (!!er) {
+                if (this.validationList[erId].error === null) {
+                    this.validationList.countErrors += 1;
+                }
+            } else {
+                if (this.validationList.countErrors > 0) {
+                    this.validationList.countErrors -= 1;
+                }
+            }
+            this.validationList[erId].error = er;
+            return this;
+        },
+        test : function () {
         }
     };
 
@@ -542,108 +696,48 @@
 
     Forrm.prototype = {
         HTML5 : false,
-        groups : {},
         init: function () {
-            var tmpGroups = [],
-                self = this;
+            var steps, stepElements;
             this.HTML5 = 'noValidate' in document.createElement('form');
             this.liveValidating = false;
+            this.go = this.options.pass || this.DOMElement.submit;
 
             if (!this.HTML5 || this.options.augmentHTML5) {
                 if ('autocomplete' in this.DOMElement && !this.options.autocomplete) {
                     this.DOMElement.setAttribute('autocomplete', 'off');
                 }
 
-                this.fields = this.DOMElement.querySelectorAll('input, textarea, select');
-                this.validatebleElements = {};
+                //set up steps
+                //if no steps treat as single step
+                stepElements = this.DOMElement.querySelectorAll('[data-forrm-step]');
+                this.numSteps = stepElements.length || 1;
+                this.steps = [];
 
-                toolkit.on(this.DOMElement.querySelector('input[type=submit]'), 'click onkeypress', function (e) {
-                    self.handleEvent.call(self, e);
-                });
+                stepElements = stepElements.length > 0 && stepElements || [this.DOMElement];
+                this.currentStep = 0;
 
-                for (var i = 0, field; field = this.fields[i]; i++) {
-                    //console.log(field.getAttribute('type'));
-                    if (field.getAttribute('type') !== 'submit' &&
-                        field.getAttribute('type') !== 'reset' &&
-                        field.getAttribute('type') !== 'button' &&
-                        field.getAttribute('type') !== 'hidden' &&
-                        field.getAttribute('disabled') === null &&
-                        field.getAttribute('required') !== null &&
-                        field.getAttribute('novalidate') === null) {
-                        this.validatebleElements[field.getAttribute('id')] = new Element(field, this);
-                        /* This part needs re-thinkin to deal with data-grouping */
-                        if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-forrm-group') !== null) {
-                            tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
-                        }
-
-                        //if it's the last of it's group
-                        if ((!(field.getAttribute('data-forrm-group')) && (field.getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) || field.getAttribute('data-forrm-group') !== this.fields[i + 1].getAttribute('data-forrm-group')) {
-                            if (tmpGroups.length > 0) {
-                                var groupName = field.getAttribute('data-forrm-group') || field.getAttribute('name'),
-                                    groupType = field.getAttribute('data-forrm-group') ? 'custom' : 'checked',
-                                    groupMin = field.getAttribute('data-forrm-group-min') || 1;
-                                this.groups[groupName] = new Group(groupName, tmpGroups, groupType, groupMin);
-                                for (var j = 0; j < tmpGroups.length; j++) {
-
-                                   tmpGroups[j].setGroup(this.groups[groupName]);
-                                }
-                                tmpGroups = [];
-                            }
-                        }
+                for (var i = 0; i < stepElements.length; ++i) {
+                    this.steps.push(new Step(stepElements[i], this, i));
+                    if (i !== 0) {
+                        this.steps[i].hide();
                     }
                 }
-                this.UI = new UI(this);
-                this.makeValidationList();
             }
         },
-        handleEvent : function (e) {
-            if (!this.HTML5 || this.options.augmentHTML5) {
-                this.liveValidating = true;
-                if (e.type === 'click' || e.type === 'onkeypress') {
-                    toolkit.preventDefault(e);
-                    this.test();
-                }
-            }
-        },
-        makeValidationList : function () {
-            this.validationList = {};
+        changeStep : function (forward) {
+            var next = !!forward && this.currentStep + 1 || this.currentStep - 1;
 
-            for (var i in this.validatebleElements) {
-                if (this.validatebleElements.hasOwnProperty(i)) {
-                    this.validationList[this.validatebleElements[i].errorGroup] = {
-                        'error': null,
-                        'element': (this.groups[this.validatebleElements[i].errorGroup] || this.validatebleElements[i]),
-                        'id': !!(this.groups[this.validatebleElements[i].errorGroup]) ?
-                                this.groups[this.validatebleElements[i].errorGroup].elements[0].DOMElement.getAttribute('id') :
-                                //document.getElementsByName(this.validatebleElements[i].errorGroup)[0].getAttribute('id') :
-                        document.getElementById(this.validatebleElements[i].errorGroup).getAttribute('id')
-                    };
-                }
-            }
-            this.validationList.countErrors = 0;
-            return this;
-        },
-        manageValidationList : function (erId, er) {
-            if (!!er) {
-                if (this.validationList[erId].error === null) {
-                    this.validationList.countErrors += 1;
-                }
-            } else {
-                if (this.validationList.countErrors > 0) {
-                    this.validationList.countErrors -= 1;
-                }
-            }
-            this.validationList[erId].error = er;
-            return this;
+            this.steps[this.currentStep].hide();
+            this.steps[next].show();
+            this.currentStep = next;
         },
         test : function () {
             var el = null,
                 er = null,
-                go = null,
-                l = this.validatebleElements.length,
+                vList,
                 self = this;
 
-            this.makeValidationList();
+            this.validationList = this.steps[this.currentStep].makeValidationList();
 
             for (var i in this.validationList) {
                 if (this.validationList.hasOwnProperty(i) && i !== 'countErrors') {
@@ -663,7 +757,11 @@
                 }
                 this.options.fail.call();
             } else {
-                //go = this.options.pass ? this.options.pass.call() : this.DOMElement.submit();
+                if (this.currentStep === this.numSteps - 1) {
+                    this.go.call(this.DOMElement);
+                } else {
+                    this.changeStep(true);
+                }
             }
         }
     };
