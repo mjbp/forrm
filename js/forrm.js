@@ -178,6 +178,7 @@
                         self.forrm.UI.listErrorMessages();
                     }
                 };
+
             this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || (this.DOMElement.tagName.toLowerCase() === 'textarea') && 'text' || this.DOMElement.tagName.toLowerCase();
 
             //if customMessages is set, check if type exists in errorMessages object, otherwise set to default text field error
@@ -194,7 +195,7 @@
                 this.type = 'minlength';
             }*/
 
-            this.validationTrigger = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'select') && 'click' || this.type === 'file' && 'change' || 'keyup';
+            //this.validationTrigger = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'select') && 'click' || this.type === 'file' && 'change' || 'keyup';
             this.errorGroup = this.DOMElement.getAttribute('id');
             this.validity = this.DOMElement.validity || this.defaultValidity();
 
@@ -367,10 +368,8 @@
             for (var i = 0; i < this.elements.length; i++) {
                 if (!this.elements[i].test()) {
                     this.elements[i].addError(null, true);
-                    if (!!this.valid) {
-                        this.valid = false;
-                        error = this.elements[i].getError();
-                    }
+                    this.valid = false;
+                    error = this.elements[i].getError();
                 } else {
                     this.numValid++;
                     if (this.numValid === +this.min) {
@@ -429,7 +428,7 @@
             return;
         },
         clearInlineErrors : function () {
-            var errorMessages = this.parent.DOMElement.querySelectorAll('.form-error-message');
+            var errorMessages = this.parent.DOMElement.querySelectorAll('.' + this.parent.options.errorMessagesClass);
 
             if (errorMessages.length === 0) {
                 return;
@@ -454,7 +453,7 @@
                     this.addInlineError(el.errorGroup);
                     return this;
                 } else {
-                    errorField.textContent = el.parent.validationList[el.errorGroup].error;
+                    errorField.innerHTML = el.parent.validationList[el.errorGroup].error;
                     return this;
                 }
             }
@@ -463,7 +462,7 @@
             this.clearInlineErrors();
             for (var er in this.parent.validationList) {
                 if (this.parent.validationList.hasOwnProperty(er)) {
-                    if (er !== 'countErrors' && !!this.parent.validationList[er].error) {
+                    if (!!this.parent.validationList[er].error) {
                         this.addInlineError(er);
                     }
                 }
@@ -471,7 +470,7 @@
         },
         listErrorMessages : function () {
             var i = 0,
-                oldListHolder = this.parent.DOMElement.querySelector('.form-error-list'),
+                oldListHolder = this.parent.DOMElement.querySelector('.forrm-error-list'),
                 listHolder = document.createElement('dl'),
                 listTitle = document.createElement('dt'),
                 listDescription = document.createElement('dd'),
@@ -486,19 +485,19 @@
             if (oldListHolder) {
                 oldListHolder.parentElement.removeChild(oldListHolder);
             }
-            if (this.parent.validationList.countErrors === 0) {
+            if (this.parent.steps[this.parent.currentStep].countErrors() === 0) {
                 return this;
             }
             listTitle.innerHTML = this.parent.options.listTitle;
             listHolder.appendChild(listTitle);
             listHolder.appendChild(listDescription);
-            listHolder.className = 'form-error-list';
+            listHolder.className = 'forrm-error-list';
             listHolder.setAttribute('role', 'alert');
             listDescription.appendChild(list);
 
             for (var er in this.parent.validationList) {
                 if (this.parent.validationList.hasOwnProperty(er)) {
-                    if (er !== 'countErrors' && !!this.parent.validationList[er].error) {
+                    if (!!this.parent.validationList[er].error) {
                         item = listItem.cloneNode(true);
                         itemLink = link.cloneNode(true);
                         itemLink.setAttribute('href', '#' + this.parent.validationList[er].id);
@@ -581,12 +580,13 @@
                 }
             }
 
+
             if (this.parent.numSteps > 1) {
                 this.addButtons();
             }
 
-            this.parent.UI = new UI(this.parent);
             this.makeValidationList();
+            this.parent.UI = new UI(this.parent);
             return this;
         },
         hide : function () {
@@ -638,21 +638,22 @@
                     };
                 }
             }
-            this.validationList.countErrors = 0;
             return this.validationList;
         },
         manageValidationList : function (erId, er) {
-            if (!!er) {
-                if (this.validationList[erId].error === null) {
-                    this.validationList.countErrors += 1;
-                }
-            } else {
-                if (this.validationList.countErrors > 0) {
-                    this.validationList.countErrors -= 1;
-                }
-            }
             this.validationList[erId].error = er;
             return this;
+        },
+        countErrors : function () {
+            var errors = 0;
+            for (var i in this.validationList) {
+                if (this.validationList.hasOwnProperty(i)) {
+                    if (this.validationList[i].error !== null) {
+                        errors++;
+                    }
+                }
+            }
+            return errors;
         }
     };
 
@@ -742,12 +743,10 @@
             this.validationList = this.steps[this.currentStep].makeValidationList();
 
             for (var i in this.validationList) {
-                if (this.validationList.hasOwnProperty(i) && i !== 'countErrors') {
-                    this.validationList[i].element.validate();
-                }
+                this.validationList[i].element.validate();
             }
-            console.log(this.validationList);
-            if (this.validationList.countErrors > 0) {
+
+            if (this.steps[this.currentStep].countErrors() > 0) {
                 self.UI.write();
                 if (!this.options.listMessages) {
                     window.scrollTo(0, this.DOMElement.offsetTop);
@@ -760,6 +759,7 @@
                 this.options.fail.call();
             } else {
                 if (this.currentStep === this.numSteps - 1) {
+                    console.log('Submitting...');
                     //this.go.call(this.DOMElement);
                 } else {
                     this.changeStep(true);
