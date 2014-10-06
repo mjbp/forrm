@@ -49,7 +49,13 @@
         .button-add:hover,
         input[type=submit]:hover { cursor: pointer; background: rgba(60, 178, 9, 0.8); color: #fff; }
 
-        input[type=range] {}
+        .forrm-step-list {margin-bottom:1em;}
+        [class*='forrm-step-list--'] {padding:1em;display:inline-block;text-align:center;opacity:0.5;background:#f9f9f9;}
+        .forrm-step-1 .forrm-step-list--1,
+        .forrm-step-2 .forrm-step-list--1,
+        .forrm-step-2 .forrm-step-list--2,
+        .forrm-step-3 [class*='forrm-step-list--'] {background:rgba(0, 0, 0, 0.5);color:#fff;opacity:1;}
+
 
         /* Input States */
 
@@ -227,6 +233,11 @@
     </form>
 
     <form class="test-form-3" action="/">
+        <div class="forrm-step-list">
+            <span class="forrm-step-list--1">Step 1</span>
+            <span class="forrm-step-list--2">Step 2</span>
+            <span class="forrm-step-list--3">Step 3</span>
+        </div>
         <fieldset data-forrm-step="1">
             <div class="forrm-row">
                 <label for="test-field-3-1">Field 1: *</label>
