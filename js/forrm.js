@@ -22,7 +22,6 @@
  * multi-step (hidden/reveal)
  *  - validate each step independently to reveal the next, display step number/total steps
  *  - show step -> add class 'forrm-step-1' etc to form element √
- *  - addClass, removeClass and toggleClass methods to toolkit **
  *
  */
 (function (name, context, definition) {
@@ -43,11 +42,21 @@
             autocomplete : true,
             customErrorMessage : false,
             displayMessages : true,
-            successClass : 'forrm-success',
-            errorClass : 'forrm-error',
+            css : {
+                prefix: 'forrm-',
+                successClass : 'success',
+                errorClass : 'error',
+                errorMessageClass : 'error-message',
+                errorListClass : 'error-list',
+                disabledClass : 'disabled',
+                hiddenClass : 'hidden',
+                buttonClass : 'btn',
+                buttonNextClass : 'btn-submit',
+                buttonPreviousClass : 'btn-previous',
+                stepPrefix : 'step-'
+            },
             listMessages : false,
             listTitle : 'We couldn\'t submit the form, please check your answers:',
-            errorMessagesClass : 'forrm-error-message',
             errorMessageElement : 'p',
             errorMessages : {
                 'text': {
@@ -265,9 +274,9 @@
             return this;
         },
         addError : function (error, groupPartial) {
-            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.forrm.options.successClass).join('');
-            if (this.DOMElement.parentNode.className.indexOf(this.forrm.options.errorClass) === -1) {
-                this.DOMElement.parentNode.className += ' ' + this.forrm.options.errorClass;
+            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.forrm.options.css.prefix + this.forrm.options.css.successClass).join('');
+            if (this.DOMElement.parentNode.className.indexOf(this.forrm.options.css.prefix + this.forrm.options.css.successClass) === -1) {
+                this.DOMElement.parentNode.className += ' ' + this.forrm.options.css.prefix + this.forrm.options.css.errorClass;
             }
             this.DOMElement.setAttribute('aria-invalid', 'true');
             if (!groupPartial) {
@@ -280,7 +289,7 @@
             return this;
         },
         removeError : function (groupPartial) {
-            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.forrm.options.errorClass).join('');
+            this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.forrm.options.css.prefix + this.forrm.options.css.errorClass).join('');
             this.DOMElement.setAttribute('aria-invalid', 'false');
             this.DOMElement.removeAttribute('aria-labelledby');
             if (!groupPartial) {
@@ -293,8 +302,8 @@
         },
         addSuccess : function (groupPartial) {
             this.removeError(groupPartial);
-            if (this.DOMElement.parentNode.className.indexOf(this.forrm.options.successClass) === -1) {
-                this.DOMElement.parentNode.className += ' ' + this.forrm.options.successClass;
+            if (this.DOMElement.parentNode.className.indexOf(this.forrm.options.css.prefix + this.forrm.options.css.successClass) === -1) {
+                this.DOMElement.parentNode.className += ' ' + this.forrm.options.css.prefix + this.forrm.options.css.successClass;
             }
             return this;
         },
@@ -418,7 +427,7 @@
                 msg = document.createElement(this.parent.options.errorMessageElement);
 
             msg.textContent = this.parent.validationList[erId].error;
-            msg.className = this.parent.options.errorMessagesClass;
+            msg.className = this.parent.options.css.prefix + this.parent.options.css.errorMessageClass;
             msg.setAttribute('role', 'alert');
             msg.setAttribute('id', erId + '-error');
             el = document.getElementById(this.parent.validationList[erId].id);
@@ -428,7 +437,7 @@
             return;
         },
         clearInlineErrors : function () {
-            var errorMessages = this.parent.DOMElement.querySelectorAll('.' + this.parent.options.errorMessagesClass);
+            var errorMessages = this.parent.DOMElement.querySelectorAll('.' + this.parent.options.css.prefix + this.parent.options.css.errorMessageClass);
 
             if (errorMessages.length === 0) {
                 return;
@@ -470,7 +479,7 @@
         },
         listErrorMessages : function () {
             var i = 0,
-                oldListHolder = this.parent.DOMElement.querySelector('.forrm-error-list'),
+                oldListHolder = this.parent.DOMElement.querySelector('.' + this.parent.options.css.prefix +  this.parent.options.css.errorListClass),
                 listHolder = document.createElement('dl'),
                 listTitle = document.createElement('dt'),
                 listDescription = document.createElement('dd'),
@@ -491,7 +500,7 @@
             listTitle.innerHTML = this.parent.options.listTitle;
             listHolder.appendChild(listTitle);
             listHolder.appendChild(listDescription);
-            listHolder.className = 'forrm-error-list';
+            listHolder.className = this.parent.options.css.prefix +  this.parent.options.css.errorListClass;
             listHolder.setAttribute('role', 'alert');
             listDescription.appendChild(list);
 
@@ -514,10 +523,10 @@
         toggleConditional : function (els, reveal) {
             for (var i = 0, el; el = els[i];++i) {
                 if (reveal !== null) {
-                    el.parentNode.className = el.parentNode.className.split(' forrm-disabled').join('');
+                    el.parentNode.className = el.parentNode.className.split(' ' + this.parent.options.css.prefix + this.parent.options.css.disabledClass).join('');
                     el.removeAttribute('disabled');
                 } else {
-                    el.parentNode.className = el.parentNode.className + ' forrm-disabled';
+                    el.parentNode.className = el.parentNode.className + ' ' + this.parent.options.css.prefix + this.parent.options.css.disabledClass;
                     el.setAttribute('disabled', 'disabled');
                 }
             }
@@ -590,10 +599,10 @@
             return this;
         },
         hide : function () {
-            this.DOMElement.className = this.DOMElement.className + ' forrm-hidden';
+            this.DOMElement.className = this.DOMElement.className + ' ' + this.parent.options.css.prefix + this.parent.options.css.hiddenClass;
         },
         show : function () {
-            this.DOMElement.className = this.DOMElement.className.split(' forrm-hidden').join('');
+            this.DOMElement.className = this.DOMElement.className.split(' ' + this.parent.options.css.prefix + this.parent.options.css.hiddenClass).join('');
         },
         addButtons : function () {
             var self = this,
@@ -604,7 +613,7 @@
             sbmt = tpl.cloneNode(true);
 
             if (this.stepNum + 1 !== this.parent.numSteps) {
-                sbmt.className = "forrm-btn forrm-btn-submit";
+                sbmt.className = this.parent.options.css.prefix + this.parent.options.css.buttonClass + ' ' +  this.parent.options.css.prefix + this.parent.options.css.buttonNextClass;
                 sbmt.innerHTML = 'Submit';
                 toolkit.on(sbmt, 'click onkeypress', function (e) {
                         self.parent.handleEvent.call(self.parent, e);
@@ -614,7 +623,7 @@
 
             if (this.stepNum !== 0) {
                 prv = tpl.cloneNode(true);
-                prv.className = "forrm-btn forrm-btn-previous";
+                prv.className = this.parent.options.css.prefix + this.parent.options.css.buttonClass + ' ' + this.parent.options.css.prefix + this.parent.options.css.buttonPreviousClass;
                 prv.innerHTML = 'Previous';
                 toolkit.on(prv, 'click onkeypress', function (e) {
                     self.parent.changeStep.call(self.parent, false, e);
@@ -697,7 +706,7 @@
                 stepElements = stepElements.length > 0 && stepElements || [this.DOMElement];
                 this.currentStep = 0;
                 if (this.numSteps > 1) {
-                    this.DOMElement.className += ' forrm-step-1';
+                    this.DOMElement.className += ' ' + this.options.css.prefix + this.options.css.stepPrefix + '1';
                 }
                 for (var i = 0; i < stepElements.length; ++i) {
                     this.steps.push(new Step(stepElements[i], this, i));
@@ -725,10 +734,17 @@
         changeStep : function (forward, e) {
             var next = !!forward && this.currentStep + 1 || this.currentStep - 1;
 
+            console.log(this.options.css.prefix + this.options.css.stepPrefix + (+this.currentStep + 1));
+
             if(!!e) {toolkit.preventDefault(e);}
 
             this.steps[this.currentStep].hide();
-            this.DOMElement.className = this.DOMElement.className.split(' forrm-step-' + next).join(' forrm-step-' + (+next + 1));
+            this.DOMElement.className = this.DOMElement.className.split(' ' +
+                                                                        this.options.css.prefix +
+                                                                        this.options.css.stepPrefix +
+                                                                        (+this.currentStep + 1)).join(' ' +
+                                                                        this.options.css.prefix +
+                                                                        this.options.css.stepPrefix + (+next + 1));
             this.steps[next].show();
             this.currentStep = next;
 
@@ -751,7 +767,7 @@
                 if (!this.options.listMessages) {
                     window.scrollTo(0, this.DOMElement.offsetTop);
                     //document.getElementsByClassName(this.options.errorMessagesClass)[0].focus();
-                    document.querySelector('.' + this.options.errorMessagesClass).focus();
+                    document.querySelector('.' + this.options.css.prefix + this.options.css.errorMessageClass).focus();
                 } else {
                     window.scrollTo(0, this.UI.errorListHolder.offsetTop);
                     this.UI.errorListHolder.focus();
