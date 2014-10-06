@@ -19,6 +19,8 @@
         input, textarea, select { font-family:'Open Sans', sans-serif;font-size:1rem;display: block; padding: 1%; border-radius: 4px; border: 0 none; width: 100%; background: #e6e6e6;outline: none;  }
         input:hover :not(input[type=submit]), textarea:hover :not(input[type=submit]) { background: #f1f1f1; }
 
+        .forrm-hidden {position: absolute;overflow: hidden;clip: rect(0 0 0 0);height: 1px;width: 1px;margin: -1px;padding: 0; border: 0;}
+
 
         .forrm-row-checkbox,
         .forrm-row-radio{ position: relative;}
@@ -39,11 +41,13 @@
         .forrm-row-radio label { display: inline-block;}
         .forrm-row-submit { margin-bottom: 0; }
 
-
+        button,
         .button-add,
         input[type=submit],
-        input[type=submit]:valid{ text-decoration: none; border-radius: 4px; width: auto; background: #3cb209; color: white; padding: .5em 2em; font-weight: 700; }
-        .button-add:hover, input[type=submit]:hover { cursor: pointer; background: rgba(60, 178, 9, 0.8); color: #fff; }
+        input[type=submit]:valid{ text-decoration: none; border-radius: 4px; width: auto; background: #3cb209; color: white; padding: .5em 2em; font-weight: 700; font-size:1em;box-shadow:none;}
+        button:hover,
+        .button-add:hover,
+        input[type=submit]:hover { cursor: pointer; background: rgba(60, 178, 9, 0.8); color: #fff; }
 
         input[type=range] {}
 
@@ -226,28 +230,14 @@
         <fieldset data-forrm-step="1">
             <div class="forrm-row">
                 <label for="test-field-3-1">Field 1: *</label>
-                <input type="text" id="test-field-3-1" value="" required aria-required="true">
+                <input type="text" id="test-field-3-1" name="test-field-3-1" value="" required aria-required="true">
             </div>
             <div class="forrm-row">
                 <label for="test-field-3-2">Field 2: *</label>
-                <input type="number" id="test-field-3-2" value="" maxlength="2" required aria-required="true">
+                <input type="number" id="test-field-3-2" name="test-field-3-2" value="" maxlength="2" required aria-required="true">
             </div>
-        </fieldset>
+        </fieldset><!--
         <fieldset data-forrm-step="2">
-            <div class="forrm-row">
-                <label for="test-field-3-3">Field 4: *</label>
-                <input type="text" id="test-field-3-3" value="" required aria-required="true">
-            </div>
-            <div class="forrm-row">
-                <label for="test-field-3-4">Field 5: *</label>
-                <input type="number" id="test-field-3-4" value="">
-            </div>
-            <div class="forrm-row">
-                <label for="test-field-3-4">Field 6: *</label>
-                <input type="text" id="test-field-3-4" value="" required aria-required="true">
-            </div>
-        </fieldset>
-        <fieldset data-forrm-step="3">
             <div class="forrm-row forrm-row-checkbox">
                 <fieldset>
                     <legend>Checkbox group</legend>
@@ -269,6 +259,20 @@
                         <label for="test-checkbox-step-2">Option 1</label>
                     </div>
                 </fieldset>
+            </div>
+        </fieldset>-->
+        <fieldset data-forrm-step="2">
+            <div class="forrm-row">
+                <label for="test-field-3-3">Field 4: *</label>
+                <input type="text" id="test-field-3-3" name="test-field-3-3" value="" required aria-required="true">
+            </div>
+            <div class="forrm-row">
+                <label for="test-field-3-4">Field 5: *</label>
+                <input type="number" id="test-field-3-4" name="test-field-3-4" value="">
+            </div>
+            <div class="forrm-row">
+                <label for="test-field-3-5">Field 6: *</label>
+                <input type="text" id="test-field-3-5" name="test-field-3-5" value="" required aria-required="true">
             </div>
             <div class="forrm-row submit">
                 <input type="submit" value="Submit">
