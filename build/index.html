@@ -6,7 +6,7 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet'>
 	<style>
         *{box-sizing:border-box;margin: 0;padding: 0;border: 0;outline: 0;vertical-align: baseline;}
-        body {font-family:'Open Sans', sans-serif;background:#f1f1f1;color:#191919;font-size:110%}
+        body {font-family:'Open Sans', sans-serif;background:#fafafa;color:#191919;font-size:110%}
         *:focus {outline: none;}
         *:invalid {box-shadow:none}
         form {width:80%;margin:40px auto;}
@@ -20,7 +20,6 @@
         input:hover :not(input[type=submit]), textarea:hover :not(input[type=submit]) { background: #f1f1f1; }
 
         .forrm-hidden {position: absolute;overflow: hidden;clip: rect(0 0 0 0);height: 1px;width: 1px;margin: -1px;padding: 0; border: 0;}
-
 
         .forrm-row-checkbox,
         .forrm-row-radio{ position: relative;}
@@ -193,9 +192,9 @@
             </div>
             <div class="forrm-row forrm-row-checkbox">
                 <fieldset>
-                    <legend>Required checkbox: *</legend>
+                    <legend>I agree the terms and conditions: *</legend>
                      <div class="forrm-row forrm-row-checkbox">
-                        <input type="checkbox" id="test-checkbox-5" name="test-checkbox-5" value="1" required aria-required="true">
+                        <input type="checkbox" id="test-checkbox-5" name="test-checkbox-5" value="1" required aria-required="true" data-forrm-custom-error="Must must agree to the terms in order to continue">
                         <label for="test-checkbox-5">Option 1</label>
                     </div>
                 </fieldset>
