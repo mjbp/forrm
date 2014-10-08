@@ -10,14 +10,10 @@
  * ROADMAP:
  * minlength attribute polyfill √(sort of, using pattern)
  *
- * set custom error message for field **
+ * set custom error message for field ********
  * matching fields (for passwords) ** √
-       set required if a previous element is selected?? use conditional instead??
+ * customConstraint validation with custom error √
  *
- *
- * conditionals ******** FIX ME PLS -> I NEED TO REVEAL DEPENDENT BEFORE FORM SUBMISSION
-    ****** ON CHANGE (not on validate), ENABLE DEPENDENT
-
  *  - one required for custom group √
  *    - min number of group required √
  *  - reveal named field(s) once valid √ (see below)
@@ -202,6 +198,7 @@
 
                 this.testCustomConstraint = (!!this.DOMElement.getAttribute('data-forrm-custom-constraint') && this.forrm.options.customConstraint[this.DOMElement.getAttribute('data-forrm-custom-constraint')]) || false;
 
+
                 /*
                 //if minlength, set pattern attribute
                 if (this.DOMElement.getAttribute('minlength') !== 'null') {
@@ -314,9 +311,25 @@
             if (!this.forrm.HTML5) {
                 this.setValidity();
             }
+            if (!!this.testCustomConstraint) {
+                if (!!this.forrm.HTML5) {
+                    this.DOMElement.setCustomValidity(this.testCustomConstraint.call(this.DOMElement));
+                } else {
+                    if (!this.testCustomConstraint.call(this.DOMElement)) {
+                        this.validity.valid = false;
+                        this.validity.customError = this.testCustomConstraint.call(this.DOMElement);
+                    }
+                }
+            }
             return (this.DOMElement.checkValidity instanceof Function && this.DOMElement.checkValidity()) || this.getValidity();
         },
         validate : function () {
+            if (!this.test()) {
+                this.addError(this.getError());
+            } else {
+                this.addSuccess();
+            }
+            /*
             if (!!this.testCustomConstraint && !!this.testCustomConstraint.call(this.DOMElement)) {
                 this.addError(this.testCustomConstraint.call(this.DOMElement));
             } else {
@@ -326,12 +339,17 @@
                     this.addSuccess();
                 }
             }
+            */
         },
         getError : function () {
             if (this.forrm.options.customErrorMessage || this.type === 'group') {
                 return (this.forrm.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
             } else {
-                return this.DOMElement.validationMessage || this.validationMessage;
+                if (this.DOMElement.getAttribute('data-forrm-custom-error') !== null) {
+                    return this.DOMElement.getAttribute('data-forrm-custom-error');
+                } else {
+                    return this.DOMElement.validationMessage || this.validationMessage;
+                }
             }
         },
         addEnabler : function () {
