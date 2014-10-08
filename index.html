@@ -69,11 +69,12 @@
         .forrm-row-radio.forrm-error label:before,
         .forrm-error input,
         .forrm-error select,
-        .forrm-error textarea { box-shadow: 0px 0px 5px 0px rgba(255, 25, 16, 0.9); background: rgba(255, 25, 16, 0.1); }
+        .forrm-error textarea,
+        .forrm-error input:valid,
+        .forrm-error textarea:valid { box-shadow: 0px 0px 5px 0px rgba(255, 25, 16, 0.9); background: rgba(255, 25, 16, 0.1); }
 
         input:valid,
-        textarea:valid,
-        .forrm-error:valid {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
+        textarea:valid {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
         input.forrm-success {background: rgba(60, 178, 9, 0.1);box-shadow: 0px 0px 5px 0px rgba(60, 178, 9, 0.9);}
 
         .forrm-disabled {opacity:0.5}
@@ -92,6 +93,21 @@
 </head>
 <body>		
     <a href="https://github.com/mjbp/form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+    <form class="test-form-0" action="/">
+        <fieldset>
+            <div class="forrm-row">
+                <label for="test-pw-1">Password: *</label>
+                <input type="password" id="test-pw-1" name="test-pw-1" value="" required aria-required="true">
+            </div>
+            <div class="forrm-row">
+                <label for="test-pw-2">Re-type your password: *</label>
+                <input type="password" id="test-pw-2" name="test-pw-2" value="" required aria-required="true" data-forrm-custom-constraint="match-values">
+            </div>
+            <div class="forrm-row submit">
+                <input type="submit" value="Submit">
+            </div>
+        </fieldset>
+    </form>
     <form class="test-form-1" action="/">
         <fieldset>
             <fieldset class="forrm-group">
@@ -220,18 +236,34 @@
             </div>
             <div class="forrm-row">
                 <label for="test-number">Number: *</label>
-                <input type="number" id="test-number" value="" data-forrm-conditonal="conditional-test" required aria-required="true">
+                <input type="number" id="test-number" value="" required aria-required="true">
             </div>
-            <div class="forrm-row forrm-disabled conditional-test">
+            <div class="forrm-row">
                 <label for="test-url">Url: *</label>
-                <input type="url" id="test-url" value="" data-forrm-conditonal-target="conditional-test" required aria-required="true" disabled>
+                <input type="url" id="test-url" value="" required aria-required="true">
             </div>
             <div class="forrm-row submit">
                 <input type="submit" value="Submit">
             </div>
         </fieldset>
     </form>
-
+    <form class="form-test-enabler" action="/">
+        <div class="forrm-row">
+            <label for="test-enabler-1">Text: *</label>
+            <input type="text" id="test-enabler-1" name="test-enabler-1" value="" required>
+        </div>
+        <div class="forrm-row">
+            <label for="test-enabler-2">Text: *</label>
+            <input type="text" id="test-enabler-2" name="test-enabler" value="" data-forrm-enabler="enabler-test">
+        </div>
+        <div class="forrm-row forrm-disabled enabler-test">
+            <label for="test-enabler-3">Url: *</label>
+            <input type="text" id="test-enabler-3" name="test-enabler-3" value="" required aria-required="true" disabled>
+        </div>
+        <div class="forrm-row submit">
+            <input type="submit" value="Submit">
+        </div>
+    </form>
     <form class="test-form-3" action="/">
         <div class="forrm-step-list">
             <span class="forrm-step-list--1">Step 1</span>
@@ -296,6 +328,20 @@
 	<script>
         //$('form').Form();
         Forrm.init(".test-form-1, .test-form-2, .test-form-3");
+        Forrm.init(".test-form-0", {customConstraint :
+                                        {'match-values' : function () {
+                                                var matcher = document.querySelector('#test-pw-1').value,
+                                                    error = 'The passwords must be the same';
+
+                                                if (this.value === matcher) {
+                                                    return '';
+                                                } else {
+                                                    return error;
+                                                }
+                                            }
+                                        }
+                                   });
+        Forrm.init(".form-test-enabler");
 	</script>
 </body>
 </html>
