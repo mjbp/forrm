@@ -2,7 +2,7 @@
 /*global define, console*/
 /*!
  * @name        Forrm, lightweight vanilla js HTML5 form validation based on constraintValidation API
- * @version     Sept 14
+ * @version     Oct 14
  * @author      mjbp
  * Licensed under the MIT license
  */
@@ -10,7 +10,7 @@
  * ROADMAP:
  * minlength attribute polyfill √(sort of, using pattern)
  *
- * set custom error message for field ********
+ * set custom error message for field √
  * matching fields (for passwords) ** √
  * customConstraint validation with custom error √
  *
@@ -55,7 +55,7 @@
                 buttonPreviousClass : 'btn-previous',
                 stepPrefix : 'step-'
             },
-            listMessages : false,
+            listMessages : true,
             listTitle : 'We couldn\'t submit the form, please check your answers:',
             errorMessageElement : 'p',
             errorMessages : {
@@ -329,20 +329,9 @@
             } else {
                 this.addSuccess();
             }
-            /*
-            if (!!this.testCustomConstraint && !!this.testCustomConstraint.call(this.DOMElement)) {
-                this.addError(this.testCustomConstraint.call(this.DOMElement));
-            } else {
-                if (!this.test()) {
-                    this.addError(this.getError());
-                } else {
-                    this.addSuccess();
-                }
-            }
-            */
         },
         getError : function () {
-            if (this.forrm.options.customErrorMessage || this.type === 'group') {
+            if (this.forrm.options.customErrorMessage) {
                 return (this.forrm.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
             } else {
                 if (this.DOMElement.getAttribute('data-forrm-custom-error') !== null) {
@@ -366,9 +355,6 @@
                 };
             //get dependents
             self.dependents = document.querySelectorAll('.' + dc + ' input, ' + '.' + dc + ' textarea, ' + '.' + dc + 'select');
-
-
-            //toolkit.removeEvent(self.DOMElement, 'change', openSesame);
             toolkit.on(self.DOMElement, 'change', openSesame);
         }
     };
@@ -830,8 +816,7 @@
                 this.options.fail.call();
             } else {
                 if (this.currentStep === this.numSteps - 1) {
-                    console.log('Submitting...');
-                    //this.go.call(this.DOMElement);
+                    this.go.call(this.DOMElement);
                 } else {
                     this.changeStep(true);
                 }
