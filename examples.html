@@ -28,6 +28,9 @@
         .nav-primary {text-align:right;display:block;float:left;line-height:75px;width:65%;padding-right:4%}
         .nav-primary-link {color:#0000ff;text-decoration:none;display: inline-block;margin-left:1rem;}
         .nav-primary-link:hover {color:#3C3C3C;}
+        .nav-secondary {counter-reset: section;}
+        .nav-secondary-link {display:block;}
+        .nav-secondary-link:before {counter-increment: section;content:counter(section) ". ";}
         .main {padding:35px 12%;}
         .bucket {background:#fff;width:100%;padding:95px 4% 2em 12%;}
         h1, h2, p, ul {margin-bottom:1rem;}
@@ -148,12 +151,12 @@ padding: 8px 24px;font-size:.875rem;box-shadow:none;transition: box-shadow 200ms
         </nav>
     </header>
     <div class="bucket">
-        <nav>
-            <a href="#">Default installation</a>
-            <a href="#">List errors</a>
-            <a href="#">Custom error messages</a>
-            <a href="#">Groups</a>
-            <a href="#">Steps</a>
+        <nav class="nav-secondary">
+            <a class="nav-secondary-link" href="#">Default installation</a>
+            <a class="nav-secondary-link" href="#">List errors</a>
+            <a class="nav-secondary-link" href="#">Custom error messages</a>
+            <a class="nav-secondary-link" href="#">Groups</a>
+            <a class="nav-secondary-link" href="#">Steps</a>
         </nav>
     </div>
     <div role="main" class="main">
