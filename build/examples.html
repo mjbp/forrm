@@ -77,7 +77,7 @@
         .forrm-row-radio .forrm-row-checkbox { margin-bottom: 0; }
         input[type=radio],
         input[type=checkbox] {display: inline-block; width:auto; height:auto; margin-right:1em;cursor: pointer;}
-        
+
         .forrm-row-checkbox label,
         .forrm-row-radio label { display: inline-block;}
         .forrm-row-submit { margin-bottom: 0;}
@@ -106,7 +106,7 @@ padding: 8px 24px;font-size:.875rem;box-shadow:none;transition: box-shadow 200ms
         div[data-optional] input,
         div[data-optional] label {opacity:0.5}
         div[data-optional] input:focus{opacity:1}
-        
+
         .forrm-error-message {color:rgb(255, 25, 16);position:absolute;top:0;right:0;font-size:.875rem}
 
         .forrm-error input,
@@ -137,7 +137,7 @@ padding: 8px 24px;font-size:.875rem;box-shadow:none;transition: box-shadow 200ms
         .forrm-error-list ol { padding-left: 1.4em; margin-left: 0; }*/
     </style>
 </head>
-<body>		
+<body>
    <!--<a href="https://github.com/mjbp/form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>-->
     <header class="banner banner--home" role="banner">
         <h1 class="banner-title">Forrm</h1>
@@ -148,106 +148,31 @@ padding: 8px 24px;font-size:.875rem;box-shadow:none;transition: box-shadow 200ms
         </nav>
     </header>
     <div class="bucket">
-        <p>An HTML5 form validation library in javascript.</p>
-        <p>Extending native HTML5 form validation to add more complex, customisable and consistent client-side validation.</p>
-        <p>No dependencies, supports all modern browsers and IE8 (standards mode)+.</p>
-        <div class="github">
-            <a class="icon-github" href="http://github.com/mjbp/forrm/">Fork on github</a>
-        </div>
+        <nav>
+            <a href="#">Default installation</a>
+            <a href="#">List errors</a>
+            <a href="#">Custom error messages</a>
+            <a href="#">Groups</a>
+            <a href="#">Steps</a>
+        </nav>
     </div>
     <div role="main" class="main">
-        <h1>What does it do?</h1>
-        <table>
-            <caption>Forrm come in two flavours, <b>lite</b> for core functionality, and <b>full</b> for additional features:</caption>
-            <thead>
-                <th></th>
-                <th class="thead-th">Lite</th>
-                <th class="thead-th">Full</th>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>Standardises client-side form validation error display and behaviour across browsers</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Form validation with accessibilty in mind</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Polyfill HTML5 validation for IE8 standards mode</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Group validation for checkbox and radio groups</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Real-time form validation</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Autocomplete support</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Inline or listed and linked error messages</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Customisable CSS hooks for all features and states</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Group validation for custom groups of any field type</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Allows setting of minimum number of valid fields for all group types</th>
-                    <td><span class="feature-no"></span><span class="hidden">No</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Customisable form completion callback</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Customisable error messages by field and error type</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Customisable error messages for individual fields</th>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Create multiple steps from a single form</th>
-                    <td><span class="feature-no"></span><span class="hidden">No</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Custom constraint validation - make your own constraint</th>
-                    <td><span class="feature-no"></span><span class="hidden">No</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-                <tr>
-                    <th>Enable fields based on previous field completion</th>
-                    <td><span class="feature-no"></span><span class="hidden">No</span></td>
-                    <td><span class="feature-yes"></span><span class="hidden">Yes</span></td>
-                </tr>
-            </tbody>
-        </table>
-        <p>Check out the <a href="documentation.html">documentation</a> for set and configuration, and the <a href="examples.html">examples</a> for use cases.</p>
+        <section class="example" id="">
+            <!--
+                h1
+                short description
+                form
+                code
+            -->
+            <!--
+                1. Default
+                2. Error list
+                3. Custom error messages
+                4. Groups
+                5. Custom constraint
+                6. Steps
+            -->
+        </section>
         <!--
         Home
         - intro
@@ -377,10 +302,10 @@ padding: 8px 24px;font-size:.875rem;box-shadow:none;transition: box-shadow 200ms
             </div>
             <div class="forrm-row forrm-row-submit">
                 <input type="submit" value="Submit">
-            </div> 
+            </div>
         </fieldset>
     </form>
-    
+
     <form class="test-form-2" action="/" role="form">
         <fieldset>
             <div class="forrm-row">
