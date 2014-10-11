@@ -13,6 +13,12 @@
  * set custom error message for field √
  * matching fields (for passwords) ** √
  * customConstraint validation with custom error √
+
+ ***********************
+ * BUG
+ * On enabler-> try to recreate error
+ *
+ *
  *
  *  - one required for custom group √
  *    - min number of group required √
@@ -51,11 +57,11 @@
                 disabledClass : 'disabled',
                 hiddenClass : 'hidden',
                 buttonClass : 'btn',
-                buttonNextClass : 'btn-submit',
-                buttonPreviousClass : 'btn-previous',
+                buttonNextClass : 'btn--submit',
+                buttonPreviousClass : 'btn--previous',
                 stepPrefix : 'step-'
             },
-            listMessages : true,
+            listMessages : false,
             listTitle : 'We couldn\'t submit the form, please check your answers:',
             errorMessageElement : 'p',
             errorMessages : {
@@ -158,20 +164,20 @@
         };
 
     /*
-     * Element wrapper class
+     * ForrmElement wrapper class
      *
      * @param  {DOM node} a single form input element
      * @param  {instance of Form class} reference to parent form element
      *
      */
-    function Element(element, parent) {
+    function ForrmElement(element, parent) {
         this.DOMElement = element;
         this.parent = parent;
         this.forrm = parent.parent;
         this.init();
     }
 
-    Element.prototype = {
+    ForrmElement.prototype = {
         init : function () {
             var updateEvent,
                 self = this,
@@ -360,13 +366,13 @@
     };
 
     /*
-     * Group wrapper class
+     * ForrmGroup wrapper class
      *
      * @param {String} name
      * @param {Array} array of nodes
      *
      */
-    function Group(name, els, type, min) {
+    function ForrmGroup(name, els, type, min) {
         if (name === 'undefined') {
             throw new Error('Nae name');
         }
@@ -379,7 +385,7 @@
         this.init(els);
     }
 
-    Group.prototype = {
+    ForrmGroup.prototype = {
         init : function () {
             this.valid = true;
         },
@@ -430,13 +436,13 @@
     };
 
      /*
-     * UI wrapper class
+     * ForrmUI wrapper class
      *
      * @param   {Form} Parent form
      * @roadMap Use templating to bypass DOM manipulation horrorshow
      *
      */
-    function UI(form) {
+    function ForrmUI(form) {
         if (form === 'undefined') {
             throw new Error('Nae form');
         }
@@ -444,7 +450,7 @@
         this.init();
     }
 
-    UI.prototype = {
+    ForrmUI.prototype = {
         init : function () {
             if (!!this.parent.options.displayMessages) {
                 this.write = !!this.parent.options.listMessages ? this.listErrorMessages : this.displayInlineErrorMessages;
@@ -567,13 +573,13 @@
     };
 
     /*
-     * Step class
+     * ForrmStep class
      *
      * @param {String} name
      * @param {Array} array of nodes
      *
      */
-    function Step(el, parent, num) {
+    function ForrmStep(el, parent, num) {
         if (name === 'undefined') {
             throw new Error('Nae name');
         }
@@ -584,7 +590,7 @@
         this.init();
     }
 
-    Step.prototype = {
+    ForrmStep.prototype = {
         init : function () {
             var tmpGroups = [],
                 self = this;
@@ -602,7 +608,7 @@
                     field.getAttribute('disabled') === null &&
                     field.getAttribute('novalidate') === null) {
                     if (field.getAttribute('required') !== null) {
-                        this.validatebleElements[field.getAttribute('id')] = new Element(field, this);
+                        this.validatebleElements[field.getAttribute('id')] = new ForrmElement(field, this);
                         if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-forrm-group') !== null) {
                             tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
                         }
@@ -612,7 +618,7 @@
                                 var groupName = field.getAttribute('data-forrm-group') || field.getAttribute('name'),
                                     groupType = field.getAttribute('data-forrm-group') ? 'custom' : 'checked',
                                     groupMin = field.getAttribute('data-forrm-group-min') || 1;
-                                this.groups[groupName] = new Group(groupName, tmpGroups, groupType, groupMin);
+                                this.groups[groupName] = new ForrmGroup(groupName, tmpGroups, groupType, groupMin);
                                 for (var j = 0; j < tmpGroups.length; j++) {
 
                                    tmpGroups[j].setGroup(this.groups[groupName]);
@@ -621,7 +627,7 @@
                             }
                         }
                     } else {
-                        this.unvalidatebleElements[field.getAttribute('id')] = new Element(field, this);
+                        this.unvalidatebleElements[field.getAttribute('id')] = new ForrmElement(field, this);
                     }
                 }
             }
@@ -632,7 +638,7 @@
             }
 
             this.makeValidationList();
-            this.parent.UI = new UI(this.parent);
+            this.parent.UI = new ForrmUI(this.parent);
             return this;
         },
         hide : function () {
@@ -737,7 +743,7 @@
                 this.DOMElement.className += ' ' + this.options.css.prefix + this.options.css.stepPrefix + '1';
             }
             for (var i = 0; i < stepElements.length; ++i) {
-                this.steps.push(new Step(stepElements[i], this, i));
+                this.steps.push(new ForrmStep(stepElements[i], this, i));
                 if (i !== 0) {
                     this.steps[i].hide();
                 }
@@ -826,17 +832,21 @@
 
     return {
         init : function (el, options) {
-            var elements = document.querySelectorAll(el),
-                forrms = [],
-                i = null,
-                l = elements.length;
+            if (!('querySelectorAll' in document)) {
+                throw new Error('Sorry, your browser is not supported.');
+            } else {
+                var elements = document.querySelectorAll(el),
+                    forrms = [],
+                    i = null,
+                    l = elements.length;
 
-            for (i = 0; i < l; i += 1) {
-                if (!elements[i].hasAttribute('novalidate')) {
-                    forrms[i] = new Forrm(elements[i], options);
+                for (i = 0; i < l; i += 1) {
+                    if (!elements[i].hasAttribute('novalidate')) {
+                        forrms[i] = new Forrm(elements[i], options);
+                    }
                 }
+                return forrms;
             }
-            return forrms;
         }
     };
 }));
