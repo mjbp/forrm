@@ -2,36 +2,41 @@
 body {font-family:'Roboto', sans-serif;background:#f5f5f5;color:#3C3C3C;font-size:100%;line-height:1.5em}
 @font-face {
     font-family: 'icomoon';
-    src:url('fonts/icomoon.eot?wzu5cl');
-    src:url('fonts/icomoon.eot?#iefixwzu5cl') format('embedded-opentype'),
-        url('fonts/icomoon.woff?wzu5cl') format('woff'),
-        url('fonts/icomoon.ttf?wzu5cl') format('truetype'),
-        url('fonts/icomoon.svg?wzu5cl#icomoon') format('svg');
+    src:url('../fonts/icomoon.eot?wzu5cl');
+    src:url('../fonts/icomoon.eot?#iefixwzu5cl') format('embedded-opentype'),
+        url('../fonts/icomoon.woff?wzu5cl') format('woff'),
+        url('../fonts/icomoon.ttf?wzu5cl') format('truetype'),
+        url('../fonts/icomoon.svg?wzu5cl#icomoon') format('svg');
     font-weight: normal;
     font-style: normal;
 }
-a {color:#0000ff;text-decoration:none;transition:color 260ms ease-out;}
+a {color:rgb(76, 142, 250);text-decoration:none;transition:color 260ms ease-out;}
 a:hover {color:#000;}
 h1, h2, p, ul {margin-bottom:1rem;font-weight:400;}
-h1 {font-size:1.2em;}
+h1 {font-size:1.35em;}
+h2 {margin:1em 0 .25em 0;font-size:1.1em}
 li {line-height:1.75em}
-caption {text-align:left}
+small {font-size: .85em}
+caption {text-align:left;font-size: 1.2em;}
 .icon-yes:before {content:'\e600';font-family:icomoon;font-size:1em;color:#3cb209;margin-right:5px}
 .icon-github:before {content:'\e602';line-height: 1;font-family:icomoon;margin-right:5px}
-.hidden {font: 0/0 a;  text-shadow: none;  color: transparent;}
+.icon-top {position:fixed;right:5px;bottom:5px;}
+.icon-top:before {content:'\e601';line-height: 1;font-family:icomoon;display:block;padding:1em;background:#fff;}
+.hidden {font: 0/0 a;  text-shadow: none;  color: transparent;position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;}
 .no-bullet {list-style:none;}
 pre, code {padding:0;margin:0;line-height:1.25em}
 pre {border-left:2px solid rgba(0,0,0,.1);padding:.5em .5em .5em 1em;margin-bottom:1.5em;background:#fff;width:100%;overflow-x: scroll}
 .code-comment {color:#999;}
 
-.banner {height:75px;position:fixed;box-shadow: 0 1px 5px rgba(0,0,0,.1);background:#fff;width:100%;}
+.banner {height:75px;position:fixed;z-index:2; box-shadow: 0 1px 5px rgba(0,0,0,.1);background:#fff;width:100%;}
 .banner--home {box-shadow:none;}
-.banner-title {font-weight:400;width:23%;font-size:1.75rem;display:block;float:left;line-height:75px;margin-left:12%;padding-left:50px;position:relative;left:-50px;background:url(forrm.svg) center left no-repeat;color:#000;}
+.banner-title {font-weight:400;width:23%;font-size:1.75rem;display:block;float:left;line-height:75px;margin-left:12%;padding-left:50px;position:relative;left:-50px;background:url(../img/forrm.svg) center left no-repeat;color:#000;}
 .banner-title--home {color:#fff;}
 
 .nav-primary {text-align:right;display:block;float:left;line-height:75px;width:65%;padding-right:4%}
-.nav-primary-link {color:#0000ff;text-decoration:none;display: inline-block;margin-left:1rem;}
+.nav-primary-link {text-decoration:none;display: inline-block;margin-left:1rem;}
 .nav-primary-link:hover {color:#3C3C3C;}
+.nav-primary-link--current {}
 .nav-secondary {counter-reset: section;}
 .nav-secondary-link {display:block;}
 .nav-secondary-link:before {counter-increment: section;content:counter(section) ". ";}
@@ -40,7 +45,7 @@ pre {border-left:2px solid rgba(0,0,0,.1);padding:.5em .5em .5em 1em;margin-bott
 .bucket {background:#fff;width:100%;padding:95px 4% 2em 12%;}
 section {margin:0 0 35px 0;}
 
-table {text-align:left;border-collapse: collapse;margin-bottom:2em}
+table {text-align:left;border-collapse: collapse;margin:0 0 3em;}
 thead {padding-bottom:.5em}
 th {font-weight:400;padding:1em 1em 1em 0;}
 .thead-th {padding-left:1em;}
@@ -51,22 +56,22 @@ td {border:0 none;border-bottom:1px solid rgba(0,0,0,.1)}
 
 *:focus {outline: none;}
 *:invalid {box-shadow:none}
-form {width:80%;margin:4rem auto;}
-.forrm-row {position:relative;margin-bottom: 2%; }
+form {margin:2em auto;}
+.forrm-row {position:relative;margin-bottom: 2%;}
 
-textarea { resize: none; }
+textarea {resize: none;}
 input,
 select,
-option { border-radius: 0; }
-select {-webkit-appearance: none;-webkit-border-radius: 0px; }
-label { font-size:.875rem; display: block; margin-bottom: .25em; cursor: pointer;}
+option {border-radius: 0;}
+select {-webkit-appearance: none;-webkit-border-radius: 0px;}
+label {font-size:.875rem; display: block; margin-bottom: .25em; cursor: pointer;}
 input, textarea, select { font-family:'Roboto', sans-serif;font-size:1rem;display: block; padding: 1%;border: 0 none; width: 100%; background: #fff;outline: none;  border-bottom:1px solid #C8C8C8;color:#3C3C3C;}
 option {font-family:'Roboto', sans-serif;font-size:1rem;padding:1%;}
 .forrm-hidden {position: absolute;overflow: hidden;clip: rect(0 0 0 0);height: 1px;width: 1px;margin: -1px;padding: 0; border: 0;}
 input:focus,
 textarea:focus {border-bottom:1px solid rgb(76, 142, 250);}
 
-select {background:#fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAEbgAABG4B0KOyaAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACbSURBVDiN7ZNLDoIwFEXPhTVI2aL8tuPMpbAHQJdDrpNqFCkhYeLAJm9ye87La9rKNkdWdsj+jQaScklXSeVeSVIZnTyzPQMD0EsKO+QA9MBge8Y28SY64A6EZ7YsIESme2ULoAVuQLEiF3Gv/chXwAaY3ptEeQKaLz4xag2MwCnWCNSr7MZ5qyiOQJXitPWUJZ0BbF+SzP8v8ABkhsJhj8L9jwAAAABJRU5ErkJggg==) 99% center no-repeat;}
+select {position:relative;background:#fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAEbgAABG4B0KOyaAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACbSURBVDiN7ZNLDoIwFEXPhTVI2aL8tuPMpbAHQJdDrpNqFCkhYeLAJm9ye87La9rKNkdWdsj+jQaScklXSeVeSVIZnTyzPQMD0EsKO+QA9MBge8Y28SY64A6EZ7YsIESme2ULoAVuQLEiF3Gv/chXwAaY3ptEeQKaLz4xag2MwCnWCNSr7MZ5qyiOQJXitPWUJZ0BbF+SzP8v8ABkhsJhj8L9jwAAAABJRU5ErkJggg==) 99% center no-repeat;}
 option {font-family:'Roboto', sans-serif;font-size:1rem;}
 
 .forrm-row-checkbox,
@@ -132,7 +137,7 @@ input.forrm-success {border-bottom: 1px solid #3cb209; }
 .forrm-row-radio.forrm-error {background:transparent;box-shadow:none;}
 
 .forrm-error-list { width: 100%; margin: 0 0 1.5em 0; padding: 3%; background: rgba(255, 25, 16, 0.1); color: rgba(255, 25, 16, 0.9); position: relative; }
-.forrm-error-list a {color: rgba(255, 25, 16, 0.9);}
+.forrm-error-list a {color: rgba(255, 25, 16, 0.9);text-decoration: underline}
 
 .forrm-error-list dt { margin-bottom: 1em; }
 .forrm-error-list ol { padding-left: 1.4em; margin-left: 0; }
