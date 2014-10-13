@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset=utf-8>
+    <title>Forrm</title>
+    <link href="//fonts.googleapis.com/css?family=Roboto:400" rel="stylesheet">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   <!--<a href="https://github.com/mjbp/form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>-->
+    <header class="banner banner--home" role="banner">
+        <h1 class="banner-title">Forrm</h1>
+        <nav class="nav-primary">
+            <a href="/" class="nav-primary-link">Home</a>
+            <a href="/" class="nav-primary-link">Documentation</a>
+            <a href="/" class="nav-primary-link">Examples</a>
+        </nav>
+    </header>
+    <div class="bucket">
+        <nav class="nav-secondary">
+            <h1>Documentation</h1>
+            <a class="nav-secondary-link" href="#overview">Overview</a>
+            <a class="nav-secondary-link" href="#installation">Basic Installation</a>
+            <a class="nav-secondary-link" href="#options">Options</a>
+            <a class="nav-secondary-link" href="#supported">Supported fields/attributes</a>
+        </nav>
+    </div>
+    <div role="main" class="main">
+        <section id="overview">
+            <h1>Overview</h1>
+            <p>Forrm is a javascript form validation library. It extends native browser HTML5 form validation to add more complex, customisable and consistent client-side validation.</p>
+            <p>It is designed to make HTML5 form validation as simple as possible with declarative, readable, easily maintainable, extensible, accessible, reusable code. It should be <b>used in addition to robust server-side validation</b>.</p>
+        </section>
+        <section id="installation">
+            <!--
+                Overview
+                Installation
+                Multiple forms with the same options, pass the selectors you need
+                Options
+                Supported fields/attributes
+                    - HTML5
+                    - Custom
+            -->
+            <h1>Basic Installation</h1>
+            <p>The first step is to code an accessible form in HTML5, using appropriate elements and attributes. Field validation depends on the presence of the required attribute. To display inline errors Forrm expects ech label-input pair to be wrapper in a container, such as a div or li.</p>
+            <p>Forrm has no dependencies so to add it to a HTML page, just include the Forrm script (either the lite or full version) and create an instance with the selectors you need. In code that would look like:</p>
+<pre>
+<code>&lt;script src="js/forrm.js">&lt;/script>
+&lt;script>
+  Forrm.init("form");
+&lt;/script></code>
+</pre>
+            <p>This would add the Forrm validation wrapper with default options to all forms in the document. To apply different options to different forms in the document, simply wrap the form with different options.</p>
+            <p>The Forrm constructor relies on the document.querySelectorAll selection engine, so any valid selector will work as will multiple comma-seperated selectors.</p>
+            <pre>
+<code>&lt;script src="js/forrm.js">&lt;/script>
+&lt;script>
+    <span class="code-comment">//two forms with the default options (displaying inline errors)</span>
+    Forrm.init(".form-login, .form-subscribe");
+
+    <span class="code-comment">//one form displaying the linked list of errors</span>
+    Forrm.init(".form-contact", {listMessages: true});
+ &lt;/script></code>
+            </pre>
+        </section>
+        <section id="options">
+            <h1>Options</h1>
+            <table>
+                <thead>
+                    <th>Property</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="cell-left">augmentHTML</td>
+                        <td class="cell-left">true</td>
+                        <td class="cell-left">Turns Forrm on and off for browsers that support the constraintValidation API. If set to false, Forrm acts only to polyfill HTML5 form validation in older browsers</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">autocomplete</td>
+                        <td class="cell-left">true</td>
+                        <td class="cell-left">Allow autocomplete or not, if set to false autocomplete for the form disabled.</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">customErrorMessage</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">Turn custom error messages on and off. In supported browsers error messages are returned based on the validityState set by the browser. Setting this to true overwrites the browser error messaages with those set in the options (see below). Non-HTML5 browsers always use custom error messages</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.prefix</td>
+                        <td class="cell-left">'forrm-'</td>
+                        <td class="cell-left">Prefix for all CSS hooks added by the script</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.successClass</td>
+                        <td class="cell-left">'success'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the parent element of valid fields</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.errorClass</td>
+                        <td class="cell-left">'error'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the parent element of invalid fields</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.errorMessageClass</td>
+                        <td class="cell-left">'error-message'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the inline error message</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.errorListClass</td>
+                        <td class="cell-left">'error-list'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.disabledClass</td>
+                        <td class="cell-left">'disabled'</td>
+                        <td class="cell-left">Suffix for the CSS hook used for the parent of disabled fields - for use in enabling/disabling</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.buttonClass</td>
+                        <td class="cell-left">'error-list'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.buttonNextClass</td>
+                        <td class="cell-left">'error-list'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.buttonPreviousClass</td>
+                        <td class="cell-left">'error-list'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">css.stepPrefix</td>
+                        <td class="cell-left">'error-list'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>The default options object looks like:</p>
+            <pre>
+<code>{
+    augmentHTML5 : true,
+    autocomplete : true,
+    customErrorMessage : false,
+    displayMessages : true,
+    css : {
+        prefix: 'forrm-',
+        successClass : 'success',
+        errorClass : 'error',
+        errorMessageClass : 'error-message',
+        errorListClass : 'error-list',
+        disabledClass : 'disabled',
+        buttonClass : 'btn',
+        buttonNextClass : 'btn--submit',
+        buttonPreviousClass : 'btn--previous',
+        stepPrefix : 'step-'
+    },
+    listMessages : false,
+    listTitle : 'We couldn\'t submit the form, please check your answers:',
+    errorMessageElement : 'p',
+    errorMessages : {
+        'text': {
+            'valueMissing' : 'This field is required',
+            'patternMismatch' : 'Match the requested format'
+        },
+        'url': {
+            'valueMissing' : 'This field is required',
+            'patternMismatch' : 'Enter a valid URL',
+            'typeMismatch' : 'Enter a valid URL'
+        },
+        'search': {
+            'valueMissing' : 'This field is required',
+            'patternMismatch' : 'Match the requested format'
+        },
+        'email': {
+            'valueMissing' : 'This field is required',
+            'patternMismatch' : 'Enter a valid email address',
+            'typeMismatch' : 'Enter a valid email address'
+        },
+        'tel': {
+            'valueMissing' : 'This field is required',
+            'patternMismatch' : 'Enter a valid phone number'
+        },
+        'select': {
+            'valueMissing' : 'Choose an option'
+        },
+        'checkbox': {
+            'valueMissing' : 'Check at least one of the required boxes'
+        },
+        'radio': {
+            'valueMissing' : 'Select one of the required radio options'
+        },
+        'number': {
+            'valueMissing' : 'This field is required',
+            'patternMismatch' : 'Enter a valid number',
+            'typeMismatch' : 'Enter a valid number'
+        },
+        'file': {
+            'valueMissing' : 'Choose a file'
+        },
+        'group': {
+            'valueMissing' : 'One of these fields is required',
+            'patternMismatch' : 'Match the requested format one on of these fields'
+        }
+    },
+    patterns : {
+        email : "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+        tel : '[\\w\\d\\s\\(\\)\\.+-]+',
+        number : '[\\d]',
+        color: '/^#?([a-f0-9]{6}|[a-f0-9]{3})$/'
+    },
+    pass : false
+}</code>
+            </pre>
+        </section>
+</div>
+<script>
+    if ('querySelectorAll' in document) {
+        var offset = 100;
+        [].forEach.call(document.querySelectorAll('.nav-secondary a'), function (a) {
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                window.scrollTo(0, ((document.getElementById(e.target.getAttribute('href').substr(1)).getBoundingClientRect())['top'] - offset));
+            }, false);
+        });
+    }
+</script>
+</body>
+</html>
