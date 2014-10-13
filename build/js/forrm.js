@@ -9,6 +9,8 @@
 /*
  * ROADMAP:
  * minlength attribute polyfill √(sort of, using pattern)
+ **********
+ * ADD BROWSER-STYLE FIRST ERROR-LIKE CALIDATION MESSAGES**********
  *
  * set custom error message for field √
  * matching fields (for passwords) ** √
