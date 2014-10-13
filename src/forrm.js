@@ -13,11 +13,8 @@
  * set custom error message for field √
  * matching fields (for passwords) ** √
  * customConstraint validation with custom error √
-
- ***********************
- * BUG
- * On enabler-> try to recreate error
- *
+ ********
+ * Max for group
  *
  *
  *  - one required for custom group √
@@ -48,6 +45,7 @@
             autocomplete : true,
             customErrorMessage : false,
             displayMessages : true,
+            firstErrorOnly : false,
             css : {
                 prefix: 'forrm-',
                 successClass : 'success',
@@ -63,7 +61,7 @@
             },
             listMessages : false,
             listTitle : 'We couldn\'t submit the form, please check your answers:',
-            errorMessageElement : 'p',
+            errorMessageElement : 'span',
             errorMessages : {
                 'text': {
                     'valueMissing' : 'This field is required',
@@ -109,17 +107,13 @@
                     'patternMismatch' : 'Match the requested format one on of these fields'
                 }
             },
+            fail : false,
+            pass : false,
             patterns : {
-                //very simple checks, let most through
-                //not even attempting to validate urls by regex
-                email : "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
-                //email : "[a-z0-9!#$%&'*+/=?^_`{|}~.-]+@[a-z0-9-]+(\\.[a-z0-9-]+)+",
+                email : '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?',
                 tel : '[\\w\\d\\s\\(\\)\\.+-]+',
-                number : '[\\d]',
-                color: '/^#?([a-f0-9]{6}|[a-f0-9]{3})$/'
-            },
-            fail : function () {},
-            pass : false
+                number : '[\\d]'
+            }
         },
         toolkit = {
             extend: function (){
@@ -807,19 +801,24 @@
 
             for (var i in this.validationList) {
                 this.validationList[i].element.validate();
+                if (!!this.options.firstErrorOnly && !!this.validationList[i].error) {
+                    break;
+                }
             }
 
             if (this.steps[this.currentStep].countErrors() > 0) {
                 self.UI.write();
                 if (!this.options.listMessages) {
-                    window.scrollTo(0, this.DOMElement.offsetTop);
+                    //window.scrollTo(0, this.DOMElement.offsetTop);
                     //document.getElementsByClassName(this.options.errorMessagesClass)[0].focus();
                     document.querySelector('.' + this.options.css.prefix + this.options.css.errorMessageClass).focus();
                 } else {
-                    window.scrollTo(0, this.UI.errorListHolder.offsetTop);
+                    //window.scrollTo(0, this.UI.errorListHolder.offsetTop);
                     this.UI.errorListHolder.focus();
                 }
-                this.options.fail.call();
+                if (typeof this.options.fail === 'function') {
+                    this.options.fail.call();
+                }
             } else {
                 if (this.currentStep === this.numSteps - 1) {
                     this.go.call(this.DOMElement);

@@ -5,25 +5,23 @@
     <title>Forrm</title>
     <link href="//fonts.googleapis.com/css?family=Roboto:400" rel="stylesheet">
     <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-   <!--<a href="https://github.com/mjbp/form"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>-->
     <header class="banner banner--home" role="banner">
-        <h1 class="banner-title">Forrm</h1>
+        <a href="./"><h1 class="banner-title">Forrm</h1></a>
         <nav class="nav-primary">
-            <a href="/" class="nav-primary-link">Home</a>
-            <a href="/" class="nav-primary-link">Documentation</a>
-            <a href="/" class="nav-primary-link">Examples</a>
+            <a href="./" class="nav-primary-link">Home</a>
+            <a href="./documentation.html" class="nav-primary-link nav-primary-link--current">Documentation</a>
+            <a href="./examples.html" class="nav-primary-link">Examples</a>
         </nav>
     </header>
-    <div class="bucket">
+    <div class="bucket" id="top">
         <nav class="nav-secondary">
             <h1>Documentation</h1>
             <a class="nav-secondary-link" href="#overview">Overview</a>
             <a class="nav-secondary-link" href="#installation">Basic Installation</a>
             <a class="nav-secondary-link" href="#options">Options</a>
-            <a class="nav-secondary-link" href="#supported">Supported fields/attributes</a>
         </nav>
     </div>
     <div role="main" class="main">
@@ -33,26 +31,28 @@
             <p>It is designed to make HTML5 form validation as simple as possible with declarative, readable, easily maintainable, extensible, accessible, reusable code. It should be <b>used in addition to robust server-side validation</b>.</p>
         </section>
         <section id="installation">
-            <!--
-                Overview
-                Installation
-                Multiple forms with the same options, pass the selectors you need
-                Options
-                Supported fields/attributes
-                    - HTML5
-                    - Custom
-            -->
             <h1>Basic Installation</h1>
-            <p>The first step is to code an accessible form in HTML5, using appropriate elements and attributes. Field validation depends on the presence of the required attribute. To display inline errors Forrm expects ech label-input pair to be wrapper in a container, such as a div or li.</p>
-            <p>Forrm has no dependencies so to add it to a HTML page, just include the Forrm script (either the lite or full version) and create an instance with the selectors you need. In code that would look like:</p>
+            <p>The first step is to code an accessible form in HTML5, using appropriate elements and attributes. Field validation depends on the presence of the required attribute. To display inline errors Forrm expects each label-input pair to be wrapper in a container, such as a div or li.</p>
+            <pre>
+<code><span class="code-comment">//Create an HTML5 form</span>
+&lt;form action="/search" method="post">
+  &lt;div class="forrm-row">
+    &lt;label for="search-field">Search*</label>
+    &lt;input type="search" id="search-field" name="search-field" placeholder="Your search terms..." value="" aria-required="true" required>
+  &lt;/div>
+  &lt;input type="submit" value="Search">
+&lt;/form></code>
+</pre>
+            <p>Forrm has no dependencies so to add it to a HTML page, just include the Forrm script (either the lite or full version) and create an instance with the selectors you need. Any selector that plays nicely with document.querySelectorAll works. In code that would look like:</p>
 <pre>
-<code>&lt;script src="js/forrm.js">&lt;/script>
+<code><span class="code-comment">//Get the Forrm script</span>
+&lt;script src="js/forrm.js">&lt;/script>
+<span class="code-comment">//Pass a selector to Forrm constructor</span>
 &lt;script>
   Forrm.init("form");
 &lt;/script></code>
 </pre>
-            <p>This would add the Forrm validation wrapper with default options to all forms in the document. To apply different options to different forms in the document, simply wrap the form with different options.</p>
-            <p>The Forrm constructor relies on the document.querySelectorAll selection engine, so any valid selector will work as will multiple comma-seperated selectors.</p>
+            <p>This would add the Forrm validation wrapper with default options to all forms in the document. To apply different options to different forms in the document, simply instantiate the form with different options.</p>
             <pre>
 <code>&lt;script src="js/forrm.js">&lt;/script>
 &lt;script>
@@ -63,10 +63,13 @@
     Forrm.init(".form-contact", {listMessages: true});
  &lt;/script></code>
             </pre>
+        <p>Check out the <a href="examples.html">examples</a>.</p>
         </section>
         <section id="options">
             <h1>Options</h1>
+            <p>Forrm is highly configureable. Options are passed as the second argument to the Forrm constructor and are merged with the default <a href="#options-object">options object</a>. Any property can be set during instatiation.</p>
             <table>
+                <caption>General options</caption>
                 <thead>
                     <th>Property</th>
                     <th>Default</th>
@@ -74,20 +77,25 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <th class="cell-left">augmentHTML</td>
+                        <td class="cell-left">augmentHTML</td>
                         <td class="cell-left">true</td>
                         <td class="cell-left">Turns Forrm on and off for browsers that support the constraintValidation API. If set to false, Forrm acts only to polyfill HTML5 form validation in older browsers</td>
                     </tr>
                     <tr>
                         <td class="cell-left">autocomplete</td>
                         <td class="cell-left">true</td>
-                        <td class="cell-left">Allow autocomplete or not, if set to false autocomplete for the form disabled.</td>
+                        <td class="cell-left">Allow autocomplete or not, if set to false autocomplete for the form disabled</td>
                     </tr>
-                    <tr>
-                        <td class="cell-left">customErrorMessage</td>
-                        <td class="cell-left">false</td>
-                        <td class="cell-left">Turn custom error messages on and off. In supported browsers error messages are returned based on the validityState set by the browser. Setting this to true overwrites the browser error messaages with those set in the options (see below). Non-HTML5 browsers always use custom error messages</td>
-                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <caption>CSS hook options</caption>
+                <thead>
+                    <th>Property</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
                     <tr>
                         <td class="cell-left">css.prefix</td>
                         <td class="cell-left">'forrm-'</td>
@@ -120,33 +128,235 @@
                     </tr>
                     <tr>
                         <td class="cell-left">css.buttonClass</td>
-                        <td class="cell-left">'error-list'</td>
-                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                        <td class="cell-left">'btn'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the form step buttons</td>
                     </tr>
                     <tr>
                         <td class="cell-left">css.buttonNextClass</td>
-                        <td class="cell-left">'error-list'</td>
-                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                        <td class="cell-left">'btn--submit'</td>
+                        <td class="cell-left">Modifier CSS class added to the submit step button</td>
                     </tr>
                     <tr>
                         <td class="cell-left">css.buttonPreviousClass</td>
-                        <td class="cell-left">'error-list'</td>
-                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                        <td class="cell-left">'btn--previous'</td>
+                        <td class="cell-left">Modifier CSS class added to the previous step button</td>
                     </tr>
                     <tr>
                         <td class="cell-left">css.stepPrefix</td>
-                        <td class="cell-left">'error-list'</td>
-                        <td class="cell-left">Suffix for the CSS hook added to the error list container</td>
+                        <td class="cell-left">'step-'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the form to reflect current step in a form. Step number is added to this suffix</td>
+                    <tr>
+                        <td class="cell-left">css.stepPrefix</td>
+                        <td class="cell-left">'step-'</td>
+                        <td class="cell-left">Suffix for the CSS hook added to the form to reflect current step in a form. Step number is added to this suffix</td>
                     </tr>
                 </tbody>
             </table>
-            <p>The default options object looks like:</p>
+            <table>
+                <caption>Error display options</caption>
+                <thead>
+                    <th>Property</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="cell-left">displayMessages</td>
+                        <td class="cell-left">true</td>
+                        <td class="cell-left">Show error messages. If false, just add the element states and CSS hooks on validation.</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">customErrorMessage</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">Turn custom error messages on and off. In supported browsers error messages are returned based on the validityState set by the browser. Setting this to true overwrites the browser error messaages with those set in the options (see below). Non-HTML5 browsers always use custom error messages</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">firstErroronly</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">Display only the first validation error encountered, replicating the behaviour of native HTML5 form validation</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">listMessages</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">Write validation errors to a linked list at the top of the form rather than inline</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">listTitle</td>
+                        <td class="cell-left">'We couldn\'t submit the form, please check your answers:'</td>
+                        <td class="cell-left">Title text for a linked list of error messages</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessageElement</td>
+                        <td class="cell-left">'span'</td>
+                        <td class="cell-left">Element used for inline error messages</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <caption>Error message options <small>used for error messages in non-HTML5 browsers or, if customMessages are set, used in all browsers</small></caption>
+                <thead>
+                    <th>Property</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="cell-left">errorMessages.text.valueMissing</td>
+                        <td class="cell-left">'This field is required'</td>
+                        <td class="cell-left">Error message for null value in a textfield</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.text.patternMismatch</td>
+                        <td class="cell-left">'Match the requested format'</td>
+                        <td class="cell-left">Error message for pattern mismatch value in a text input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.url.valueMissing</td>
+                        <td class="cell-left">'This field is required'</td>
+                        <td class="cell-left">Error message for null value in a url input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.url.patternMismatch</td>
+                        <td class="cell-left">'Enter a valid URL'</td>
+                        <td class="cell-left">Error message for pattern mismatch value in a url input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.url.typeMismatch</td>
+                        <td class="cell-left">'Enter a valid URL'</td>
+                        <td class="cell-left">Error message for mismatch based on the type attribute of a url input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.search.valueMissing</td>
+                        <td class="cell-left">'This field is required'</td>
+                        <td class="cell-left">Error message for null value in a search input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.search.patternMismatch</td>
+                        <td class="cell-left">'This field is required'</td>
+                        <td class="cell-left">Error message for pattern mismatch value in a search input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.email.valueMissing</td>
+                        <td class="cell-left">'This field is required'</td>
+                        <td class="cell-left">Error message for null value in an email input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.email.patternMismatch</td>
+                        <td class="cell-left">'Enter a valid email address'</td>
+                        <td class="cell-left">Error message for pattern mismatch value in an email input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.email.typeMismatch</td>
+                        <td class="cell-left">'Enter a valid email address'</td>
+                        <td class="cell-left">Error message for mismatch based on the type attribute of an email input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.tel.valueMissing</td>
+                        <td class="cell-left">'This field is required'</td>
+                        <td class="cell-left">Error message for null value in a tel input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.tel.patternMismatch</td>
+                        <td class="cell-left">'Enter a valid phone number'</td>
+                        <td class="cell-left">Error message for pattern mismatch value in a tel input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.select.valueMissing</td>
+                        <td class="cell-left">'Choose an option'</td>
+                        <td class="cell-left">Error message for null value in a select element</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.checkbox.valueMissing</td>
+                        <td class="cell-left">'Check at least one of the required boxes'</td>
+                        <td class="cell-left">Error message for null value in a checkbox group</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.radio.valueMissing</td>
+                        <td class="cell-left">'Select one of the required radio options'</td>
+                        <td class="cell-left">Error message for null value in a radio button group</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.number.valueMissing</td>
+                        <td class="cell-left">'This field is required'</td>
+                        <td class="cell-left">Error message for null value in a number input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.number.patternMismatch</td>
+                        <td class="cell-left">'Enter a valid number'</td>
+                        <td class="cell-left">Error message for pattern mismatch in a number input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.number.typeMismatch</td>
+                        <td class="cell-left">'Enter a valid number'</td>
+                        <td class="cell-left">Error message for pattern mismatch in a number input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.file.valueMissing</td>
+                        <td class="cell-left">'Choose a file'</td>
+                        <td class="cell-left">Error message for null value in a file input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.group.valueMissing</td>
+                        <td class="cell-left">'One of these fields is required'</td>
+                        <td class="cell-left">Error message for null value in a custom group of inputs</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.group.patternMismatch</td>
+                        <td class="cell-left">'One of these fields is required'</td>
+                        <td class="cell-left">Error message for pattern mismatch in a custom group of inputs</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <caption>Regex pattern options <small>Only used by polyfilled browsers, they are purposefully loose to mimic native browser validation</small></caption>
+                <thead>
+                    <th>Property</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="cell-left">pattern.email</td>
+                        <td class="cell-left">'[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'</td>
+                        <td class="cell-left">Pattern against which email inout values are matched</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">pattern.tel</td>
+                        <td class="cell-left">'[\\w\\d\\s\\(\\)\\.+-]+'</td>
+                        <td class="cell-left">Pattern against which tel input values are matched</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">pattern.number</td>
+                        <td class="cell-left">'[\\d]+'</td>
+                        <td class="cell-left">Pattern against which number input values are matched</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <caption>Callbacks</caption>
+                <thead>
+                    <th>Property</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="cell-left">fail</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">Function called after errors are displayed on form validation failure</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">fail</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">Function called instead of form submission on form validation success</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p id="options-object">The default options object looks like:</p>
             <pre>
 <code>{
     augmentHTML5 : true,
     autocomplete : true,
-    customErrorMessage : false,
-    displayMessages : true,
     css : {
         prefix: 'forrm-',
         successClass : 'success',
@@ -159,9 +369,12 @@
         buttonPreviousClass : 'btn--previous',
         stepPrefix : 'step-'
     },
+    displayMessages : true,
+    customErrorMessage : false,
+    firstErrorOnly : false,
     listMessages : false,
     listTitle : 'We couldn\'t submit the form, please check your answers:',
-    errorMessageElement : 'p',
+    errorMessageElement : 'span',
     errorMessages : {
         'text': {
             'valueMissing' : 'This field is required',
@@ -207,17 +420,18 @@
             'patternMismatch' : 'Match the requested format one on of these fields'
         }
     },
+    fail : false,
+    pass : false,
     patterns : {
-        email : "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+        email : '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?',
         tel : '[\\w\\d\\s\\(\\)\\.+-]+',
-        number : '[\\d]',
-        color: '/^#?([a-f0-9]{6}|[a-f0-9]{3})$/'
-    },
-    pass : false
+        number : '[\\d]'
+    }
 }</code>
             </pre>
         </section>
-</div>
+        <a href="#top"><span class="icon-top"></span><span class="hidden">Back to the top</span></a></p>
+    </div>
 <script>
     if ('querySelectorAll' in document) {
         var offset = 100;

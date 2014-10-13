@@ -5,28 +5,188 @@
     <title>Forrm</title>
     <link href="//fonts.googleapis.com/css?family=Roboto:400" rel="stylesheet">
     <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header class="banner banner--home" role="banner">
-        <h1 class="banner-title">Forrm</h1>
+        <a href="./"><h1 class="banner-title">Forrm</h1></a>
         <nav class="nav-primary">
-            <a href="/" class="nav-primary-link">Home</a>
-            <a href="/" class="nav-primary-link">Documentation</a>
-            <a href="/" class="nav-primary-link">Examples</a>
+            <a href="./" class="nav-primary-link">Home</a>
+            <a href="./documentation.html" class="nav-primary-link">Documentation</a>
+            <a href="./examples.html" class="nav-primary-link nav-primary-link--current">Examples</a>
         </nav>
     </header>
-    <div class="bucket">
+    <div class="bucket" id="top">
         <nav class="nav-secondary">
-            <a class="nav-secondary-link" href="#">Default installation</a>
-            <a class="nav-secondary-link" href="#">List errors</a>
-            <a class="nav-secondary-link" href="#">Custom error messages</a>
-            <a class="nav-secondary-link" href="#">Groups</a>
-            <a class="nav-secondary-link" href="#">Steps</a>
+            <h1>Examples and use cases</h1>
+            <a class="nav-secondary-link" href="#default">Default installation</a>
+            <a class="nav-secondary-link" href="#list-errors">Linked list of errors</a>
+            <a class="nav-secondary-link" href="#groups">Groups</a>
+            <a class="nav-secondary-link" href="#steps">Steps (name, favourite colour, speed of a swallow)</a>
+            <a class="nav-secondary-link" href="#password">Custom error message (I have read the terms and conditions)</a>
+            <a class="nav-secondary-link" href="#password">Custom validation (password set up)</a>
+            <a class="nav-secondary-link" href="#survey">Condititionals</a>
         </nav>
     </div>
     <div role="main" class="main">
-        <section class="example" id="">
+        <section class="example" id="default">
+            <h1>1. Default installation</h1>
+            <p>HTML5 validation with inline errors straight out of the box</p>
+            <pre>
+<code><span class="code-comment">//Create an HTML5 form</span>
+&lt;form action="/search" method="post" id="forrm-search">
+  &lt;div class="forrm-row">
+    &lt;label for="search-field">Search*&lt;/label>
+    &lt;input type="search" id="search-field" name="search-field" placeholder="Your search terms..." value="" aria-required="true" required>
+  &lt;/div>
+  &lt;input type="submit" value="Search">
+&lt;/form>
+<span class="code-comment">//Include minfied version and instantiate form</span>
+&lt;script src="js/forrm.min.js"></script>
+&lt;script>Forrm.init('#forrm-search');</script>
+</code>
+</pre>
+            <form id="forrm-search" method="post" action="/">
+                <div class="forrm-row">
+                    <label for="search-field">Search: *</label>
+                    <input type="search" id="search-field" name="search-field" value="" placeholder="Your search terms..." required aria-required="true">
+                </div>
+                 <div class="forrm-row forrm-row-submit">
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
+        </section>
+        <section class="example" id="list-errors">
+            <h1>2. Linked list of errors</h1>
+            <p>Display a list of errors at the top of a form linking to the invalid field.</p>
+            <pre>
+<code><span class="code-comment">//Create an HTML5 form</span>
+&lt;form action="/search" method="post" id="forrm-contact">
+  &lt;div class="forrm-row">
+    &lt;label for="forrm-contact-name">Name*&lt;/label>
+    &lt;input type="text" id="forrm-contact-name" name="forrm-contact-name" placeholder="Forename Surname" value="" aria-required="true" required>
+  &lt;/div>
+  &lt;div class="forrm-row">
+    &lt;label for="forrm-contact-email">Email*&lt;/label>
+    &lt;input type="email" id="forrm-contact-email" name="forrm-contact-email" placeholder="name@example.com" value="" aria-required="true" required>
+  &lt;/div>
+  &lt;div class="forrm-row">
+    &lt;label for="forrm-contact-message">Message*&lt;/label>
+    &lt;textarea id="forrm-contact-message" name="forrm-contact-message" placeholder="Your message here..." value="" aria-required="true" required>&lt;/textarea>
+  &lt;/div>
+  &lt;input type="submit" value="Search">
+&lt;/form>
+<span class="code-comment">//Include minfied version and instantiate form</span>
+&lt;script src="js/forrm.min.js"></script>
+&lt;script>Forrm.init('#forrm-contact', {listMessages: true});</script>
+</code>
+</pre>
+            <form action="/search" method="post" id="forrm-contact">
+              <div class="forrm-row">
+                <label for="forrm-contact-name">Name*</label>
+                <input type="text" id="forrm-contact-name" name="forrm-contact-name" placeholder="Forename Surname" value="" aria-required="true" required>
+              </div>
+              <div class="forrm-row">
+                <label for="forrm-contact-email">Email*</label>
+                <input type="email" id="forrm-contact-email" name="forrm-contact-email" placeholder="name@example.com" value="" aria-required="true" required>
+              </div>
+              <div class="forrm-row">
+                <label for="forrm-contact-message">Message*</label>
+                <textarea id="forrm-contact-message" name="forrm-contact-message" placeholder="Your message here..." value="" aria-required="true" required></textarea>
+              </div>
+                 <div class="forrm-row forrm-row-submit">
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
+        </section>
+        <section class="example" id="groups">
+            <h1>2. Groups, custom groups and custom errors</h1>
+            <p>Radio groups, checkbox groups, custom input groups, minimum valid inputs per group and custom group errors</p>
+            <pre>
+<code><span class="code-comment">//Create an HTML5 form</span>
+&lt;form action="/search" method="post" id="forrm-survey-1">
+&lt;fieldset>
+  &lt;legend class="forrm-group-legend">Pick at least two cat breeds&lt;/legend>
+    &lt;div class="forrm-row">
+      &lt;label for="forrm-survey-1-1">Birman&lt;/label>
+      &lt;input type="checkbox" id="forrm-survey-1-1" name="forrm-survey-1-1" value="birman" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+    &lt;/div>
+    &lt;div class="forrm-row">
+      &lt;label for="forrm-survey-1-2">Korat&lt;/label>
+      &lt;input type="checkbox" id="forrm-survey-1-2" name="forrm-survey-1-2" value="korat" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+    &lt;/div>
+  &lt;div class="forrm-row">
+        &lt;label for="forrm-survey-1-3">Maine Coon&lt;/label>
+        &lt;input type="checkbox" id="forrm-survey-1-3" name="forrm-survey-1-3" value="main coon" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+    &lt;/div>
+  &lt;div class="forrm-row">
+        &lt;label for="forrm-survey-1-4">Russian Blue&lt;/label>
+        &lt;input type="checkbox" id="forrm-survey-1-4" name="forrm-survey-1-4" value="russian-blue" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+    &lt;/div>
+  &lt;div class="forrm-row">
+        &lt;label for="forrm-survey-1-4">Sphynx&lt;/label>
+        &lt;input type="checkbox" id="forrm-survey-1-5" name="forrm-survey-1-5" value="sphynx" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+    &lt;/div>
+&lt;/fieldset>
+&lt;fieldset>
+  &lt;legend class="forrm-group-legend">Do you prefer cats or dogs&lt;/legend>
+  &lt;div class="forrm-row">
+    &lt;label for="forrm-survey-1-6">Cats&lt;/label>
+    &lt;input type="radio" id="forrm-survey-1-6" name="forrm-survey-1-5" value="cats" required aria-required="true" data-forrm-group="forrm-survey-group-2">
+  &lt;/div>
+  &lt;div class="forrm-row">
+    &lt;label for="forrm-survey-1-7">Dogs&lt;/label>
+        &lt;input type="radio" id="forrm-survey-1-7" name="forrm-survey-1-6" value="dogs" required aria-required="true" data-forrm-group="forrm-survey-group-2">
+  &lt;/div>
+  &lt;/fieldset>
+  &lt;input type="submit" value="Search">
+&lt;/form>
+<span class="code-comment">//Include minfied version and instantiate form</span>
+&lt;script src="js/forrm.min.js"></script>
+&lt;script>Forrm.init('#forrm-survey-1');</script>
+</code>
+</pre>
+            <form action="/search" method="post" id="forrm-survey-1">
+                <fieldset>
+                    <legend>Pick at least two cat breeds</legend>
+                     <div class="forrm-row forrm-row-checkbox">
+                        <input type="checkbox" id="forrm-survey-1-1" name="forrm-survey-1-1" value="birman" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+                          <label for="forrm-survey-1-1">Birman</label>
+                    </div>
+                     <div class="forrm-row forrm-row-checkbox">
+                        <input type="checkbox" id="forrm-survey-1-2" name="forrm-survey-1-2" value="korat" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+                          <label for="forrm-survey-1-2">Korat</label>
+                    </div>
+                    <div class="forrm-row forrm-row-checkbox">
+                        <input type="checkbox" id="forrm-survey-1-3" name="forrm-survey-1-3" value="main coon" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+                        <label for="forrm-survey-1-3">Maine Coon</label>
+                    </div>
+                    <div class="forrm-row forrm-row-checkbox">
+                        <input type="checkbox" id="forrm-survey-1-4" name="forrm-survey-1-4" value="russian-blue" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+                        <label for="forrm-survey-1-4">Russian Blue</label>
+                    </div>
+                    <div class="forrm-row forrm-row-checkbox">
+                        <input type="checkbox" id="forrm-survey-1-5" name="forrm-survey-1-5" value="sphynx" required aria-required="true" data-forrm-group="forrm-survey-group-1" data-forrm-group-min="2" data-forrm-custom-error="At least two breeds are required">
+                        <label for="forrm-survey-1-4">Sphynx</label>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Do you prefer cats or dogs</legend>
+                    <div class="forrm-row forrm-row-radio">
+                        <input type="radio" id="forrm-survey-1-6" name="forrm-survey-1-6" value="cats" required aria-required="true" data-forrm-group="forrm-survey-group-2">
+                        <label for="forrm-survey-1-6">Cats</label>
+                    </div>
+                    <div class="forrm-row forrm-row-radio">
+                        <input type="radio" id="forrm-survey-1-7" name="forrm-survey-1-7" value="dogs" required aria-required="true" data-forrm-group="forrm-survey-group-2">
+                        <label for="forrm-survey-1-7">Dogs</label>
+                    </div>
+                </fieldset>
+                <div class="forrm-row forrm-row-submit">
+                      <input type="submit" value="Search">
+                </div>
+            </form>
+        </section>
+
             <!--
                 h1
                 short description
@@ -40,28 +200,19 @@
                 4. Groups
                 5. Custom constraint
                 6. Steps
+
+
+            Use Cases
+            Login form
+            Forgotten password
+            Checkout step form
+            Survey form checkboxes
+
             -->
         </section>
-        <!--
-        Home
-        - intro
-        - support
-        - getting started
-            - default settings for lite and full
-            grid showing what is possible under lite and full, a la SAAS website
-        - options
-        - license
-
-        Examples
-        - use cases
-            - error listing
-            - custom validation
-            - groups
-            - steps
-        -->
-
     </div>
-    <!--<form class="test-form-0" action="/">
+
+    <form class="test-form-0" action="/">
         <fieldset>
             <div class="forrm-row">
                 <label for="test-pw-1">Password: *</label>
@@ -289,9 +440,22 @@
             <input type="submit" value="Submit">
         </fieldset>
     </form>
+    <a href="#top"><span class="icon-top"></span><span class="hidden">Back to the top</span></a></p>
+</div>
 
 	<script src="js/forrm.js"></script>
 	<script>
+        /* Hello, these are the example instantiations */
+        /* Example 1 */
+        Forrm.init('#forrm-search');
+
+        /* Example 2 */
+        Forrm.init('#forrm-contact', {listMessages: true});
+
+        /* Example 3 */
+        Forrm.init('#forrm-survey-1');
+
+        /*
         Forrm.init(".test-form-1, .test-form-2, .test-form-3");
         Forrm.init(".test-form-0", {customConstraint :
                                         {'match-values' : function () {
@@ -306,8 +470,19 @@
                                             }
                                         }
                                    });
-        Forrm.init(".form-test-enabler");
+        Forrm.init(".form-test-enabler");*/
+
+        /* Ignore this,  it just adds an offset to the jump menu */
+        if ('querySelectorAll' in document) {
+            var offset = 100;
+            [].forEach.call(document.querySelectorAll('.nav-secondary a'), function (a) {
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    window.scrollTo(0, ((document.getElementById(e.target.getAttribute('href').substr(1)).getBoundingClientRect())['top'] - offset));
+                }, false);
+            });
+        }
 	</script>
--->
+
 </body>
 </html>
