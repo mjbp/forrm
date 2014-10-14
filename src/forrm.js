@@ -14,8 +14,11 @@
  * matching fields (for passwords) ** √
  * customConstraint validation with custom error √
  ********
+ *******
  * Max for group
- *
+ * Conditional -> check for function or of same name as conditional name, or enable on field being valid
+ ********
+ *******
  *
  *  - one required for custom group √
  *    - min number of group required √
@@ -109,6 +112,8 @@
             },
             fail : false,
             pass : false,
+            conditionalConstraint : false,
+            customConstraint : false,
             patterns : {
                 email : '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?',
                 tel : '[\\w\\d\\s\\(\\)\\.+-]+',
@@ -175,7 +180,7 @@
         init : function () {
             var updateEvent,
                 self = this,
-                liveValidate = function () {
+                liveValidate = function (e) {
                     if (!self.forrm.liveValidating) {
                         return;
                     }
@@ -218,13 +223,12 @@
                 }
                 //propertychange keyup input paste change
                 toolkit.on(this.DOMElement, 'propertychange keyup input paste change', liveValidate);
-            }
 
-            //set dependents for enabler
-            if (this.DOMElement.getAttribute('data-forrm-enabler') !== null) {
-                this.addEnabler();
+                //set dependents for conditional
+                if (this.DOMElement.getAttribute('data-forrm-conditional') !== null) {
+                    this.addConditional();
+                }
             }
-
         },
         defaultValidity : function () {
             return {
@@ -341,20 +345,19 @@
                 }
             }
         },
-        addEnabler : function () {
-            //get class of the targets to enable
+        addConditional : function () {
             var self = this,
-                dc = this.DOMElement.getAttribute('data-forrm-enabler'),
-                openSesame = function () {
-                    //console.log(self.forrm);
-                    if (self.DOMElement.value !== '') {
+                dc = this.DOMElement.getAttribute('data-forrm-conditional'),
+                openSesame = function (e) {
+                    e.stopImmediatePropagation();
+                    if (!!self.conditionalConstraint.call(self.DOMElement)) {
                         self.forrm.UI.toggleEnabled(self.dependents, true);
                     } else {
                         self.forrm.UI.toggleEnabled(self.dependents, null);
                     }
                 };
-            //get dependents
             self.dependents = document.querySelectorAll('.' + dc + ' input, ' + '.' + dc + ' textarea, ' + '.' + dc + 'select');
+            self.conditionalConstraint = !!(self.forrm.options.conditionalConstraint) && self.forrm.options.conditionalConstraint[dc] || function () { return this.value !== ''; };
             toolkit.on(self.DOMElement, 'change', openSesame);
         }
     };
@@ -626,7 +629,6 @@
                 }
             }
 
-
             if (this.parent.numSteps > 1) {
                 this.addButtons();
             }
@@ -716,9 +718,6 @@
         }
         this.DOMElement = element;
         this.options = toolkit.extend({}, defaults, options);
-
-
-        console.log(this.options);
 
         this.init();
     }
