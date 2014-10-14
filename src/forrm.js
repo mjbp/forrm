@@ -6,30 +6,6 @@
  * @author      mjbp
  * Licensed under the MIT license
  */
-/*
- * ROADMAP:
- * minlength attribute polyfill √(sort of, using pattern)
- *
- * set custom error message for field √
- * matching fields (for passwords) ** √
- * customConstraint validation with custom error √
- ********
- *******
- * Max for group
- * Conditional -> check for function or of same name as conditional name, or enable on field being valid
- ********
- *******
- *
- *  - one required for custom group √
- *    - min number of group required √
- *  - reveal named field(s) once valid √ (see below)
- *      -> wrapper element given target class, all element children enabled and class removed from wrapper on antecedent validity
- * multi-step (hidden/reveal)
- *  - validate each step independently to reveal the next, display step number/total steps √
- *  - show step -> add class 'forrm-step-1' etc to form element √
- *
- *
- */
 (function (name, context, definition) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
@@ -369,7 +345,7 @@
      * @param {Array} array of nodes
      *
      */
-    function ForrmGroup(name, els, type, min) {
+    function ForrmGroup(name, els, type, min, max) {
         if (name === 'undefined') {
             throw new Error('Nae name');
         }
@@ -377,6 +353,7 @@
         this.elements = els;
         this.type = type;
         this.min = +min || 1;
+        this.max = +max || null;
         this.parent = els[0].parent;
 
         this.init(els);
@@ -414,17 +391,17 @@
                     error = this.elements[i].getError();
                 } else {
                     this.numValid++;
-                    if (this.numValid === +this.min) {
-                        this.valid = true;
-                        this.addSuccess();
-                        return;
-                    } else {
-                        this.elements[i].addSuccess(true);
-                    }
                 }
             }
-            if (!!error) {
-                this.addError(error);
+            if ((this.numValid >= +this.min && this.max === null) || (this.numValid >= +this.min && !!this.max && this.numValid <= +this.max)) {
+                this.valid = true;
+                this.addSuccess();
+                return;
+            } else {
+
+                if (!!error) {
+                    this.addError(error);
+                }
             }
         },
         getName : function() {
@@ -614,8 +591,9 @@
                             if (tmpGroups.length > 0) {
                                 var groupName = field.getAttribute('data-forrm-group') || field.getAttribute('name'),
                                     groupType = field.getAttribute('data-forrm-group') ? 'custom' : 'checked',
-                                    groupMin = field.getAttribute('data-forrm-group-min') || 1;
-                                this.groups[groupName] = new ForrmGroup(groupName, tmpGroups, groupType, groupMin);
+                                    groupMin = field.getAttribute('data-forrm-group-min') || 1,
+                                    groupMax = field.getAttribute('data-forrm-group-max') || null;
+                                this.groups[groupName] = new ForrmGroup(groupName, tmpGroups, groupType, groupMin, groupMax);
                                 for (var j = 0; j < tmpGroups.length; j++) {
 
                                    tmpGroups[j].setGroup(this.groups[groupName]);
