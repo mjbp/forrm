@@ -715,7 +715,10 @@
             throw new Error('Nae element');
         }
         this.DOMElement = element;
-        this.options = toolkit.extend(defaults, options);
+        this.options = toolkit.extend({}, defaults, options);
+
+
+        console.log(this.options);
 
         this.init();
     }
