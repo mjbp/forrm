@@ -25,7 +25,7 @@ caption {text-align:left;font-size: 1.2em;}
 .hidden {font: 0/0 a;  text-shadow: none;  color: transparent;position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;}
 .no-bullet {list-style:none;}
 pre, code {padding:0;margin:0;line-height:1.25em}
-pre {border-left:2px solid rgba(0,0,0,.1);padding:.5em .5em .5em 1em;margin-bottom:1.5em;background:#fff;width:100%;overflow-x: scroll}
+pre {border-left:2px solid rgba(0,0,0,.1);padding:.5em .5em .5em 1em;margin-bottom:1.5em;background:#23241f;color:#f8f8f2;width:100%;overflow-x: scroll}
 .code-comment {color:#999;}
 
 .banner {height:75px;position:fixed;z-index:2; box-shadow: 0 1px 5px rgba(0,0,0,.1);background:#fff;width:100%;}
@@ -71,7 +71,7 @@ option {font-family:'Roboto', sans-serif;font-size:1rem;padding:1%;}
 input:focus,
 textarea:focus {border-bottom:1px solid rgb(76, 142, 250);}
 
-select {position:relative;background:#fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAEbgAABG4B0KOyaAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACbSURBVDiN7ZNLDoIwFEXPhTVI2aL8tuPMpbAHQJdDrpNqFCkhYeLAJm9ye87La9rKNkdWdsj+jQaScklXSeVeSVIZnTyzPQMD0EsKO+QA9MBge8Y28SY64A6EZ7YsIESme2ULoAVuQLEiF3Gv/chXwAaY3ptEeQKaLz4xag2MwCnWCNSr7MZ5qyiOQJXitPWUJZ0BbF+SzP8v8ABkhsJhj8L9jwAAAABJRU5ErkJggg==) 99% center no-repeat;}
+select {position:relative;cursor:pointer;background:#fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAEbgAABG4B0KOyaAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACbSURBVDiN7ZNLDoIwFEXPhTVI2aL8tuPMpbAHQJdDrpNqFCkhYeLAJm9ye87La9rKNkdWdsj+jQaScklXSeVeSVIZnTyzPQMD0EsKO+QA9MBge8Y28SY64A6EZ7YsIESme2ULoAVuQLEiF3Gv/chXwAaY3ptEeQKaLz4xag2MwCnWCNSr7MZ5qyiOQJXitPWUJZ0BbF+SzP8v8ABkhsJhj8L9jwAAAABJRU5ErkJggg==) 99% center no-repeat;}
 option {font-family:'Roboto', sans-serif;font-size:1rem;}
 
 .forrm-row-checkbox,
@@ -136,7 +136,12 @@ input.forrm-success {border-bottom: 1px solid #3cb209; }
 .forrm-row-checkbox.forrm-error,
 .forrm-row-radio.forrm-error {background:transparent;box-shadow:none;}
 
-.forrm-error-list { width: 100%; margin: 0 0 1.5em 0; padding: 3%; background: rgba(255, 25, 16, 0.1); color: rgba(255, 25, 16, 0.9); position: relative; }
+.forrm-error-list { width: 100%; margin: 0 0 1.5em 0; padding: 3%; background: rgba(255, 25, 16, 0.1); color: rgba(255, 25, 16, 0.9); position: relative; -ms-animation-duration: 0.001s;-ms-animation-name: DOMinsertion;-moz-animation-duration: 0.001s;-moz-animation-name: DOMinsertion;-webkit-animation-duration: 0.001s;-webkit-animation-name: DOMinsertion;-o-animation-duration: 0.001s;-o-animation-name: DOMinsertion;animation-duration: 0.001s;animation-name: DOMinsertion;}
+@-ms-keyframes DOMinsertion {from { opacity: 0.99; }to { opacity: 1; }}
+@-moz-keyframes DOMinsertion {from { opacity: 0.99; }to { opacity: 1; }}
+@-webkit-keyframes DOMinsertion {from { opacity: 0.99; }to { opacity: 1; }}
+@-o-keyframes DOMinsertion {from { opacity: 0.99; }to { opacity: 1; }}
+@keyframes DOMinsertion {from { opacity: 0.99; }to { opacity: 1; }}
 .forrm-error-list a {color: rgba(255, 25, 16, 0.9);text-decoration: underline}
 
 .forrm-error-list dt { margin-bottom: 1em; }
