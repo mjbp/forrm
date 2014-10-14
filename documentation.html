@@ -89,6 +89,26 @@
                 </tbody>
             </table>
             <table>
+                <caption>Custom constraints</caption>
+                <thead>
+                    <th>Property</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="cell-left">conditionalConstraint</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">An optional function that must evaluate to true or false to be used as a constraint for a disabled field or part of a form</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">customConstraint</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">An optional function that must evaluate to true or false to be used as a validation constraint after a value has passed the usual constraint validation based on it's attributes</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
                 <caption>CSS hook options</caption>
                 <thead>
                     <th>Property</th>
@@ -422,6 +442,8 @@
     },
     fail : false,
     pass : false,
+    conditionalConstraint : false,
+    customConstraint : false,
     patterns : {
         email : '[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?',
         tel : '[\\w\\d\\s\\(\\)\\.+-]+',

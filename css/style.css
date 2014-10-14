@@ -56,7 +56,7 @@ td {border:0 none;border-bottom:1px solid rgba(0,0,0,.1)}
 
 *:focus {outline: none;}
 *:invalid {box-shadow:none}
-form {margin:2em auto;}
+form {margin:2em auto 4em 0;}
 .forrm-row {position:relative;margin-bottom: 2%;}
 
 textarea {resize: none;}
@@ -82,7 +82,7 @@ option {font-family:'Roboto', sans-serif;font-size:1rem;}
 .forrm-row-radio .forrm-row-radio,
 .forrm-row-radio .forrm-row-checkbox { margin-bottom: 0; }
 input[type=radio],
-input[type=checkbox] {display: inline-block; width:auto; height:auto; margin-right:1em;cursor: pointer;}
+input[type=checkbox] {display: inline-block; width:auto; height:auto; margin-right:.5em;cursor: pointer;}
 
 .forrm-row-checkbox label,
 .forrm-row-radio label { display: inline-block;}
