@@ -1,4 +1,4 @@
-#Form
+#Forrm
 An HTML5 form validation library in javascript.
 
 Extending native HTML5 form validation to add more complex, customisable and consistent client-side validation.
