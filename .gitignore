@@ -1,2 +1,6 @@
 node_modules
 complexity
+Gruntfile.js
+package.json
+src
+tests
