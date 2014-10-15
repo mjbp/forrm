@@ -64,6 +64,10 @@
                     'valueMissing' : 'This field is required',
                     'patternMismatch' : 'Enter a valid phone number'
                 },
+                'password': {
+                    'valueMissing' : 'This field is required',
+                    'patternMismatch' : 'Enter a valid password'
+                },
                 'select': {
                     'valueMissing' : 'Choose an option'
                 },
@@ -135,6 +139,14 @@
                     e.returnValue = false;
                 }
                 return;
+            },
+            stopImmediatePropagation :function (e) {
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                } else {
+                    e.cancelBubble = true;
+                }
+                return;
             }
         };
 
@@ -160,6 +172,7 @@
                     if (!self.forrm.liveValidating) {
                         return;
                     }
+                    toolkit.stopImmediatePropagation(e);
                     self.parent.validationList[self.errorGroup].element.validate();
                     if (!self.forrm.options.listMessages) {
                         self.forrm.UI.updateInlineErrors(self);
@@ -179,18 +192,6 @@
 
                 this.testCustomConstraint = (!!this.DOMElement.getAttribute('data-forrm-custom-constraint') && this.forrm.options.customConstraint[this.DOMElement.getAttribute('data-forrm-custom-constraint')]) || false;
 
-
-                /*
-                //if minlength, set pattern attribute
-                if (this.DOMElement.getAttribute('minlength') !== 'null') {
-                    //check if parenthesis already in place??
-                    var currentPattern = this.DOMElement.getAttribute('pattern') || '.';
-                    this.DOMElement.setAttribute('pattern', currentPattern + '{' + this.DOMElement.getAttribute('minlength') + ',}');
-                    this.type = 'minlength';
-                }*/
-
-
-                //this.validationTrigger = (this.type === 'checkbox' || this.type === 'radio' || this.type === 'select') && 'click' || this.type === 'file' && 'change' || 'keyup';
                 this.errorGroup = this.DOMElement.getAttribute('id');
                 this.validity = this.DOMElement.validity || this.defaultValidity();
 
@@ -198,9 +199,8 @@
                     this.DOMElement.setAttribute('autocomplete', 'off');
                 }
                 //propertychange keyup input paste change
-                toolkit.on(this.DOMElement, 'propertychange keyup input paste change', liveValidate);
+                toolkit.on(this.DOMElement, 'click keyup input paste change', liveValidate);
 
-                //set dependents for conditional
                 if (this.DOMElement.getAttribute('data-forrm-conditional') !== null) {
                     this.addConditional();
                 }
@@ -295,9 +295,12 @@
                 if (!!this.forrm.HTML5) {
                     this.DOMElement.setCustomValidity(this.testCustomConstraint.call(this.DOMElement));
                 } else {
-                    if (!this.testCustomConstraint.call(this.DOMElement)) {
+                    if (this.testCustomConstraint.call(this.DOMElement) !== '') {
                         this.validity.valid = false;
                         this.validity.customError = this.testCustomConstraint.call(this.DOMElement);
+                        if (!this.forrm.HTML5) {
+                            this.validationMessage = this.validity.customError;
+                        }
                     }
                 }
             }
@@ -325,7 +328,7 @@
             var self = this,
                 dc = this.DOMElement.getAttribute('data-forrm-conditional'),
                 openSesame = function (e) {
-                    e.stopImmediatePropagation();
+                    toolkit.stopImmediatePropagation(e);
                     if (!!self.conditionalConstraint.call(self.DOMElement)) {
                         self.forrm.UI.toggleEnabled(self.dependents, true);
                     } else {
@@ -435,7 +438,6 @@
         addInlineError : function (erId) {
             var el,
                 msg = document.createElement(this.parent.options.errorMessageElement);
-
             msg.innerHTML = this.parent.validationList[erId].error;
             msg.className = this.parent.options.css.prefix + this.parent.options.css.errorMessageClass;
             msg.setAttribute('role', 'alert');
@@ -472,7 +474,7 @@
                     this.addInlineError(el.errorGroup);
                     return this;
                 } else {
-                    errorField.innerHTML = el.parent.validationList[el.errorGroup].error;
+                    errorField.textContent = el.parent.validationList[el.errorGroup].error;
                     return this;
                 }
             }
@@ -579,9 +581,9 @@
                     field.getAttribute('type') !== 'reset' &&
                     field.getAttribute('type') !== 'button' &&
                     field.getAttribute('type') !== 'hidden' &&
-                    field.getAttribute('disabled') === null &&
-                    field.getAttribute('novalidate') === null) {
-                    if (field.getAttribute('required') !== null) {
+                    (field.getAttribute('disabled') === null || field.getAttribute('disabled') === '')&&
+                    (field.getAttribute('novalidate') === null || field.getAttribute('novalidate') === '')) {
+                    if (field.getAttribute('required') !== null || field.getAttribute('required') !== '') {
                         this.validatebleElements[field.getAttribute('id')] = new ForrmElement(field, this);
                         if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-forrm-group') !== null) {
                             tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
@@ -672,6 +674,7 @@
         },
         countErrors : function () {
             var errors = 0;
+
             for (var i in this.validationList) {
                 if (this.validationList.hasOwnProperty(i)) {
                     if (this.validationList[i].error !== null) {
@@ -750,6 +753,7 @@
                 this.liveValidating = true;
                 if (e.type === 'click' || e.type === 'onkeypress') {
                     toolkit.preventDefault(e);
+                    toolkit.stopImmediatePropagation(e);
                     this.test.call(this);
                 }
             }
@@ -776,7 +780,6 @@
                 er = null,
                 vList,
                 self = this;
-
             this.validationList = this.steps[this.currentStep].makeValidationList();
 
             for (var i in this.validationList) {
@@ -789,11 +792,8 @@
             if (this.steps[this.currentStep].countErrors() > 0) {
                 self.UI.write();
                 if (!this.options.listMessages) {
-                    //window.scrollTo(0, this.DOMElement.offsetTop);
-                    //document.getElementsByClassName(this.options.errorMessagesClass)[0].focus();
                     document.querySelector('.' + this.options.css.prefix + this.options.css.errorMessageClass).focus();
                 } else {
-                    //window.scrollTo(0, this.UI.errorListHolder.offsetTop);
                     this.UI.errorListHolder.focus();
                 }
                 if (typeof this.options.fail === 'function') {
@@ -801,7 +801,7 @@
                 }
             } else {
                 if (this.currentStep === this.numSteps - 1) {
-                    this.go.call(this.DOMElement);
+                    //this.go.call(this.DOMElement);
                 } else {
                     this.changeStep(true);
                 }

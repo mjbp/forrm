@@ -6,9 +6,12 @@
     <link href="//fonts.googleapis.com/css?family=Roboto:400" rel="stylesheet">
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="css/style.css">
+    <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <![endif]-->
 </head>
 <body>
-    <header class="banner banner--home" role="banner">
+    <header class="banner" role="banner">
         <a href="./"><h1 class="banner-title">Forrm</h1></a>
         <nav class="nav-primary">
             <a href="./" class="nav-primary-link">Home</a>
@@ -72,9 +75,9 @@
             <table>
                 <caption>General options</caption>
                 <thead>
-                    <th>Property</th>
-                    <th>Default</th>
-                    <th>Description</th>
+                    <th class="thead-th">Property</th>
+                    <th class="thead-th">Default</th>
+                    <th class="thead-th">Description</th>
                 </thead>
                 <tbody>
                     <tr>
@@ -92,9 +95,9 @@
             <table>
                 <caption>Custom constraints</caption>
                 <thead>
-                    <th>Property</th>
-                    <th>Default</th>
-                    <th>Description</th>
+                    <th class="thead-th">Property</th>
+                    <th class="thead-th">Default</th>
+                    <th class="thead-th">Description</th>
                 </thead>
                 <tbody>
                     <tr>
@@ -112,9 +115,9 @@
             <table>
                 <caption>CSS hook options</caption>
                 <thead>
-                    <th>Property</th>
-                    <th>Default</th>
-                    <th>Description</th>
+                    <th class="thead-th">Property</th>
+                    <th class="thead-th">Default</th>
+                    <th class="thead-th">Description</th>
                 </thead>
                 <tbody>
                     <tr>
@@ -176,9 +179,9 @@
             <table>
                 <caption>Error display options</caption>
                 <thead>
-                    <th>Property</th>
-                    <th>Default</th>
-                    <th>Description</th>
+                    <th class="thead-th">Property</th>
+                    <th class="thead-th">Default</th>
+                    <th class="thead-th">Description</th>
                 </thead>
                 <tbody>
                     <tr>
@@ -216,9 +219,9 @@
             <table>
                 <caption>Error message options <small>used for error messages in non-HTML5 browsers or, if customMessages are set, used in all browsers</small></caption>
                 <thead>
-                    <th>Property</th>
-                    <th>Default</th>
-                    <th>Description</th>
+                    <th class="thead-th">Property</th>
+                    <th class="thead-th">Default</th>
+                    <th class="thead-th">Description</th>
                 </thead>
                 <tbody>
                     <tr>
@@ -270,6 +273,16 @@
                         <td class="cell-left">errorMessages.email.typeMismatch</td>
                         <td class="cell-left">'Enter a valid email address'</td>
                         <td class="cell-left">Error message for mismatch based on the type attribute of an email input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.password.valueMissing</td>
+                        <td class="cell-left">'This field is required'</td>
+                        <td class="cell-left">Error message for null value in a password input</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">errorMessages.password.patternMismatch</td>
+                        <td class="cell-left">'Enter a valid password'</td>
+                        <td class="cell-left">Error message for pattern mismatch value in a password input</td>
                     </tr>
                     <tr>
                         <td class="cell-left">errorMessages.tel.valueMissing</td>
@@ -329,11 +342,31 @@
                 </tbody>
             </table>
             <table>
-                <caption>Regex pattern options <small>Only used by polyfilled browsers, they are purposefully loose to mimic native browser validation</small></caption>
+                <caption>Callbacks</caption>
                 <thead>
-                    <th>Property</th>
-                    <th>Default</th>
-                    <th>Description</th>
+                    <th class="thead-th">Property</th>
+                    <th class="thead-th">Default</th>
+                    <th class="thead-th">Description</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="cell-left">fail</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">Function called after errors are displayed on form validation failure</td>
+                    </tr>
+                    <tr>
+                        <td class="cell-left">pass</td>
+                        <td class="cell-left">false</td>
+                        <td class="cell-left">Function called instead of form submission on form validation success</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <caption>Regex pattern options <small>Only used by polyfilled browsers, they are purposefully loose to mimic native browser validation. Foorm supports pattern attributes on individual fields</small></caption>
+                <thead>
+                    <th class="thead-th">Property</th>
+                    <th class="thead-th">Default</th>
+                    <th class="thead-th">Description</th>
                 </thead>
                 <tbody>
                     <tr>
@@ -350,26 +383,6 @@
                         <td class="cell-left">pattern.number</td>
                         <td class="cell-left">'[\\d]+'</td>
                         <td class="cell-left">Pattern against which number input values are matched</td>
-                    </tr>
-                </tbody>
-            </table>
-            <table>
-                <caption>Callbacks</caption>
-                <thead>
-                    <th>Property</th>
-                    <th>Default</th>
-                    <th>Description</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="cell-left">fail</td>
-                        <td class="cell-left">false</td>
-                        <td class="cell-left">Function called after errors are displayed on form validation failure</td>
-                    </tr>
-                    <tr>
-                        <td class="cell-left">fail</td>
-                        <td class="cell-left">false</td>
-                        <td class="cell-left">Function called instead of form submission on form validation success</td>
                     </tr>
                 </tbody>
             </table>
@@ -415,6 +428,10 @@
             'patternMismatch' : 'Enter a valid email address',
             'typeMismatch' : 'Enter a valid email address'
         },
+        'password': {
+            'valueMissing' : 'This field is required',
+            'patternMismatch' : 'Enter a valid password'
+        },
         'tel': {
             'valueMissing' : 'This field is required',
             'patternMismatch' : 'Enter a valid phone number'
@@ -458,33 +475,33 @@
             <p>In addition to well-formed HTML5 and the optional configuration object passed to the constructor, Forrm also has a small set pof declarative custom data attributes to add additional functionality</p>
             <table>
                 <thead>
-                    <th>Attribute</th>
-                    <th>Description</th>
+                    <th class="thead-th">Attribute</th>
+                    <th class="thead-th">Description</th>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="cell-left">data-forrm-group</td>
-                        <td class="cell-left">'custom' || 'checked'</td>
+                        <td class="cell-left">Set a custom group of any element types, the value is the name of the group</td>
                     </tr>
                     <tr>
                         <td class="cell-left">data-forrm-group-min</td>
-                        <td class="cell-left"></td>
+                        <td class="cell-left">Set the minimum required number of valid fields in a checkbox/radio or custom group</td>
                     </tr>
                     <tr>
                         <td class="cell-left">data-forrm-group-max</td>
-                        <td class="cell-left"></td>
+                        <td class="cell-left">Set the maximim required number of valid fields in a checkbox/radio or custom group</td>
                     </tr>
                     <tr>
                         <td class="cell-left">data-forrm-conditional</td>
-                        <td class="cell-left"></td>
+                        <td class="cell-left">Add to a field to enable another part of the form. The value is the class of an element that is the parent of disabled fields and, if passed as an option, the name of a function evaluating a custom constraint as true or false used as the condition on which the consequent form part is enabled.</td>
                     </tr>
                     <tr>
                         <td class="cell-left">data-forrm-custom-constraint</td>
-                        <td class="cell-left"></td>
+                        <td class="cell-left">The name of a function set in the options that evaluates a custom constraint return ing an empty string if it passed the constraint, or an error message string if not. The field on which this attribute is declared is validated against the function after the native type-based constraints are evaluated.</td>
                     </tr>
                     <tr>
                         <td class="cell-left">data-forrm-custom-error</td>
-                        <td class="cell-left"></td>
+                        <td class="cell-left">A custom error that is returned when constraint validation fails</td>
                     </tr>
                 </tbody>
             </table>
@@ -492,7 +509,7 @@
         <a href="#top"><span class="icon-top"></span><span class="hidden">Back to the top</span></a></p>
     </div>
 <script>
-    if ('querySelectorAll' in document) {
+        if ('querySelectorAll' in document && !!Array.prototype.forEach) {
         var offset = 100;
         [].forEach.call(document.querySelectorAll('.nav-secondary a'), function (a) {
             a.addEventListener('click', function (e) {
