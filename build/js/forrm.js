@@ -801,7 +801,7 @@
                 }
             } else {
                 if (this.currentStep === this.numSteps - 1) {
-                    //this.go.call(this.DOMElement);
+                    this.go.call(this.DOMElement);
                 } else {
                     this.changeStep(true);
                 }

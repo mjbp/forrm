@@ -29,8 +29,7 @@ pre, code {padding:0;margin:0;line-height:1.25em}
 pre {border-left:2px solid #DFDFDF;padding:.5em .5em .5em 1em;margin-bottom:1.5em;background:#23241f;color:#f8f8f2;width:100%;overflow-x: scroll}
 .code-comment {color:#999;}
 
-.banner {height:75px;position:fixed;z-index:2; box-shadow: 0 1px 5px #DFDFDF;background:#fff;width:100%;}
-.banner--home {box-shadow:none;}
+.banner {height:75px;position:fixed;z-index:2; background:#fff;width:100%;}
 .banner-title {font-weight:400;width:23%;font-size:1.75em;display:block;float:left;line-height:75px;margin-left:12%;padding-left:50px;position:relative;left:-50px;background:url(../img/forrm.svg) center left no-repeat;color:#000;}
 .banner-title--home {color:#fff;}
 
@@ -95,8 +94,7 @@ input[type=checkbox],
 .forrm-row-submit { margin-bottom: 0;}
 
 button,
-.button-add,
-input[type=submit] { text-decoration: none; border-radius:2px; display:inline-block; width: auto; background: #3cb209; color: #fff;
+input[type=submit] { line-height:1em;text-decoration: none; border-radius:2px; display:inline-block; width: auto; background: #3cb209; color: #fff;
 padding: 8px 24px;font-size:.875em;box-shadow:none;transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);cursor: pointer;}
 button:hover,
 .button-add:hover,

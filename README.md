@@ -13,5 +13,8 @@ Visit the website: [http://mjbp.github.io/forrm] (http://mjbp.github.io/forrm)
 ###License
 [MIT] (http://opensource.org/licenses/MIT)
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 06eb3fd3935a872e42b9878fb96a4cc4a3b2817d
