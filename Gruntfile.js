@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     uglify: {
 		js: {
             files : {
-                'build/js/forrm.min.js' : 'src/forrm.js'
+                'dist/js/forrm.min.js' : 'src/forrm.js'
             }
 		}
     },
@@ -15,7 +15,7 @@ module.exports = function (grunt) {
            expand: true,
            cwd: 'src',
            src: '*',
-           dest: 'build/js'
+           dest: 'dist/js'
         }
     },
     watch: {

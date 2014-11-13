@@ -205,8 +205,6 @@
                     this.addConditional();
                 }
                 toolkit.on(this.DOMElement, 'click keyup input paste change', liveValidate);
-
-
             }
         },
         defaultValidity : function () {
