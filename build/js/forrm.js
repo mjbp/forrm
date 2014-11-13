@@ -1,17 +1,21 @@
 /*jslint browser:true,nomen:true*/
-/*global define, console*/
+/*global define, console, module*/
 /*!
  * @name        Forrm, lightweight vanilla js HTML5 form validation based on constraintValidation API
- * @version     Oct 14
+ * @version     Nov 14
  * @author      mjbp
  * Licensed under the MIT license
  */
 (function (name, context, definition) {
     'use strict';
-    if (typeof define === 'function' && define.amd) {
-        define(definition);
+     if (typeof module !== 'undefined') {
+        module.exports = definition();
     } else {
-        context[name] = definition();
+        if (typeof define === 'function' && typeof define.amd === 'object') {
+            define(definition);
+        } else {
+            context[name] = definition();
+        }
     }
 }('Forrm', this, function (name, context) {
     'use strict';
@@ -154,7 +158,7 @@
      * ForrmElement wrapper class
      *
      * @param  {DOM node} a single form input element
-     * @param  {instance of Form class} reference to parent form element
+     * @param  {instance of ForrmStep class} reference to parent step
      *
      */
     function ForrmElement(element, parent) {
@@ -181,7 +185,6 @@
                     }
                 };
 
-            //if field is required, validate
             if (this.DOMElement.getAttribute('required') !== null) {
                 this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || (this.DOMElement.tagName.toLowerCase() === 'textarea') && 'text' || this.DOMElement.tagName.toLowerCase();
 
@@ -198,7 +201,6 @@
                 if ('autocomplete' in this.DOMElement && !this.forrm.options.autocomplete) {
                     this.DOMElement.setAttribute('autocomplete', 'off');
                 }
-                //propertychange keyup input paste change
                 toolkit.on(this.DOMElement, 'click keyup input paste change', liveValidate);
 
                 if (this.DOMElement.getAttribute('data-forrm-conditional') !== null) {
@@ -244,15 +246,10 @@
                     }
                     this.validationMessage = this.forrm.options.errorMessages[this.type].patternMismatch;
                 } else {
-                    //passed everything
-                    //if not addError on all matched fields
                     this.validity.valid = true;
                 }
             }
-
             return this;
-            //To do: set other validity states and refactor
-
         },
         setGroup : function (g) {
             this.group = g;
@@ -344,14 +341,14 @@
     /*
      * ForrmGroup wrapper class
      *
-     * @param {String} name
-     * @param {Array} array of nodes
+     * @param {String} Name of the group from child elements name attribute or forrm-group data attribute
+     * @param {Array} Array of ForrmElements in the group
+	 * @param {String} Custom group or checkbox/radio group
+	 * @param {Number} Minimum number of valid elements to satisfy constraint
+	 * @param {Number} Maximum number of valid elements to satisfy constraint
      *
      */
     function ForrmGroup(name, els, type, min, max) {
-        if (name === 'undefined') {
-            throw new Error('Nae name');
-        }
         this.name = name;
         this.elements = els;
         this.type = type;
@@ -415,14 +412,12 @@
      /*
      * ForrmUI wrapper class
      *
-     * @param   {Form} Parent form
-     * @roadMap Use templating to bypass DOM manipulation horrorshow
+     * @param   {Form} Parent forrm
+	 *
+     * @roadMap Improve DOM manipulation horrorshow
      *
      */
     function ForrmUI(form) {
-        if (form === 'undefined') {
-            throw new Error('Nae form');
-        }
         this.parent = form;
         this.init();
     }
@@ -544,21 +539,18 @@
             }
             //reinitialize the whole forrm
             this.parent.build();
-            //crashing
         }
     };
 
     /*
      * ForrmStep class
      *
-     * @param {String} name
-     * @param {Array} array of nodes
+     * @param {String} DOM node containing fields for the step
+     * @param {Forrm} array of nodes
+	 * @param {Number} Number in step sequence
      *
      */
     function ForrmStep(el, parent, num) {
-        if (name === 'undefined') {
-            throw new Error('Nae name');
-        }
         this.stepNum = num;
         this.parent = parent;
         this.DOMElement = el;
@@ -690,12 +682,12 @@
      * Forrm wrapper class
      *
      * @param {DOM node} a single form element
-     * @param  {object} to extend defaults{}
+     * @param  {object} to extend defaults {}
      *
      */
     function Forrm(element, options) {
         if (element === 'undefined') {
-            throw new Error('Nae element');
+            throw new Error('No element has been supplied');
         }
         this.DOMElement = element;
         this.options = toolkit.extend({}, defaults, options);
@@ -708,8 +700,6 @@
         build : function () {
             var steps, stepElements;
 
-            //set up steps
-            //if no steps treat as single step
             stepElements = this.DOMElement.querySelectorAll('[data-forrm-step]');
             this.numSteps = stepElements.length || 1;
             this.steps = [];

@@ -6,8 +6,7 @@ module.exports = function (grunt) {
     uglify: {
 		js: {
             files : {
-                'build/js/form.min.js' : 'src/forrm.js',
-                'build/js/jquery.form.min.js' : 'src/jquery.form.js',
+                'build/js/forrm.min.js' : 'src/forrm.js'
             }
 		}
     },
