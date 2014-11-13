@@ -201,11 +201,12 @@
                 if ('autocomplete' in this.DOMElement && !this.forrm.options.autocomplete) {
                     this.DOMElement.setAttribute('autocomplete', 'off');
                 }
-                toolkit.on(this.DOMElement, 'click keyup input paste change', liveValidate);
-
-                if (this.DOMElement.getAttribute('data-forrm-conditional') !== null) {
+				if (this.DOMElement.getAttribute('data-forrm-conditional') !== null) {
                     this.addConditional();
                 }
+                toolkit.on(this.DOMElement, 'click keyup input paste change', liveValidate);
+
+
             }
         },
         defaultValidity : function () {
