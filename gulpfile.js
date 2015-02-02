@@ -9,9 +9,6 @@ var deploy = require('gulp-gh-pages');
 var jshint = require('gulp-jshint');
 var jshintConfig = pkg.jshintConfig;
 
-/* Push demo to gh-pages remote branch */
-
-
 /* Add unit and ened to end tests */
 
 
@@ -37,7 +34,7 @@ var src = ['config.js',
 
 var dest = 'dist/';
 
-var demo = 'demo/'
+var demo = 'demo/';
 
 gulp.task('compile', function() {
     return gulp.src(src, {cwd: 'src'})
