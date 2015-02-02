@@ -5,7 +5,15 @@ var rename = require('gulp-rename');
 var concat = require('gulp-concat');
 var umd = require('gulp-umd');
 var header = require('gulp-header');
+var deploy = require('gulp-gh-pages');
 var jshint = require('gulp-jshint');
+var jshintConfig = pkg.jshintConfig;
+
+/* Push demo to gh-pages remote branch */
+
+
+/* Add unit and ened to end tests */
+
 
 var banner = [
     '/**',
@@ -17,20 +25,26 @@ var banner = [
     ' */'
 ].join('\n');
 
+
 var src = ['config.js', 
 		   'utils.js', 
 		   'element.js',
 		   'group.js',
 		   'ui.js',
 		   'step.js',
-		   'main.js'];
+		   'form.js',
+		   'forrm.js'];
+
+var dest = 'dist/';
+
+var demo = 'demo/'
 
 gulp.task('compile', function() {
     return gulp.src(src, {cwd: 'src'})
         .pipe(concat('forrm.js'))
         .pipe(umd())
         .pipe(header(banner + '\n', { pkg: pkg }))
-        .pipe(gulp.dest('dist/'));
+        .pipe(gulp.dest(dest));
 });
 
 gulp.task('dev', ['compile'], function() {
@@ -38,14 +52,24 @@ gulp.task('dev', ['compile'], function() {
 });
 
 gulp.task('hint', function() {
-	gulp.src('src/*.js')
-		.pipe(jshint())
+	gulp.src(dest + 'forrm.js')
+		.pipe(jshint(jshintConfig))
 		.pipe(jshint.reporter('default'));
 });
 
 gulp.task('compress', function() {
-    return gulp.src('dist/forrm.js')
+    return gulp.src(dest + 'forrm.js')
         .pipe(uglify({preserveComments: 'some'}))
         .pipe(rename('forrm.min.js'))
-        .pipe(gulp.dest('dist/'));
+        .pipe(gulp.dest(dest));
+});
+
+gulp.task('copy', function(){
+    return gulp.src(dest + 'forrm.min.js')
+        .pipe(gulp.dest(demo + 'js/'));
+});
+
+gulp.task('deploy', function () {
+    return gulp.src('./demo/**/*')
+        .pipe(deploy());
 });

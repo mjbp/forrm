@@ -3,3 +3,4 @@ complexity
 package.json
 Gruntfile.js
 tests
+.jshintrc

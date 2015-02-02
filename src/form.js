@@ -5,7 +5,7 @@
  * @param  {object} to extend defaults {}
  *
  */
-function Forrm(element, options) {
+function ForrmForm(element, options) {
     if (element === 'undefined') {
         throw new Error('No element has been supplied');
     }
@@ -15,7 +15,7 @@ function Forrm(element, options) {
     this.init();
 }
 
-Forrm.prototype = {
+ForrmForm.prototype = {
     HTML5 : false,
     build : function () {
         var steps, stepElements;
@@ -24,7 +24,7 @@ Forrm.prototype = {
         this.numSteps = stepElements.length || 1;
         this.steps = [];
 
-        stepElements = stepElements.length > 0 && stepElements || [this.DOMElement];
+        stepElements = (stepElements.length > 0 && stepElements) || [this.DOMElement];
         this.currentStep = 0;
         if (this.numSteps > 1) {
             this.DOMElement.className += ' ' + this.options.css.prefix + this.options.css.stepPrefix + '1';
@@ -115,26 +115,6 @@ Forrm.prototype = {
             } else {
                 this.changeStep(true);
             }
-        }
-    }
-};
-
-return {
-    init : function (el, options) {
-        if (!('querySelectorAll' in document)) {
-            throw new Error('Sorry, your browser is not supported.');
-        } else {
-            var elements = document.querySelectorAll(el),
-                forrms = [],
-                i = null,
-                l = elements.length;
-
-            for (i = 0; i < l; i += 1) {
-                if (!elements[i].hasAttribute('novalidate')) {
-                    forrms[i] = new Forrm(elements[i], options);
-                }
-            }
-            return forrms;
         }
     }
 };
