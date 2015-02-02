@@ -1,9 +1,9 @@
-node_modules
-complexity
+node_modules/
+complexity/
 package.json
 Gruntfile.js
-tests
+tests/
 .jshintrc
-demo
-tests
+demo/
+tests/
 .DS_STORE
