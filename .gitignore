@@ -6,3 +6,4 @@ tests
 .jshintrc
 demo
 tests
+.DS_STORE
