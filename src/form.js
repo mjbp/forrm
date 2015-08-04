@@ -17,28 +17,9 @@ function ForrmForm(element, options) {
 
 ForrmForm.prototype = {
     HTML5 : false,
-    build : function () {
-        var steps, stepElements;
-
-        stepElements = this.DOMElement.querySelectorAll('[data-forrm-step]');
-        this.numSteps = stepElements.length || 1;
-        this.steps = [];
-
-        stepElements = (stepElements.length > 0 && stepElements) || [this.DOMElement];
-        this.currentStep = 0;
-        if (this.numSteps > 1) {
-            this.DOMElement.className += ' ' + this.options.css.prefix + this.options.css.stepPrefix + '1';
-        }
-        for (var i = 0; i < stepElements.length; ++i) {
-            this.steps.push(new ForrmStep(stepElements[i], this, i));
-            if (i !== 0) {
-                this.steps[i].hide();
-            }
-        }
-        return this;
-    },
     init: function () {
-        var self = this;
+        var self = this,
+            tmpGroups = [];
         this.HTML5 = 'noValidate' in document.createElement('form');
         this.liveValidating = false;
         this.go = this.options.pass || this.DOMElement.submit;
@@ -48,13 +29,51 @@ ForrmForm.prototype = {
                 this.DOMElement.setAttribute('autocomplete', 'off');
             }
 
-            this.build();
+            this.fields = this.DOMElement.querySelectorAll('input, textarea, select');
+            this.validatebleElements = {};
+            this.unvalidatebleElements = {};
+            this.groups = {};
 
-            if (this.DOMElement.querySelector('input[type=submit]') !== null) {
-                UTILS.on(this.DOMElement.querySelector('input[type=submit]'), 'click onkeypress', function (e) {
-                    self.handleEvent.call(self, e);
-            }   );
-            }
+                for (var i = 0, field; field = this.fields[i]; i++) {
+                    if (field.getAttribute('type') !== 'submit' &&
+                        field.getAttribute('type') !== 'reset' &&
+                        field.getAttribute('type') !== 'button' &&
+                        field.getAttribute('type') !== 'hidden' &&
+                        (field.getAttribute('disabled') === null || field.getAttribute('disabled') === '')&&
+                        (field.getAttribute('novalidate') === null || field.getAttribute('novalidate') === '')) {
+                        if (field.getAttribute('required') !== null || field.getAttribute('required') !== '') {
+                            this.validatebleElements[field.getAttribute('id')] = new ForrmElement(field, this);
+                            if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-forrm-group') !== null) {
+                                tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
+                            }
+
+                            if ((this.fields[i + 1] === undefined || !(field.getAttribute('data-forrm-group')) && (field.getAttribute('name') !== this.fields[i + 1].getAttribute('name')) || i - 1 === this.fields.length) || field.getAttribute('data-forrm-group') !== this.fields[i + 1].getAttribute('data-forrm-group')) {
+                                if (tmpGroups.length > 0) {
+                                    var groupName = field.getAttribute('data-forrm-group') || field.getAttribute('name'),
+                                        groupType = field.getAttribute('data-forrm-group') ? 'custom' : 'checked',
+                                        groupMin = field.getAttribute('data-forrm-group-min') || 1,
+                                        groupMax = field.getAttribute('data-forrm-group-max') || null;
+                                    this.groups[groupName] = new ForrmGroup(groupName, tmpGroups, groupType, groupMin, groupMax);
+                                    for (var j = 0; j < tmpGroups.length; j++) {
+
+                                       tmpGroups[j].setGroup(this.groups[groupName]);
+                                    }
+                                    tmpGroups = [];
+                                }
+                            }
+                        } else {
+                            this.unvalidatebleElements[field.getAttribute('id')] = new ForrmElement(field, this);
+                        }
+                    }
+                }
+                this.makeValidationList();
+                this.UI = new ForrmUI(this);
+
+                if (this.DOMElement.querySelector('input[type=submit]') !== null) {
+                        UTILS.on(this.DOMElement.querySelector('input[type=submit]'), 'click onkeypress', function (e) {
+                            self.handleEvent.call(self, e);
+                    }   );
+                }
         }
         return this;
     },
@@ -68,29 +87,45 @@ ForrmForm.prototype = {
             }
         }
     },
-    changeStep : function (forward, e) {
-        var next = !!forward && this.currentStep + 1 || this.currentStep - 1;
+	makeValidationList : function () {
+		this.validationList = {};
 
-        if(!!e) {UTILS.preventDefault(e);}
+		for (var i in this.validatebleElements) {
+			if (this.validatebleElements.hasOwnProperty(i)) {
+				this.validationList[this.validatebleElements[i].errorGroup] = {
+					'error': null,
+					'element': (this.groups[this.validatebleElements[i].errorGroup] || this.validatebleElements[i]),
+					'id': !!(this.groups[this.validatebleElements[i].errorGroup]) ?
+							this.groups[this.validatebleElements[i].errorGroup].elements[0].DOMElement.getAttribute('id') :
+					document.getElementById(this.validatebleElements[i].errorGroup).getAttribute('id')
+				};
+			}
+		}
+		return this.validationList;
+	},
+	manageValidationList : function (erId, er) {
+		this.validationList[erId].error = er;
+		return this;
+	},
+	countErrors : function () {
+		var errors = 0;
 
-        this.steps[this.currentStep].hide();
-        this.DOMElement.className = this.DOMElement.className.split(' ' +
-                                                                    this.options.css.prefix +
-                                                                    this.options.css.stepPrefix +
-                                                                    (+this.currentStep + 1)).join(' ' +
-                                                                    this.options.css.prefix +
-                                                                    this.options.css.stepPrefix + (+next + 1));
-        this.steps[next].show();
-        this.currentStep = next;
-
-        return this;
-    },
+		for (var i in this.validationList) {
+			if (this.validationList.hasOwnProperty(i)) {
+				if (this.validationList[i].error !== null) {
+					errors++;
+				}
+			}
+		}
+		return errors;
+	},
     test : function () {
         var el = null,
             er = null,
             vList,
             self = this;
-        this.validationList = this.steps[this.currentStep].makeValidationList();
+        
+        this.validationList = this.makeValidationList();
 
         for (var i in this.validationList) {
             this.validationList[i].element.validate();
@@ -99,8 +134,8 @@ ForrmForm.prototype = {
             }
         }
 
-        if (this.steps[this.currentStep].countErrors() > 0) {
-            self.UI.write();
+        if (this.countErrors() > 0) {
+            this.UI.write();
             if (!this.options.listMessages) {
                 document.querySelector('.' + this.options.css.prefix + this.options.css.errorMessageClass).focus();
             } else {
@@ -110,11 +145,7 @@ ForrmForm.prototype = {
                 this.options.fail.call();
             }
         } else {
-            if (this.currentStep === this.numSteps - 1) {
-                this.go.call(this.DOMElement);
-            } else {
-                this.changeStep(true);
-            }
+            this.go.call(this.DOMElement);
         }
     }
 };

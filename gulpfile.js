@@ -28,7 +28,7 @@ var src = ['config.js',
 		   'element.js',
 		   'group.js',
 		   'ui.js',
-		   'step.js',
+		   //'step.js',
 		   'form.js',
 		   'forrm.js'];
 

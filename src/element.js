@@ -2,13 +2,12 @@
  * ForrmElement wrapper class
  *
  * @param  {DOM node} a single form input element
- * @param  {instance of ForrmStep class} reference to parent step
+ * @param  {instance of ForrmElement class} reference to parent forrm
  *
  */
 function ForrmElement(element, parent) {
 	this.DOMElement = element;
 	this.parent = parent;
-	this.forrm = parent.parent;
 	this.init();
 }
 
@@ -17,15 +16,15 @@ ForrmElement.prototype = {
 		var updateEvent,
 			self = this,
 			liveValidate = function (e) {
-				if (!self.forrm.liveValidating) {
+				if (!self.parent.liveValidating) {
 					return;
 				}
 				UTILS.stopImmediatePropagation(e);
 				self.parent.validationList[self.errorGroup].element.validate();
-				if (!self.forrm.options.listMessages) {
-					self.forrm.UI.updateInlineErrors(self);
+				if (!self.parent.options.listMessages) {
+					self.parent.UI.updateInlineErrors(self);
 				} else {
-					self.forrm.UI.listErrorMessages();
+					self.parent.UI.listErrorMessages();
 				}
 			};
 
@@ -33,16 +32,16 @@ ForrmElement.prototype = {
 			this.type = (this.DOMElement.tagName.toLowerCase() === 'input') && this.DOMElement.getAttribute('type') || (this.DOMElement.tagName.toLowerCase() === 'textarea') && 'text' || this.DOMElement.tagName.toLowerCase();
 
 			//if customMessages is set, check if type exists in errorMessages object, otherwise set to default text field error
-			if(!!(this.forrm.options.customErrorMessage) && !(this.type in this.forrm.options.errorMessages)) {
+			if(!!(this.parent.options.customErrorMessage) && !(this.type in this.parent.options.errorMessages)) {
 				this.type = 'text';
 			}
 
-			this.testCustomConstraint = (!!this.DOMElement.getAttribute('data-forrm-custom-constraint') && this.forrm.options.customConstraint[this.DOMElement.getAttribute('data-forrm-custom-constraint')]) || false;
+			this.testCustomConstraint = (!!this.DOMElement.getAttribute('data-forrm-custom-constraint') && this.parent.options.customConstraint[this.DOMElement.getAttribute('data-forrm-custom-constraint')]) || false;
 
 			this.errorGroup = this.DOMElement.getAttribute('id');
 			this.validity = this.DOMElement.validity || this.defaultValidity();
 
-			if ('autocomplete' in this.DOMElement && !this.forrm.options.autocomplete) {
+			if ('autocomplete' in this.DOMElement && !this.parent.options.autocomplete) {
 				this.DOMElement.setAttribute('autocomplete', 'off');
 			}
 			if (this.DOMElement.getAttribute('data-forrm-conditional') !== null) {
@@ -69,14 +68,14 @@ ForrmElement.prototype = {
 	},
 	setValidity : function () {
 		var regExp,
-			pattern = this.DOMElement.getAttribute('pattern') || this.forrm.options.patterns[this.type],
+			pattern = this.DOMElement.getAttribute('pattern') || this.parent.options.patterns[this.type],
 			list;
 
 		this.validationMessage = null;
 		if (this.DOMElement.value.replace( /^\s+/g, '' ).replace( /\s+$/g, '' ) === "" || ((this.type === 'radio' || this.type === 'checkbox') && !this.DOMElement.checked)) {
 			this.validity.valid = false;
 			this.validity.valueMissing = true;
-			this.validationMessage = this.forrm.options.errorMessages[this.type].valueMissing;
+			this.validationMessage = this.parent.options.errorMessages[this.type].valueMissing;
 		} else {
 			this.validity.valueMissing = false;
 			regExp = new RegExp(pattern, "");
@@ -87,7 +86,7 @@ ForrmElement.prototype = {
 				} else {
 					this.validity.typeMismatch = true;
 				}
-				this.validationMessage = this.forrm.options.errorMessages[this.type].patternMismatch;
+				this.validationMessage = this.parent.options.errorMessages[this.type].patternMismatch;
 			} else {
 				this.validity.valid = true;
 			}
@@ -101,9 +100,9 @@ ForrmElement.prototype = {
 		return this;
 	},
 	addError : function (error, groupPartial) {
-		this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.forrm.options.css.prefix + this.forrm.options.css.successClass).join('');
-		if (this.DOMElement.parentNode.className.indexOf(this.forrm.options.css.prefix + this.forrm.options.css.errorClass) === -1) {
-			this.DOMElement.parentNode.className += ' ' + this.forrm.options.css.prefix + this.forrm.options.css.errorClass;
+		this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.css.prefix + this.parent.options.css.successClass).join('');
+		if (this.DOMElement.parentNode.className.indexOf(this.parent.options.css.prefix + this.parent.options.css.errorClass) === -1) {
+			this.DOMElement.parentNode.className += ' ' + this.parent.options.css.prefix + this.parent.options.css.errorClass;
 		}
 		this.DOMElement.setAttribute('aria-invalid', 'true');
 		if (!groupPartial) {
@@ -112,7 +111,7 @@ ForrmElement.prototype = {
 		return this;
 	},
 	removeError : function (groupPartial) {
-		this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.forrm.options.css.prefix + this.forrm.options.css.errorClass).join('');
+		this.DOMElement.parentNode.className = this.DOMElement.parentNode.className.split(' ' + this.parent.options.css.prefix + this.parent.options.css.errorClass).join('');
 		this.DOMElement.setAttribute('aria-invalid', 'false');
 		this.DOMElement.removeAttribute('aria-labelledby');
 		if (!groupPartial) {
@@ -122,23 +121,23 @@ ForrmElement.prototype = {
 	},
 	addSuccess : function (groupPartial) {
 		this.removeError(groupPartial);
-		if (this.DOMElement.parentNode.className.indexOf(this.forrm.options.css.prefix + this.forrm.options.css.successClass) === -1) {
-			this.DOMElement.parentNode.className += ' ' + this.forrm.options.css.prefix + this.forrm.options.css.successClass;
+		if (this.DOMElement.parentNode.className.indexOf(this.parent.options.css.prefix + this.parent.options.css.successClass) === -1) {
+			this.DOMElement.parentNode.className += ' ' + this.parent.options.css.prefix + this.parent.options.css.successClass;
 		}
 		return this;
 	},
 	test : function () {
-		if (!this.forrm.HTML5) {
+		if (!this.parent.HTML5) {
 			this.setValidity();
 		}
 		if (!!this.testCustomConstraint) {
-			if (!!this.forrm.HTML5) {
+			if (!!this.parent.HTML5) {
 				this.DOMElement.setCustomValidity(this.testCustomConstraint.call(this.DOMElement));
 			} else {
 				if (this.testCustomConstraint.call(this.DOMElement) !== '') {
 					this.validity.valid = false;
 					this.validity.customError = this.testCustomConstraint.call(this.DOMElement);
-					if (!this.forrm.HTML5) {
+					if (!this.parent.HTML5) {
 						this.validationMessage = this.validity.customError;
 					}
 				}
@@ -154,8 +153,8 @@ ForrmElement.prototype = {
 		}
 	},
 	getError : function () {
-		if (this.forrm.options.customErrorMessage) {
-			return (this.forrm.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
+		if (this.parent.options.customErrorMessage) {
+			return (this.parent.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
 		} else {
 			if (this.DOMElement.getAttribute('data-forrm-custom-error') !== null) {
 				return this.DOMElement.getAttribute('data-forrm-custom-error');
@@ -170,13 +169,13 @@ ForrmElement.prototype = {
 			openSesame = function (e) {
 				UTILS.stopImmediatePropagation(e);
 				if (!!self.conditionalConstraint.call(self.DOMElement)) {
-					self.forrm.UI.toggleEnabled(self.dependents, true);
+					self.parent.UI.toggleEnabled(self.dependents, true);
 				} else {
-					self.forrm.UI.toggleEnabled(self.dependents, null);
+					self.parent.UI.toggleEnabled(self.dependents, null);
 				}
 			};
 		self.dependents = document.querySelectorAll('.' + dc + ' input, ' + '.' + dc + ' textarea, ' + '.' + dc + 'select');
-		self.conditionalConstraint = !!(self.forrm.options.conditionalConstraint) && self.forrm.options.conditionalConstraint[dc] || function () { return this.value !== ''; };
+		self.conditionalConstraint = !!(self.parent.options.conditionalConstraint) && self.parent.options.conditionalConstraint[dc] || function () { return this.value !== ''; };
 		UTILS.on(self.DOMElement, 'change', openSesame);
 	}
 };

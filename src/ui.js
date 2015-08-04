@@ -91,7 +91,7 @@ ForrmUI.prototype = {
 	  if (oldListHolder) {
 		  oldListHolder.parentElement.removeChild(oldListHolder);
 	  }
-	  if (this.parent.steps[this.parent.currentStep].countErrors() === 0) {
+	  if (this.parent.countErrors() === 0) {
 		  return this;
 	  }
 	  listTitle.innerHTML = this.parent.options.listTitle;
@@ -127,7 +127,5 @@ ForrmUI.prototype = {
 			  el.setAttribute('disabled', 'disabled');
 		  }
 	  }
-	  //reinitialize the whole forrm
-	  this.parent.build();
   }
 };

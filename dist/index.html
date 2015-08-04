@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset=utf-8>
+    <title>Forrm</title>
+    <link href="//fonts.googleapis.com/css?family=Roboto:400" rel="stylesheet">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="../demo/css/style.css">
+</head>
+<body>
+    <div role="main" class="main">
+        <section id="default">
+            <form id="example-search" action="/">
+                <div class="forrm-row">
+                    <label for="search-field">Search: *</label>
+                    <input type="search" id="search-field" name="search-field" value="" placeholder="Your search terms..." required aria-required="true">
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
+        <section class="example" id="list-errors">
+            <form action="/" id="example-contact">
+              <div class="forrm-row">
+                <label for="example-contact-name">Name*</label>
+                <input type="text" id="example-contact-name" name="example-contact-name" placeholder="Forename Surname" value="" aria-required="true" required>
+              </div>
+              <div class="forrm-row">
+                <label for="example-contact-email">Email*</label>
+                <input type="email" id="example-contact-email" name="example-contact-email" placeholder="name@example.com" value="" aria-required="true" required>
+              </div>
+              <div class="forrm-row">
+                <label for="example-contact-message">Message*</label>
+                <textarea id="example-contact-message" name="example-contact-message" placeholder="Your message here..." value="" aria-required="true" required></textarea>
+              </div>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
+        <section id="groups">
+            <form action="/" id="example-survey">
+              <div class="forrm-row forrm-row-radio">
+                <fieldset>
+                  <legend>Pick two cat breeds*</legend>
+                    <div class="forrm-row forrm-row-checkbox">
+                      <input type="checkbox" id="example-survey-1" name="example-survey-1" value="birman" required aria-required="true" data-forrm-group-min="2" data-forrm-group-max="2" data-forrm-custom-error="Exactly two breeds are required">
+                      <label for="example-survey-1">Birman</label>
+                    </div>
+                    <div class="forrm-row forrm-row-checkbox">
+                      <input type="checkbox" id="example-survey-2" name="example-survey-1" value="korat" required aria-required="true" data-forrm-group-min="2" data-forrm-group-max="2" data-forrm-custom-error="Exactly two breeds are required">
+                      <label for="example-survey-2">Korat</label>
+                    </div>
+                    <div class="forrm-row forrm-row-checkbox">
+                      <input type="checkbox" id="example-survey-3" name="example-survey-1" value="main coon" required aria-required="true" data-forrm-group-min="2" data-forrm-group-max="2" data-forrm-custom-error="Exactly two breeds are required">
+                    <label for="example-survey-3">Maine Coon</label>
+                  </div>
+                  <div class="forrm-row forrm-row-checkbox">
+                    <input type="checkbox" id="example-survey-4" name="example-survey-1" value="russian-blue" required aria-required="true" data-forrm-group-min="2" data-forrm-group-max="2" data-forrm-custom-error="Exactly two breeds are required">
+                    <label for="example-survey-4">Russian Blue</label>
+                </div>
+                <div class="forrm-row forrm-row-checkbox">
+                  <input type="checkbox" id="example-survey-5" name="example-survey-1" value="sphynx" required aria-required="true" data-forrm-group-min="2" data-forrm-group-max="2" data-forrm-custom-error="Exactly two breeds are required">
+                  <label for="example-survey-5">Sphynx</label>
+                </div>
+            </fieldset>
+            </div>
+            <div class="forrm-row forrm-row-radio">
+              <fieldset>
+                <legend>Do you prefer cats or dogs?*</legend>
+                <div class="forrm-row forrm-row-radio">
+                  <input type="radio" id="example-survey-6" name="example-survey-6" value="cats" required aria-required="true">
+                  <label for="example-survey-6">Cats</label>
+                </div>
+                <div class="forrm-row forrm-row-radio">
+                  <input type="radio" id="example-survey-7" name="example-survey-6" value="dogs" required aria-required="true">
+                  <label for="example-survey-7">Dogs</label>
+                </div>
+             </fieldset>
+             </div>
+            <fieldset class="forrm-group">
+                <legend class="forrm-group-legend">Your cat's full name or nickname</legend>
+                 <div class="forrm-row">
+                    <label for="example-survey-8">Cat full name: *</label>
+                    <input type="text" id="example-survey-8" name="example-survey-8" value="" required aria-required="true" data-forrm-group="test-group">
+                 </div>
+                 <div class="forrm-row">
+                    <label for="example-survey-9">Cat nickname: *</label>
+                    <input type="text" id="example-survey-9" name="example-curvey-9" value="" required aria-required="true" data-forrm-group="test-group"data-forrm-custom-error="Cats must have a full name or a nickname">
+                 </div>
+            </fieldset>
+            <input type="submit" value="Submit">
+            </form>
+        </section>
+        <section id="custom-error">
+            <form id="example-custom-error" action="/">
+                <div class="forrm-row forrm-row-checkbox">
+                    <fieldset>
+                         <div class="forrm-row forrm-row-checkbox">
+                            <input type="checkbox" id="example-custom-error-1" name="example-custom-error-1" value="1" required aria-required="true" data-forrm-custom-error="You must must agree to the terms in order to continue">
+                            <label for="example-custom-error-1">I agree the terms and conditions*</label>
+                        </div>
+                    </fieldset>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
+        <section id="constraints">
+                <form id="example-constraint" action="/">
+                    <fieldset>
+                        <div class="forrm-row">
+                            <label for="example-constraint-1">Password: *</label>
+                            <input type="password" id="example-constraint-1" name="example-constraint-group" value="" required aria-required="true">
+                        </div>
+                        <div class="forrm-row">
+                            <label for="example-constraint-2">Re-type your password: *</label>
+                            <input type="password" id="example-constraint-2" name="example-constraint-group" value="" required aria-required="true" data-forrm-custom-constraint="match-values">
+                        </div>
+                        <input type="submit" value="Submit">
+                    </fieldset>
+                </form>
+        </section>
+        <section id="Functions">
+            <form id="example-functions" action="/">
+                <div class="forrm-row">
+                    <label for="example-functions">How old are you? *</label>
+                    <select id="example-functions" name="example-functions" required aria-required="true">
+                        <option value="">Select one&hellip;</option>
+                        <option value="18-35">18-35</option>
+                        <option value="36-55">36-55</option>
+                        <option value="55-85">55-85</option>
+                        <option value="85+">85+</option>
+                    </select>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
+        <section id="conditional">
+            <form id="example-conditional" action="/">
+                <div class="forrm-row forrm-row-radio">
+                    <fieldset>
+                        <legend>I have a pet *</legend>
+                         <div class="forrm-row forrm-row-radio">
+                            <input type="radio" id="example-conditional-1" name="example-conditional-1" value="cat" required aria-required="true" data-forrm-conditional="isOther">
+                            <label for="example-conditional-1">Cat</label>
+                        </div>
+                         <div class="forrm-row forrm-row-radio">
+                            <input type="radio" id="example-conditional-2" name="example-conditional-1" value="dog" required aria-required="true" data-forrm-conditional="isOther">
+                            <label for="example-conditional-2">Dog</label>
+                        </div>
+                         <div class="forrm-row forrm-row-radio">
+                            <input type="radio" id="example-conditional-3" name="example-conditional-1" value="other" required aria-required="true" data-forrm-conditional="isOther">
+                            <label for="example-conditional-3">Other</label>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="forrm-row forrm-disabled isOther">
+                    <label for="test-conditional-4">If other, please describe*</label>
+                    <input type="text" id="test-conditional-4" name="test-conditional-4" value="" required aria-required="true" disabled>
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        </section>
+    </div>
+    <a href="#top"><span class="icon-top"></span><span class="hidden">Back to the top</span></a>
+</div>
+
+	<script src="forrm.js"></script>
+	<script>
+        /* Hello, these are the example instantiations */
+        /* Example 1, 3, 4, 5 */
+        Forrm.init('#example-search, #example-survey, #example-steps-1, #example-custom-error');
+
+        /* Example 2 */
+        Forrm.init('#example-contact', {listMessages: true});
+        
+        Forrm.init('#example-constraint', {customConstraint :
+                                        {'match-values' : function () {
+                                                var matcher = document.querySelector('#example-constraint-1').value,
+                                                    error = 'The passwords must be the same';
+
+                                                if (this.value === matcher) {
+                                                    return '';
+                                                } else {
+                                                    return error;
+                                                }
+                                            }
+                                        }
+									});
+                                    
+        Forrm.init('#example-functions', {
+            fail : function () {window.alert(':( Validation failed');},
+            pass : function () {window.alert(':) Validation success');}
+        });
+
+        Forrm.init('#example-conditional', {conditionalConstraint : {
+            isOther : function () {
+                return this.value === 'other';
+            }
+        }});
+
+	</script>
+
+</body>
+</html>
