@@ -130,7 +130,7 @@ ForrmElement.prototype = {
 		if (!this.parent.HTML5) {
 			this.setValidity();
 		}
-		if (!!this.testCustomConstraint) {
+        if (!!this.testCustomConstraint && (!!this.getValidity() || !!this.validity.customError)) {
 			if (!!this.parent.HTML5) {
 				this.DOMElement.setCustomValidity(this.testCustomConstraint.call(this.DOMElement));
 			} else {
@@ -153,8 +153,9 @@ ForrmElement.prototype = {
 		}
 	},
 	getError : function () {
+        
 		if (this.parent.options.customErrorMessage) {
-			return (this.parent.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
+            return (this.parent.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch'] || this.DOMElement.validationMessage);
 		} else {
 			if (this.DOMElement.getAttribute('data-forrm-custom-error') !== null) {
 				return this.DOMElement.getAttribute('data-forrm-custom-error');

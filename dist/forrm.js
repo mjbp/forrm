@@ -1,6 +1,6 @@
 /**
  * @name Forrm: Clientside form validation framework using contraintValidation
- * @version 0.2.0 Tue, 04 Aug 2015 13:33:13 GMT
+ * @version 0.2.0 Fri, 04 Sep 2015 08:59:41 GMT
  * @author mjbp
  * @license 
  * @url https://github.com/mjbp/forrm/
@@ -285,7 +285,7 @@ ForrmElement.prototype = {
 		if (!this.parent.HTML5) {
 			this.setValidity();
 		}
-		if (!!this.testCustomConstraint) {
+        if (!!this.testCustomConstraint && (!!this.getValidity() || !!this.validity.customError)) {
 			if (!!this.parent.HTML5) {
 				this.DOMElement.setCustomValidity(this.testCustomConstraint.call(this.DOMElement));
 			} else {
@@ -308,8 +308,9 @@ ForrmElement.prototype = {
 		}
 	},
 	getError : function () {
+        
 		if (this.parent.options.customErrorMessage) {
-			return (this.parent.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch']);
+            return (this.parent.options.errorMessages[this.type][this.validity.valueMissing && 'valueMissing' || this.validity.patternMismatch && 'patternMismatch' || this.validity.typeMismatch && 'typeMismatch'] || this.DOMElement.validationMessage);
 		} else {
 			if (this.DOMElement.getAttribute('data-forrm-custom-error') !== null) {
 				return this.DOMElement.getAttribute('data-forrm-custom-error');

@@ -9,7 +9,7 @@ var deploy = require('gulp-gh-pages');
 var jshint = require('gulp-jshint');
 var jshintConfig = pkg.jshintConfig;
 
-/* Add unit and ened to end tests */
+/* Add unit and end to end tests */
 
 
 var banner = [
