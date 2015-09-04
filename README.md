@@ -7,6 +7,8 @@ Designed to make HTML5 form validation as simple as possible with declarative, r
 
 No dependencies, supports all modern browsers and IE8 (standards mode)+.
 
+An even lighter version without the step functionality (that breaks a form down into separate steps) is available in the 'unstep' branch
+
 
 Visit the website: [http://mjbp.github.io/forrm] (http://mjbp.github.io/forrm)
 
