@@ -1,6 +1,6 @@
 /**
  * @name Forrm: Clientside form validation framework using contraintValidation
- * @version 0.2.0 Fri, 04 Sep 2015 08:59:41 GMT
+ * @version 0.2.0 Tue, 15 Sep 2015 13:25:48 GMT
  * @author mjbp
  * @license 
  * @url https://github.com/mjbp/forrm/
@@ -579,7 +579,7 @@ ForrmForm.prototype = {
                         field.getAttribute('type') !== 'hidden' &&
                         (field.getAttribute('disabled') === null || field.getAttribute('disabled') === '')&&
                         (field.getAttribute('novalidate') === null || field.getAttribute('novalidate') === '')) {
-                        if (field.getAttribute('required') !== null || field.getAttribute('required') !== '') {
+                        if (field.hasAttribute('required')) {
                             this.validatebleElements[field.getAttribute('id')] = new ForrmElement(field, this);
                             if (field.getAttribute('type') === 'checkbox' || field.getAttribute('type') === 'radio' || field.getAttribute('data-forrm-group') !== null) {
                                 tmpGroups.push(this.validatebleElements[field.getAttribute('id')]);
